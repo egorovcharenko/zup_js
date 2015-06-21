@@ -1,0 +1,22 @@
+<template name="loadData">
+  <div class="center aligned">
+    <div class="ui primary button" id="load_goods">
+      Загрузить товары
+    </div>
+    <div class="ui primary button" id="load_companies">
+      Загрузить компании
+    </div>
+    <div class="ui primary button" id="load_rest">
+      Загрузить остальное
+    </div>
+    {{#if isActive}}
+    <div class="ui horizontal divider">Прогресс</div>
+    {{#with progress}}
+    <div class="ui indicating progress active">
+      <div class="bar" style="-webkit-transition-duration: 300ms; transition-duration: 300ms; width: {{dataPercent}}%;"></div>
+      <div class="label">{{#if isActive}}{{countAlready}} из {{countTotal}}{{/if}}</div>
+    </div>
+    {{/with}}
+    {{/if}}
+  </div>
+</template>

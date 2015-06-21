@@ -1,0 +1,20 @@
+table(class="ui celled table")
+  thead
+    tr
+      th Заказ
+      th Товар
+      th Кол-во
+      th Поставщик
+  tbody
+    each customerOrders
+      tr
+        td {{name}} - {{_state}}
+        td
+        td
+        td
+      each customerOrderPositionModified
+        tr
+          td
+          td #{name}
+          td #{quantity}
+          td #{companyName}              
