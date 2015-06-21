@@ -38,9 +38,9 @@ Meteor.methods({
           }
 
           // Создание ленивого загрузчика
-          var lazyLoader = client.createLazyLoader();
+          //var lazyLoader = client.createLazyLoader();
           // Привязка ленивого загрузчика
-          lazyLoader.attach(entity);
+          //lazyLoader.attach(entity);
 
           if (collection.find({uuid: entity.uuid}).count() > 0) {
             collection.remove({uuid: entity.uuid});

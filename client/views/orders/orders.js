@@ -26,14 +26,11 @@ Template.ordersList.events({
   "click .order-state": function (event, template) {
     //console.log(event);
     Session.set("StateToLoad", event.target.innerText)
-    Meteor.call("loadOrdersFromMS", {"state.name": event.target.innerText}, function (error, result) {
-      //LocalOrders = result;
-      //LocalOrders.remove({});
-      //_.each(result, function (order) {
-      //  LocalOrders.insert (order);
-        //console.log(order);
-      //})
-    });
+    //Meteor.call("loadOrdersFromMS", {"state.name": event.target.innerText}, null);
+    Meteor.call('loadEntityFromMS', {"state.name": event.target.innerText}, "customerOrder", "Goods", function (order) {
+      order._state = Workflows.find({uuid: order.stateUuid});
+      order.sum.sum /= 100;
+    })
   }
 });
 

@@ -14,6 +14,9 @@ Meteor.publish('tempCol', function() {
   return tempCol.find();
 });
 
+Meteor.publish('workflows', function() {
+  return Workflows.find();
+});
 // Server
 /*
 Meteor.publishComposite('ordersWPosWGoodsWSuppliers', {

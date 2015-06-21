@@ -25,5 +25,8 @@ Template.loadData.events({
   },
   "click #load_companies": function(event, template){
     Meteor.call('loadEntityFromMS', null, "company", "Companies", null)
+  },
+  "click #load_rest": function(event, template){
+    Meteor.call('loadEntityFromMS', null, "workflow", "Workflows", null)
   }
 });
