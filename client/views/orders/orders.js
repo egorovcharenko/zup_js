@@ -10,13 +10,39 @@ Template.ordersList.rendered = function(){
 
 Template.ordersList.helpers({
   ordersListHelper: function () {
-    //console.log("ordersListHelper got invoked");
-    return orders.find({_state: Session.get("StateToLoad")});
+    var temp = Workflows.findOne({name:"CustomerOrder"});
+    if (temp) {
+      var stateUuid;
+      _.each(temp.state, function (state) {
+        if (state.name == Session.get("StateToLoad")) {
+          stateUuid = state.uuid;
+        }
+      })
+      var ret = orders.find({stateUuid: stateUuid});
+      //console.log(ret.fetch());
+      return ret;
+    }
+    return [];
+  },
+  orderHelper: function () {
+    var ret = {};
+    ret.sum = this.sum.sum / 100;
+    stateUuid = this.stateUuid;
+    var temp = Workflows.findOne({name:"CustomerOrder"});
+    //console.log(temp);
+    if (temp) {
+      _.each(temp.state, function (state) {
+        //console.log(stateUuid + " <> " + stateUuid);
+        if (state.uuid == stateUuid) {
+          ret.state = state.name;
+        }
+      });
+    }
+    //console.log(ret);
+    return ret;
   },
   suppliers: function () {
     var ret = Companies.find({tags: {$in: ["поставщики"]}});
-    //console.log(ret);
-    //console.log(ret.fetch());
     return ret;
   }
 });
@@ -27,10 +53,21 @@ Template.ordersList.events({
     //console.log(event);
     Session.set("StateToLoad", event.target.innerText)
     //Meteor.call("loadOrdersFromMS", {"state.name": event.target.innerText}, null);
-    Meteor.call('loadEntityFromMS', {"state.name": event.target.innerText}, "customerOrder", "Orders", function (order) {
-      order._state = Workflows.find({uuid: order.stateUuid});
-      order.sum.sum /= 100;
-    })
+    var temp = Workflows.findOne({name:"CustomerOrder"});
+    if (temp) {
+      var stateUuid;
+      _.each(temp.state, function (state) {
+        if (state.name == Session.get("StateToLoad")) {
+          stateUuid = state.uuid;
+          Session.set("StateToLoadUuid", state.uuid);
+          console.log(state.uuid);
+        }
+      })
+    }
+
+
+    Meteor.call('resetChecked');
+    Meteor.call('loadEntityFromMS', {"state.name": event.target.innerText}, "customerOrder", "Orders");
   }
 });
 
@@ -64,6 +101,17 @@ Template.ordersList.helpers({
 Template.ordersList.events({
   "click .orderSelect": function(event, template){
     Meteor.call("toggleChecked", this);
+  },
+  "click .allOrdersSelect": function(event, template){
+    var temp = Workflows.findOne({name:"CustomerOrder"});
+    if (temp) {
+      var stateUuid;
+      _.each(temp.state, function (state) {
+        if (state.name == Session.get("StateToLoad")) {
+          Meteor.call("setAllChecked", state.uuid);
+        }
+      })
+    }
   },
   "change #supplierSelector": function (event, template) {
     //console.log(event);

@@ -1,6 +1,7 @@
 Meteor.methods({
   loadEntityFromMS: function (stateToLoad, entityName, collectionName, operationOnEachEntity) {
-    check(arguments, [Match.Any]);
+    //console.log(arguments);
+    //check(arguments, [Match.Any]);
     var collection = CollectionNameMap[collectionName];
     var moyskladPackage = Meteor.npmRequire('moysklad-client');
 
@@ -33,15 +34,6 @@ Meteor.methods({
         }
         entitiesFromMs = client.load(entityName, query);
         _.each(entitiesFromMs, function (entity) {
-          if (operationOnEachEntity) {
-            operationOnEachEntity (entity);
-          }
-
-          // Создание ленивого загрузчика
-          //var lazyLoader = client.createLazyLoader();
-          // Привязка ленивого загрузчика
-          //lazyLoader.attach(entity);
-
           if (collection.find({uuid: entity.uuid}).count() > 0) {
             collection.remove({uuid: entity.uuid});
           }
@@ -69,7 +61,16 @@ Meteor.methods({
   },
 
   toggleChecked: function (entity) {
-    check(entity, Match.Any);
     orders.update(entity._id, {$set: {checked: ! entity.checked}});
+  },
+
+  resetChecked: function () {
+    orders.update({}, {$set: {checked: false}}, {multi:true});
+  },
+
+  setAllChecked: function (stateUuid1) {
+    console.log(stateUuid1);
+    orders.update({}, {$set: {checked: false}}, {multi:true});
+    orders.update({stateUuid: stateUuid1}, {$set: {checked: true}}, {multi:true});
   }
 });

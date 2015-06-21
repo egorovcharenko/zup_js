@@ -5,6 +5,7 @@
         <div class="center aligned">
           <div class="ui basic button order-state">На сборку</div>
           <div class="ui basic button order-state">Требуется закупка</div>
+          <div class="ui button allOrdersSelect">Выделить все</div>
         </div>
       </div>
     </div>
@@ -20,12 +21,6 @@
             {{/each}}
           </div>
         </div>
-        <a href="{{pathFor 'buyingList' query="{{getPathForBuying}}"}}">
-          <div class="ui primary button">
-            <i class="shop icon"></i>
-            Показать товары этого поставщика
-          </div>
-        </a>
       </div>
     </div>
   </div>
@@ -43,7 +38,9 @@
   <table class="ui compact celled definition table">
     <thead>
       <tr>
-        <th></th>
+        <th><td class="collapsing">
+
+        </td></th>
         <th>Номер</th>
         <th>Номер на сайте</th>
         <th>Дата создания</th>
@@ -62,26 +59,10 @@
         <td>{{name}}</td>
         <td>{{code}}</td>
         <td>{{prettifyDate created}}</td>
-        <td>{{sum.sum}}</td>
-        <td>{{_state}}</td>
+        <td>{{orderHelper.sum}}</td>
+        <td>{{orderHelper.state}}</td>
       </tr>
       {{/each}}
     </tbody>
-    <tfoot class="full-width">
-      <tr>
-        <th></th>
-        <th colspan="4">
-          <div class="ui right floated small primary labeled icon button">
-            <i class="user icon"></i> Primary
-          </div>
-          <div class="ui small button">
-            Button
-          </div>
-          <div class="ui small disabled button">
-            Disabled
-          </div>
-        </th>
-      </tr>
-    </tfoot>
   </table>
 </template>

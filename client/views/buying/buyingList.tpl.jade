@@ -3,18 +3,12 @@ table(class="ui celled table")
     tr
       th Заказ
       th Товар
-      th Кол-во
-      th Поставщик
   tbody
     each customerOrders
       tr
-        td {{name}} - {{_state}}
-        td
-        td
+        td {{name}}
         td
       each customerOrderPositionModified
         tr
           td
-          td #{name}
-          td #{quantity}
-          td #{companyName}              
+          td #{name}          

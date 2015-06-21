@@ -14,10 +14,10 @@ Router.map(function() {
         _.each(order.customerOrderPosition, function (pos) {
           var good = Goods.findOne({uuid: pos.goodUuid});
           if (good) {
-            console.log(good.supplierUuid + " - " + supplierUuid);
+            //console.log(good.supplierUuid + " - " + supplierUuid);
             if (good.supplierUuid == supplierUuid){
               var company = Companies.findOne({uuid: good.supplierUuid});
-              var tt = {name: good.name, quantity: pos.quantity, companyName: (company ? company.name : "")};
+              var tt = {name: (pos.quantity > 1) ? good.name + " " + pos.quantity + " ШТУК(И)!!!" : good.name, quantity: pos.quantity, companyName: (company ? company.name : "")};
               ret.push(tt);
             }
           }
