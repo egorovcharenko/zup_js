@@ -1,13 +1,17 @@
-Meteor.publish('orders', function() {
-  return orders.find();
+Meteor.publish('allOrders', function() {
+  return orders.find({});
 });
 
-Meteor.publish('goods', function() {
-  return Goods.find();
+Meteor.publish('checkedOrders', function() {
+  return orders.find({checked:true});
 });
 
-Meteor.publish('companies', function() {
-  return Companies.find();
+Meteor.publish('allGoods', function() {
+  return Goods.find({});
+});
+
+Meteor.publish('allSuppliersSub', function() {
+  return Companies.find({tags: {$in: ["поставщики"]}}, {fields: {uuid:1, name:1, tags:1}});
 });
 
 Meteor.publish('tempCol', function() {
@@ -15,7 +19,33 @@ Meteor.publish('tempCol', function() {
 });
 
 Meteor.publish('workflows', function() {
-  return Workflows.find();
+  return Workflows.find({}, {name:1, state:1});
+});
+
+// Server
+Meteor.publishComposite('buyingListPub', {
+    find: function() {
+        return orders.find({checked:true});
+    },
+    children: [
+        {
+            find: function(order) {
+              var temp = [];
+              _.each(order.customerOrderPosition, function (pos) {
+                temp.push(pos.goodUuid);
+              })
+              return Goods.find({uuid: {$in: temp}});
+            },
+            children: [
+                {
+                    find: function(good, order) {
+                        return Companies.find(
+                            { uuid: good.supplierUuid });
+                    }
+                }
+            ]
+        }
+    ]
 });
 // Server
 /*

@@ -10,7 +10,7 @@ Template.ordersList.rendered = function(){
 
 Template.ordersList.helpers({
   ordersListHelper: function () {
-    var temp = Workflows.findOne({name:"CustomerOrder"});
+    var temp = Workflows.findOne({name:"CustomerOrder"}, { stateUuid: 1 });
     if (temp) {
       var stateUuid;
       _.each(temp.state, function (state) {
@@ -18,8 +18,7 @@ Template.ordersList.helpers({
           stateUuid = state.uuid;
         }
       })
-      var ret = orders.find({stateUuid: stateUuid});
-      //console.log(ret.fetch());
+      var ret = orders.find({stateUuid: stateUuid}, {name:1, stateUuid:1, created: 1, code:1});
       return ret;
     }
     return [];
@@ -28,21 +27,18 @@ Template.ordersList.helpers({
     var ret = {};
     ret.sum = this.sum.sum / 100;
     stateUuid = this.stateUuid;
-    var temp = Workflows.findOne({name:"CustomerOrder"});
-    //console.log(temp);
+    var temp = Workflows.findOne({name:"CustomerOrder"}, {name:1, code:1, created:1, stateUuid:1});
     if (temp) {
       _.each(temp.state, function (state) {
-        //console.log(stateUuid + " <> " + stateUuid);
         if (state.uuid == stateUuid) {
           ret.state = state.name;
         }
       });
     }
-    //console.log(ret);
     return ret;
   },
   suppliers: function () {
-    var ret = Companies.find({tags: {$in: ["поставщики"]}});
+    var ret = Companies.find({tags: {$in: ["поставщики"]}}, {name:1, uuid:1});
     return ret;
   }
 });

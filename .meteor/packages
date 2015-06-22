@@ -29,3 +29,5 @@ npm-container
 momentjs:moment
 mquandalle:jade
 meteorhacks:kadira
+meteorhacks:subs-manager
+reywood:publish-composite

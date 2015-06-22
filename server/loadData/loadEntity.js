@@ -34,7 +34,7 @@ Meteor.methods({
         }
         entitiesFromMs = client.load(entityName, query);
         _.each(entitiesFromMs, function (entity) {
-          if (collection.find({uuid: entity.uuid}).count() > 0) {
+          if (collection.find({uuid: entity.uuid}, {uuid:1}).count() > 0) {
             collection.remove({uuid: entity.uuid});
           }
           collection.insert(entity);
