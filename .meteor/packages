@@ -11,7 +11,6 @@ accounts-password
 aldeed:collection2
 iron:router
 raix:handlebar-helpers
-matteodem:easy-security
 fastclick
 zimme:iron-router-active
 manuelschoebel:ms-seo
@@ -28,6 +27,6 @@ meteorhacks:npm
 npm-container
 momentjs:moment
 mquandalle:jade
-meteorhacks:kadira
 meteorhacks:subs-manager
 reywood:publish-composite
+matteodem:easy-security

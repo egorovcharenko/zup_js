@@ -1,13 +1,17 @@
 Meteor.publish('allOrders', function() {
-  return orders.find({});
+  return Orders.find({});
 });
 
 Meteor.publish('checkedOrders', function() {
-  return orders.find({checked:true});
+  return Orders.find({checked:true});
 });
 
 Meteor.publish('allGoods', function() {
   return Goods.find({});
+});
+
+Meteor.publish('dataTimestamps', function() {
+  return DataTimestamps.find({});
 });
 
 Meteor.publish('allSuppliersSub', function() {
@@ -22,10 +26,27 @@ Meteor.publish('workflows', function() {
   return Workflows.find({}, {name:1, state:1});
 });
 
+Meteor.publish('ordersWithState', function(orderState) {
+  var temp = Workflows.findOne({name:"CustomerOrder"});
+  if (temp) {
+    var result;
+    _.every(temp.state, function (state) {
+      if (state.name == orderState) {
+        result = Orders.find({stateUuid: state.uuid});
+        return false;
+      }
+      return true;
+    });
+  }
+  console.log(result.count());
+  return result;
+});
+
+
 // Server
 Meteor.publishComposite('buyingListPub', {
     find: function() {
-        return orders.find({checked:true});
+        return Orders.find({checked:true});
     },
     children: [
         {
@@ -51,7 +72,7 @@ Meteor.publishComposite('buyingListPub', {
 /*
 Meteor.publishComposite('ordersWPosWGoodsWSuppliers', {
     find: function() {
-        return orders.find({}, { sort: { created: -1 }});
+        return Orders.find({}, { sort: { created: -1 }});
     },
     children: [
         {

@@ -1,39 +1,49 @@
 //var subs = new SubsManager();
 
-var allOrdersSub = null;
-var tempColSub = null;
-var allSuppliersSub = null;
-var workflowsSub = null;
-
 Router.configure({
   layoutTemplate: 'basicLayout'
 });
 
 Router.map(function() {
+
   this.route('ordersList', {
-    path: '/orders/list',
+    path: '/orders/list/:orderState?',
+    loadingTemplate: 'loading',
     waitOn: function() {
-      allOrdersSub = Meteor.subscribe('allOrders');
-      allSuppliersSub = Meteor.subscribe('allSuppliersSub');
-      tempColSub = Meteor.subscribe('tempCol');
-      workflowsSub = Meteor.subscribe('workflows');
-      return [allOrdersSub, allSuppliersSub, tempColSub, workflowsSub];
+      console.log("in ordersList waitOn");
+      var orderState = this.params.orderState || "Требуется закупка";
+      return [
+        Meteor.subscribe('ordersWithState', orderState),
+        Meteor.subscribe('allSuppliersSub'),
+        Meteor.subscribe('tempCol'),
+        Meteor.subscribe('workflows')
+      ];
+    },
+    data: function () {
+      return Orders.find({});
+    },
+    onBeforeAction: function (pause) {
+      //Meteor.call('loadEntityFromMS', {"state.name": this.params.orderState}, "customerOrder", "Orders");
+      this.next();
     }
   });
+
   this.route('loadData', {
     path: '/loaddata',
     waitOn: function() {
-      return Meteor.subscribe('tempCol');
+      return [Meteor.subscribe('tempCol'), Meteor.subscribe('dataTimestamps')];
     }
-    });
-  this.route('/buyingList/:supplierUuid', {
+  });
+
+  this.route('buyingList', {
+    path: '/buyingList/:supplierUuid',
     waitOn: function() {
       return Meteor.subscribe('buyingListPub');
     },
     data: function() {
       var supplierUuid = this.params.supplierUuid;
       var retOrd = [];
-      _.each(orders.find({checked: true}, {fields: {name:1, 'customerOrderPosition.goodUuid':1, 'customerOrderPosition.quantity':1, created: 1}}, {sort: {created: 1}}).fetch(), function (order) {
+      _.each(Orders.find({checked: true}, {fields: {name:1, 'customerOrderPosition.goodUuid':1, 'customerOrderPosition.quantity':1, created: 1}}, {sort: {created: 1}}).fetch(), function (order) {
         var ret = [];
         _.each(order.customerOrderPosition, function (pos) {
           var good = Goods.findOne({uuid: pos.goodUuid}, {fields: {name:1, supplierUuid: 1}});
@@ -51,7 +61,13 @@ Router.map(function() {
         }
       });
       return { customerOrders: retOrd };
-    },
-    name: 'buyingList'
+    }
+  });
+
+  this.route('home', {
+    path: '/',
+    action: function () {
+      this.render('ordersList');
+    }
   });
 });
