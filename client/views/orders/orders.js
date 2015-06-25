@@ -56,24 +56,7 @@ Template.ordersList.events({
   "click .order-state": function (event, template) {
     Meteor.call('resetChecked');
 
-    Router.go('ordersList', {orderState: event.target.innerText})
-
-    /*
-    Session.set("StateToLoad", event.target.innerText)
-    var temp = Workflows.findOne({name:"CustomerOrder"});
-    if (temp) {
-      var stateUuid;
-      _.each(temp.state, function (state) {
-        if (state.name == Session.get("StateToLoad")) {
-          stateUuid = state.uuid;
-          Session.set("StateToLoadUuid", state.uuid);
-          console.log(state.uuid);
-        }
-      })
-    }
-
-
-    Meteor.call('loadEntityFromMS', {"state.name": event.target.innerText}, "customerOrder", "Orders");*/
+    Router.go('ordersList', {orderState: event.target.innerText});
   },
   "click .orderSelect": function(event, template){
     Meteor.call("toggleChecked", this);
@@ -82,10 +65,12 @@ Template.ordersList.events({
     var temp = Workflows.findOne({name:"CustomerOrder"});
     if (temp) {
       var stateUuid;
-      _.each(temp.state, function (state) {
-        if (state.name == Session.get("StateToLoad")) {
+      _.every(temp.state, function (state) {
+        if (state.name == Router.current().params.orderState) {
           Meteor.call("setAllChecked", state.uuid);
+          return false;
         }
+        return true;
       })
     }
   },
