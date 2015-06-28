@@ -1,3 +1,7 @@
+getLastTimeRun = (entityName) ->
+  lastTimeLoaded = DataTimestamps.findOne(name: entityName)
+  if lastTimeLoaded? then new Date(lastTimeLoaded.value) else '01-01-2014'
+
 findMetadataUuidByName = (entityName, attrName) ->
   #console.log("findMetadataUuidByName: entityName:" + entityName + ", attrName: " + attrName);
   embEntityMetadata = EmbeddedEntityMetadata.findOne(name: entityName)
@@ -94,8 +98,7 @@ Meteor.methods
         Meteor.call 'updateTimestampFlag', entityMSName
       else
         console.log "Error in loading entities: #{error}"
-        
-Meteor.methods
+
   loadAllEntities: () ->
     console.log "loadAllEntities started"
     console.log "loadEntityGenericMethod good started"
