@@ -1,0 +1,57 @@
+.ui.three.column.grid
+  .column
+    .ui.raised.segment
+      .center.aligned
+        .ui.basic.button.order-state На сборку
+        .ui.basic.button.order-state Требуется закупка
+        .ui.basic.button.order-state Передан курьерам
+        .ui.button.allOrdersSelect Выделить все
+        .ui.tag.label Выделено {{selectedCount}}
+  .column
+    .ui.raised.segment
+      #send-to-aplix.ui.red.button. Отправить выбранные в Апликс
+  .column
+    .ui.raised.segment
+      #supplierSelector.ui.search.selection.dropdown
+        input(type="hidden", name="country")
+        i.dropdown.icon
+        input.search(type="text", tabindex="0")
+        .default.text Выберите поставщика
+        .menu(tabindex="-1")
+          each suppliers
+            .item(data-value="{{uuid}}") {{name}}
+.center.aligned
+  if isActive
+    .ui.horizontal.divider Подождите
+    with progress
+      .ui.indicating.progress.active
+        .bar(style="-webkit-transition-duration: 300ms; transition-duration: 300ms; width: {{dataPercent}}%;")
+        .label {{#if isActive}}{{countAlready}} из {{countTotal}}{{/if}}
+table.ui.compact.celled.definition.table
+  thead
+    tr
+      th
+      th Номер
+      th Номер на сайте
+      th Дата создания
+      th Сумма
+      th Статус
+      th Статус Апликс
+      th Трек Апликс
+  tbody
+    each this
+      tr
+        td.collapsing
+          div(class="{{#if checked}}checked{{/if}} ui fitted toggle checkbox div orderSelect")
+            input(type="checkbox", checked="{{checked}}")
+            label
+        td {{name}}
+        td {{code}}
+        td {{prettifyDate created}}
+        td {{orderHelper.sum}}
+        td {{orderHelper.state}}
+          #packOrder.ui.teal.button Собрать
+        td {{orderHelper.aplixState}}
+        td 
+          a(href="http://www.aplix.ru/tools/tracking/?track={{orderHelper.aplixTrack}}",target="_blank").
+            {{orderHelper.aplixTrack}}

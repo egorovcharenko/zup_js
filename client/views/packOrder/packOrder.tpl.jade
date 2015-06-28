@@ -1,0 +1,94 @@
+.ui.segment
+  #goBack.ui.basic.button
+    i.arrow.left.icon
+    | Назад
+  .ui.action.left.icon.input
+    i.barcode.icon
+    input#markerInput(type="text",placeholder="Введите маркер")
+    #add_marker.ui.teal.button Установить
+  #stateSelector.ui.search.selection.dropdown
+    input#realStateSelector(type="hidden", name="state")
+    i.dropdown.icon
+    input.search(type="text", tabindex="0")
+    .default.text Выберите статус
+    .menu(tabindex="-1")
+      each states
+        .item(data-value="{{uuid}}") {{name}}
+  #setState.ui.teal.button
+    | Установить статус
+.ui.segment
+  .ui.grid
+    .three.column.row
+      #positions-list(class="twelve wide column")
+        table.ui.compact.celled.definition.table
+          thead
+            tr 
+              th Стеллаж
+              th Полка
+              th Коробка
+              th Название
+              th Собрано
+              th Отсут.
+              th
+          tbody
+            each customerOrderPositionsModified
+              tr(class="{{#if outOfStock}}negative{{else}}{{#if isAllPacked}}positive{{else}}{{#if isPosSelected}}active{{/if}}{{/if}}{{/if}}")
+                td #{pallet}
+                td #{shelf}
+                td #{place}
+                td #{goodName}
+                td.collapsing
+                  .ui.grid
+                    .ui.five.wide.column
+                      #minus-qty.ui.icon.basic.button
+                        i.big.minus.circle.icon
+                    .ui.six.wide.column
+                      h2.ui.header #{packedQty} / #{qty}
+                        if isQtyMoreThan1
+                          i.big.warning.sign.icon
+                    .ui.five.wide.column
+                      #plus-qty.ui.icon.button
+                        i.big.add.circle.icon
+                td.collapsing.center.aligned
+                  #out-of-stock(class="ui fitted checkbox {{#if outOfStock}}checked{{/if}}")
+                    input(type="checkbox", checked="#{outOfStock}")
+                    label
+                td.collapsing
+                  #show-more.ui.icon.basic.button
+                    i.chevron.right.icon
+      if isAnyPosSelected
+        .four.wide.column
+          .ui.sticky.fixed
+            .ui.card
+              .ui.slide.reveal.image
+                img.visible.content(src="{{goodDetails.imageUrl}}")
+                .ui.grid.hidden.content 
+                  .four.wide.column
+                    .ui.vertical.buttons
+                      .ui.button А
+                      .ui.button Б
+                      .ui.button В
+                      .ui.button Г
+                      .ui.button Д
+                      .ui.button Е
+                      .ui.button Ж
+                      .ui.button З
+                      .ui.button И
+                  .four.wide.column
+                    .ui.vertical.buttons
+                      .ui.button 0
+                      .ui.button 1
+                      .ui.button 2
+                      .ui.button 3
+                      .ui.button 4
+                      .ui.button 5
+                  .four.wide.column
+                    #new-place-input.ui.input
+              .content
+                .header {{goodDetails.goodName}}
+                .meta {{goodDetails.sku}}
+                .description  {{{goodDetails.goodDesc}}}
+                .extraContent
+                  .right.floated.created
+                  .friends
+                    .ui.small.basic.button Задать место хранения

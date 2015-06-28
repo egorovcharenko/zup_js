@@ -14,7 +14,6 @@ raix:handlebar-helpers
 fastclick
 zimme:iron-router-active
 manuelschoebel:ms-seo
-browser-policy
 useraccounts:semantic-ui
 natestrauser:animate-css
 dburles:collection-helpers
@@ -30,3 +29,11 @@ mquandalle:jade
 meteorhacks:subs-manager
 reywood:publish-composite
 matteodem:easy-security
+zardak:soap
+agershun:alasql
+aaronthorp:magentojs
+aldeed:template-extension
+mrt:flash-messages
+mrt:moment
+coffeescript
+vsivsi:job-collection

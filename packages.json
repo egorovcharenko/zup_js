@@ -1,3 +1,4 @@
 {
-  "moysklad-client": "0.2.6"  
+  "moysklad-client": "0.2.6",
+  "magento-api":"0.0.10"
 }
