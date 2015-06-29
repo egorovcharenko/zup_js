@@ -21,7 +21,7 @@ Meteor.methods
         if entitiesFromMs?
           _.each entitiesFromMs, (entity) ->
             savedEntity = collection.findOne(uuid: entity.uuid)
-            if savedEntity
+            if savedEntity?
               if entityName is "customerOrder"
                 #checked
                 entity.checked = savedEntity.checked
@@ -43,11 +43,8 @@ Meteor.methods
             return
           countAlready += entitiesFromMs.length
           tempCol.upsert { 'name': 'countAlready' }, $set: 'value': countAlready
-          unless countAlready < maxCountToLoad and entitiesFromMs.length > 0
-            break
-        # end
-        else
-          console.log "entitiesFromMs = null"
+        unless countAlready < maxCountToLoad and entitiesFromMs.length > 0
+          break
       tempCol.upsert { 'name': 'countTotal' }, $set: 'value': 10
       tempCol.upsert { 'name': 'countAlready' }, $set: 'value': 0
       tempCol.upsert { 'name': 'isActive' }, $set: 'value': false

@@ -17,6 +17,8 @@
         .item(data-value="{{uuid}}") {{name}}
   #setState.ui.teal.button
     | Установить статус
+  #setOutOfStockField.ui.teal.button
+    | Записать отсутствующие товары
 .ui.segment
   .ui.grid
     .three.column.row
@@ -27,6 +29,7 @@
               th Стеллаж
               th Полка
               th Коробка
+              th Артикул
               th Название
               th Собрано
               th Отсут.
@@ -37,6 +40,7 @@
                 td #{pallet}
                 td #{shelf}
                 td #{place}
+                td #{sku}
                 td #{goodName}
                 td.collapsing
                   .ui.grid

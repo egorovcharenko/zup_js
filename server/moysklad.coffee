@@ -60,36 +60,46 @@ Meteor.methods
         logChangesInDescription entityFromMS, attrib.name, oldValue, attrib.value
         return
       console.log entityFromMSAfter2: entityFromMS
-      newEntity = undefined
       newEntity = client.save(entityFromMS)
       console.log 'newEntity: ', newEntity
-      newEntity
+      done null, "Заменено"
     )
     console.log 'updateEntityMS ended'
     response.result
 
   setEntityStateByUuid: (entityType, entityUuid, newStateUuid) ->
-    console.log "setEntityState started, newState: #{newStateUuid}"
+    #console.log "setEntityState started, newState: #{newStateUuid}"
     moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
-      client = moyskladPackage.createClient()
-      client.setAuth 'admin@allshellac', 'qweasd'
-      entityFromMS = client.load(entityType, entityUuid)
-      console.log "entityFromMS before: #{objToString entityFromMS}"
-      stateWorkflow = Workflows.findOne name:"CustomerOrder"
+      try
+        client = moyskladPackage.createClient()
+        client.setAuth 'admin@allshellac', 'qweasd'
+        entityFromMS = client.load(entityType, entityUuid)
+        #console.log "entityFromMS before: #{objToString entityFromMS}"
+        stateWorkflow = Workflows.findOne name:"CustomerOrder"
 
-      oldStateName = (_.find stateWorkflow.state, (state) -> state.uuid is entityFromMS.stateUuid).name
-      newStateName = (_.find stateWorkflow.state, (state) -> state.uuid is newStateUuid).name
-      console.log "newStateUuid: #{newStateUuid}"
+        oldStateName = (_.find stateWorkflow.state, (state) -> state.uuid is entityFromMS.stateUuid).name
+        newStateName = (_.find stateWorkflow.state, (state) -> state.uuid is newStateUuid).name
+        #console.log "newStateUuid: #{newStateUuid}"
 
-      entityFromMS.stateUuid = newStateUuid
-      logChangesInDescription entityFromMS, "Статус", oldStateName, newStateName
-      console.log "entityFromMS after: #{objToString entityFromMS}"
+        entityFromMS.stateUuid = newStateUuid
+        logChangesInDescription entityFromMS, "Статус", oldStateName, newStateName
+        #console.log "entityFromMS after: #{objToString entityFromMS}"
 
-      client.save(entityFromMS)
-      return
+        client.save(entityFromMS)
+
+        #fake on the client
+        if entityType is "customerOrder"
+          Orders.update({uuid: entityUuid}, {$set:{stateUuid: newStateUuid}})
+
+        done null, oldStateName + "->" + newStateName
+      catch error
+        done error, null
     )
-    response.result
+    if response.error?
+      throw error
+    else
+      response.result
 
   loadEntityGenericMethod: (entityMSName, collectionName) ->
     console.log "loadEntityGenericMethod, entityMSName: #{entityMSName}"

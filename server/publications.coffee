@@ -88,3 +88,9 @@ Meteor.publishComposite 'packOrderPub', (orderName) ->
 
 Meteor.publish 'allJobs', ->
   myJobs.find {}
+
+Meteor.publish 'notCompletedJobs', ->
+  myJobs.find {status: {$ne: "completed"}}
+
+Meteor.publish 'last200jobs', ->
+  myJobs.find({}, {sort:{updated:-1}, limit: 250})
