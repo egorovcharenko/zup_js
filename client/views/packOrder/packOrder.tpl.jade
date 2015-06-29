@@ -2,6 +2,7 @@
   #goBack.ui.basic.button
     i.arrow.left.icon
     | Назад
+  .ui.massive.tag.label {{order.name}}
   .ui.action.left.icon.input
     i.barcode.icon
     input#markerInput(type="text",placeholder="Введите маркер")
@@ -92,3 +93,8 @@
                   .right.floated.created
                   .friends
                     .ui.small.basic.button Задать место хранения
+    .three.column.row
+      .twelve.wide.column
+        .ui.segment
+          .ui.tag.label Примечание
+          p.orderDescription {{{order.description}}}

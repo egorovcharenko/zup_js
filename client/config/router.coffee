@@ -125,7 +125,8 @@ Router.map ->
         ret = _.sortBy(ret, (arg) ->
           arg.pallet + arg.shelf + arg.place + arg.goodName
         )
-        return { customerOrderPositionsModified: ret }
+        order.description = order.description.replace(new RegExp('\n', 'g'), '<br/>')
+        return {order: order, customerOrderPositionsModified: ret }
       return
   return
 
