@@ -2,8 +2,10 @@ myJobs.allow admin: (userId, method, params) ->
   if userId? then true else false
 
 worker = (job, cb) ->
-  console.log "job done at #{moment().format()}"
+  console.log "update data job started, job:#{job._id}"
+  Meteor.call 'loadAllEntities'
   job.done()
+  console.log "update data job #{job._id} finished at #{moment().format()}"
   return cb()
 
 Meteor.startup ->
@@ -12,8 +14,8 @@ Meteor.startup ->
   # Create a job:
   job = new Job myJobs, 'loadAllDataMoysklad-Periodic', {}
   job.priority('normal')
-    .retry({ retries: 1, wait: 15*1000 })
-    .repeat({ repeats: myJobs.forever, wait: 30*1000})
+    .retry({ retries: 0, wait: 60*1000 })
+    .repeat({ repeats: myJobs.forever, wait: 60*1000})
     .save()
 
   # start processing jobs

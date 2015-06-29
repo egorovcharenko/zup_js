@@ -4,7 +4,6 @@
       .center.aligned
         .ui.basic.button.order-state На сборку
         .ui.basic.button.order-state Требуется закупка
-        .ui.basic.button.order-state Передан курьерам
         .ui.button.allOrdersSelect Выделить все
         .ui.tag.label Выделено {{selectedCount}}
   .column
@@ -20,19 +19,19 @@
         .menu(tabindex="-1")
           each suppliers
             .item(data-value="{{uuid}}") {{name}}
-.center.aligned
-  if isActive
-    .ui.horizontal.divider Подождите
-    with progress
-      .ui.indicating.progress.active
-        .bar(style="-webkit-transition-duration: 300ms; transition-duration: 300ms; width: {{dataPercent}}%;")
-        .label {{#if isActive}}{{countAlready}} из {{countTotal}}{{/if}}
+//- .center.aligned
+//-   if isActive
+//-     .ui.horizontal.divider Подождите
+//-     with progress
+//-       .ui.indicating.progress.active
+//-         .bar(style="-webkit-transition-duration: 300ms; transition-duration: 300ms; width: {{dataPercent}}%;")
+//-         .label {{#if isActive}}{{countAlready}} из {{countTotal}}{{/if}}
 table.ui.compact.celled.definition.table
   thead
     tr
       th
       th Номер
-      th Номер на сайте
+      th Адрес доставки
       th Дата создания
       th Сумма
       th Статус
@@ -45,11 +44,11 @@ table.ui.compact.celled.definition.table
           div(class="{{#if checked}}checked{{/if}} ui fitted toggle checkbox div orderSelect")
             input(type="checkbox", checked="{{checked}}")
             label
-        td {{name}}
-        td {{code}}
-        td {{prettifyDate created}}
-        td {{orderHelper.sum}}
-        td {{orderHelper.state}}
+        td.collapsing {{name}}
+        td {{customerAddress}}
+        td.collapsing {{prettifyDate created}}
+        td.collapsing {{orderHelper.sum}}
+        td.collapsing {{orderHelper.state}}
           #packOrder.ui.teal.button Собрать
         td {{orderHelper.aplixState}}
         td 

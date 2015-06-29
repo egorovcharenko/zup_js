@@ -101,17 +101,14 @@ Meteor.methods
 
   loadAllEntities: () ->
     console.log "loadAllEntities started"
-    console.log "loadEntityGenericMethod good started"
     Meteor.call 'loadEntityGenericMethod', 'good', 'Goods'
-    console.log "loadEntityGenericMethod company started"
     Meteor.call 'loadEntityGenericMethod', 'company', 'Companies'
-    console.log "loadEntityGenericMethod customerOrder started"
     Meteor.call 'loadEntityGenericMethod', 'customerOrder', 'Orders'
     Meteor.call 'loadEntityGenericMethod', 'workflow', 'Workflows'
     Meteor.call 'loadEntityGenericMethod', 'customEntityMetadata', 'CustomEntityMetadata'
     Meteor.call 'loadEntityGenericMethod', 'customEntity', 'CustomEntity'
     Meteor.call 'loadEntityGenericMethod', 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
-    Meteor.call 'loadTracksFromAplix', getLastTimeRun 'aplix_tracks', (error, result) ->
-      if not error?
-        Meteor.call 'updateTimestampFlag', 'aplix_tracks'
+    # Meteor.call 'loadTracksFromAplix', getLastTimeRun 'aplix_tracks', (error, result) ->
+    #   if not error?
+    #     Meteor.call 'updateTimestampFlag', 'aplix_tracks'
     console.log "loadAllEntities ended"

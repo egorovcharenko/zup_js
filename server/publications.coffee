@@ -32,14 +32,21 @@ Meteor.publishComposite 'ordersWithStateAndAplix', (orderState) ->
     find: ->
       orderStateUuid = alasql('SEARCH /WHERE(name="CustomerOrder")//WHERE(name="' + orderState + '") FROM ?', [ Workflows ])[0].uuid
       Orders.find stateUuid: orderStateUuid
-    children: [
-      { find: (order) ->
-        OrderAplixStatuses.find OrderID: order.name
- }
-      { find: (order) ->
-        OrderTracks.find OrderID: order.name
- }
-    ]
+    children:
+      [
+        {
+          find: (order) ->
+            OrderAplixStatuses.find OrderID: order.name
+        }
+        {
+          find: (order) ->
+            OrderTracks.find OrderID: order.name
+        }
+        {
+          find:(order) ->
+            Companies.find uuid: order.sourceAgentUuid
+        }
+      ]
   }
 Meteor.publishComposite 'buyingListPub',
   find: ->
@@ -59,18 +66,25 @@ Meteor.publishComposite 'packOrderPub', (orderName) ->
   {
     find: ->
       Orders.find name: orderName
-    children: [ {
-      find: (order) ->
-        temp = []
-        _.each order.customerOrderPosition, (pos) ->
-          temp.push pos.goodUuid
-          return
-        Goods.find uuid: $in: temp
-      children: [ { find: (good, order) ->
-        GoodsImages.find sku: good.productCode
- } ]
-    } ]
+    children:
+      [
+        {
+          find: (order) ->
+            temp = []
+            _.each order.customerOrderPosition, (pos) ->
+              temp.push pos.goodUuid
+              return
+            Goods.find uuid: $in: temp
+          children:
+            [
+              {
+                find: (good, order) ->
+                  GoodsImages.find sku: good.productCode
+              }
+            ]
+        }
+      ]
   }
-  
+
 Meteor.publish 'allJobs', ->
   myJobs.find {}
