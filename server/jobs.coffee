@@ -1,5 +1,6 @@
 myJobs.allow admin: (userId, method, params) ->
-  if userId? then true else false
+  #if userId? then true else false
+  true
 
 loadDataWorker = (job, cb) ->
   Meteor.call 'loadAllEntities'
