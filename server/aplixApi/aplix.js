@@ -9,10 +9,10 @@ Meteor.methods({
     var testParams = {
       user: 'test',
       pass: 'test',
-      url: 'z.aplix.test/post/ws/Delivery.1cws?wsdl'
+      url: 'z.aplix.ru/post/ws/Delivery.1cws?wsdl'
     }
 
-    var paramsToUse = testParams;
+    var paramsToUse = liveParams;
 
     var url = 'http://' + paramsToUse.user + ":" + paramsToUse.pass + "@" + paramsToUse.url;
 
