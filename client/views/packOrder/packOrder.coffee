@@ -32,19 +32,24 @@ Template.packOrder.events
     return
   'click #add_marker': (event, template) ->
     marker = template.find('#markerInput').value
-    console.log marker
+    console.log "Маркер: #{marker}"
     patt = new RegExp('^[0-9]{6}$')
     if !patt.test(marker)
       FlashMessages.sendError 'В маркере должно быть 6 цифр'
     else
-      data = [ {
+      attr = [ {
         name: 'Маркер'
         value: marker
       } ]
-      ordername = Router.current().params.orderName
-      Meteor.call 'updateEntityMS', 'customerOrder', Orders.findOne(name: ordername).uuid, null, data, (error, response) ->
-        FlashMessages.sendSuccess 'Маркер установлен'
-        return
+
+      orderUuid = Orders.findOne(name: Router.current().params.orderName).uuid
+
+      job = new Job myJobs, 'updateEntityMS', {entityType: 'customerOrder', entityUuid: orderUuid, data: null, attributes: attr}
+
+      job.priority('high')
+        .retry({ retries: 5, wait: 30*1000})
+        .save()
+
     return
   'click #out-of-stock': (event, template) ->
     Meteor.call 'outOfStockToggle', this
