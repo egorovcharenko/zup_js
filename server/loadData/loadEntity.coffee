@@ -3,7 +3,6 @@ Meteor.methods
     console.log 'loadEntityFromMS started'
     collection = CollectionNameMap[collectionName]
     moyskladPackage = Meteor.npmRequire('moysklad-client')
-    console.log '1'
     response = Async.runSync((done) ->
       toReturn = []
       countTotal = countAlready = 0
@@ -15,36 +14,48 @@ Meteor.methods
       total = client.total(entityName, query)
       tempCol.upsert { 'name': 'countTotal' }, $set: 'value': total
       tempCol.upsert { 'name': 'isActive' }, $set: 'value': true
-      loop
-        query.count(pageSize).start countAlready
-        entitiesFromMs = client.load(entityName, query)
-        if entitiesFromMs?
-          _.each entitiesFromMs, (entity) ->
-            savedEntity = collection.findOne(uuid: entity.uuid)
-            if savedEntity?
-              if entityName is "customerOrder"
-                #checked
-                entity.checked = savedEntity.checked
-                #pos.packedQty
-                if savedEntity.customerOrderPosition?
-                  for cOP in savedEntity.customerOrderPosition
-                    if cOP.packedQty?
-                      correspondingNewCOP = _.find entity.customerOrderPosition, (newCOP) -> newCOP.uuid == cOP.uuid
-                      if correspondingNewCOP?
-                        correspondingNewCOP.packedQty = cOP.packedQty
-                        console.log "packedQty saved for order: #{entity.name}, packedQty = #{cOP.packedQty}"
-              else if entityName is "good"
-                #outOfStock
-                if savedEntity.outOfStock?
-                  entity.outOfStock = savedEntity.outOfStock
-                  console.log "outOfStock saved for good: #{entity.name}, outOfStock = #{savedEntity.outOfStock}"
-              collection.remove uuid: entity.uuid
-            collection.insert entity
-            return
-          countAlready += entitiesFromMs.length
-          tempCol.upsert { 'name': 'countAlready' }, $set: 'value': countAlready
-        unless countAlready < maxCountToLoad and entitiesFromMs.length > 0
-          break
+      if total > 0
+        loop
+          query.count(pageSize).start countAlready
+          entitiesFromMs = client.load(entityName, query)
+          if entitiesFromMs?
+            _.each entitiesFromMs, (entity) ->
+              savedEntity = collection.findOne(uuid: entity.uuid)
+              if savedEntity?
+                if entityName is "customerOrder"
+
+                  #checked
+                  entity.checked = savedEntity.checked
+
+                  #pos.packedQty
+                  if savedEntity.customerOrderPosition?
+                    for cOP in savedEntity.customerOrderPosition
+                      if cOP.packedQty?
+                        correspondingNewCOP = _.find entity.customerOrderPosition, (newCOP) -> newCOP.uuid == cOP.uuid
+                        if correspondingNewCOP?
+                          correspondingNewCOP.packedQty = cOP.packedQty
+                          console.log "packedQty saved for order: #{entity.name}, packedQty = #{cOP.packedQty}"
+                else if entityName is "good"
+
+                  #outOfStock
+                  if savedEntity.outOfStock?
+                    entity.outOfStock = savedEntity.outOfStock
+                    console.log "outOfStock saved for good: #{entity.name}, outOfStock = #{savedEntity.outOfStock}"
+
+                  # stockQty
+                  if savedEntity.stockQty?
+                    entity.stockQty = savedEntity.stockQty
+
+                  #dirty
+                  if savedEntity.dirty?
+                    entity.dirty = savedEntity.dirty
+                collection.remove uuid: entity.uuid
+              collection.insert entity
+              return
+            countAlready += entitiesFromMs.length
+            tempCol.upsert { 'name': 'countAlready' }, $set: 'value': countAlready
+          unless countAlready < maxCountToLoad and entitiesFromMs.length > 0
+            break
       tempCol.upsert { 'name': 'countTotal' }, $set: 'value': 10
       tempCol.upsert { 'name': 'countAlready' }, $set: 'value': 0
       tempCol.upsert { 'name': 'isActive' }, $set: 'value': false

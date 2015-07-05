@@ -3,34 +3,27 @@
     thead
       tr 
         th Id
-        th Run Id
         th Тип
         th Обновлено
-        th Создано
+        th Запуск в
         th Попыток
         th Повторов
         th Статус
-        th Прогресс
         th Лог
     tbody
       each this
         tr
-          td #{_id}
-          td #{runId}
-          td #{type}
-          td {{prettifyDateTime updated}}
-          td {{prettifyDateTime created}}
-          td #{retries}
-          td #{repeats}
-          td #{status}
-          td #{progress.completed}/#{progress.total}
+          td #{jobId}
+          td #{_doc.type}
+          td #{lastUpdated}
+          td #{runAt}
+          td #{_doc.retried} / #{numRetries}
+          td #{_doc.repeated} / #{numRepeats}
+          td #{_doc.status}
           td
             table.ui.compact.celled.table
               tbody
-                each this.log
+                each this._doc.log
                   tr
                     td {{prettifyDateTime time}}
                     td #{message}
-                  
-          
-          

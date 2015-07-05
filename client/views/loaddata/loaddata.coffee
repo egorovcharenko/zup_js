@@ -42,3 +42,15 @@ Template.loadData.events
     Meteor.call 'loadMagentoPics'
   'click #load_everything': (event, template) ->
     Meteor.call 'loadAllEntities'
+  'click #load_stock': (event, template) ->
+    Meteor.call 'loadStockFromMS' , (error, result) ->
+      if not error?
+        console.log "loadStockFromMS успешно, результат: #{result}"
+      else
+        console.log "loadStockFromMS НЕуспешно, ошибка: #{error}"
+  'click #send_stock_to_magento': (event, template) ->
+    Meteor.call 'sendStockToMagento' , (error, result) ->
+      if not error?
+        console.log "sendStockToMagento успешно, результат: #{result}"
+      else
+        console.log "sendStockToMagento НЕуспешно, ошибка: #{error}"

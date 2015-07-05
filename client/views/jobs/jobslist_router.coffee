@@ -7,4 +7,4 @@ Router.map ->
         Meteor.subscribe('last200jobs')
       ]
     data: ->
-      myJobs.find {}, {sort: {updated:-1}}
+      myJobs.find {type: {$nin: ['autofail', 'cleanup']}}, {sort: {after:-1}}
