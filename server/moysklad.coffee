@@ -24,7 +24,7 @@ objToString = (obj) ->
 
 skipGoodStock = (good) ->
   # пропускаем наборы
-  if (good.name.lastIndexOf("Набор для шеллака", 0) == 0) or (good.name.lastIndexOf("Набор шеллака", 0) == 0)
+  if (good.name.lastIndexOf("Набор для шеллака", 0) == 0) or (good.name.lastIndexOf("Набор шеллака", 0) == 0) or (good.name.lastIndexOf("Гель-лак AllShellac Premiere", 0) == 0)
     true
   else
     false
