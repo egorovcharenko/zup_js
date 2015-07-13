@@ -11,13 +11,21 @@ Template.ordersList.helpers
   orderHelper: ->
     ret = {}
     ret.sum = @sum.sum / 100
-    ret.state = alasql('SEARCH /WHERE(name="CustomerOrder")//WHERE(uuid="' + @stateUuid + '") FROM ?', [ Workflows ])[0].name
+    temp = alasql('SEARCH /WHERE(name="CustomerOrder")//WHERE(uuid="' + @stateUuid + '") FROM ?', [ Workflows ])[0]
+    if temp?
+      ret.state = temp.name
     try
-      ret.aplixState = OrderAplixStatuses.findOne(OrderID: @name).Status.Name
+      aplixStatus = OrderAplixStatuses.findOne(OrderID: @name)
+      if aplixStatus?
+        ret.aplixState = aplixStatus.Status.Name
     catch ex
+      console.log ex
     try
-      ret.aplixTrack = OrderTracks.findOne(OrderID: @name).Number
+      aplixTrack = OrderTracks.findOne(OrderID: @name)
+      if aplixTrack?
+        ret.aplixTrack = aplixTrack.Number
     catch ex
+      console.log ex
     ret
   suppliers: ->
     ret = Companies.find({ tags: $in: [ 'поставщики' ] },
@@ -55,9 +63,10 @@ Template.ordersList.events
     if temp
       stateUuid = undefined
       _.every temp.state, (state) ->
-        if state.name == Router.current().params.orderState
-          Meteor.call 'setAllChecked', state.uuid
-          return false
+        if state?
+          if state.name == Router.current().params.orderState
+            Meteor.call 'setAllChecked', state.uuid
+            return false
         true
     return
   'change #supplierSelector': (event, template) ->

@@ -97,7 +97,7 @@ Router.map ->
               temp.goodName = good.name
 
             # место хранения
-            if good.description
+            if good.description?
               temp.goodDesc = good.description.replace(new RegExp('\n', 'g'), '<br/>')
               parse = temp.goodDesc.match(/^([a-Я])-([0-9])-([0-9]{1,3})/)
               if parse and parse.length == 4
@@ -131,7 +131,8 @@ Router.map ->
         ret = _.sortBy(ret, (arg) ->
           arg.pallet + arg.shelf + arg.place + arg.goodName
         )
-        order.description = order.description.replace(new RegExp('\n', 'g'), '<br/>')
+        if order.description?
+          order.description = order.description.replace(new RegExp('\n', 'g'), '<br/>')
         return {order: order, customerOrderPositionsModified: ret }
       return
   return
