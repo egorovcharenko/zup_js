@@ -19,7 +19,9 @@ Router.map ->
         customer = Companies.findOne({uuid: order.sourceAgentUuid})
         if customer?
           order.customerAddress = customer.requisite.actualAddress
-      orders
+        else
+          console.log "Клиент в заказе #{order.name} не найден"
+      return orders
     onBeforeAction: (pause) ->
       @next()
       return

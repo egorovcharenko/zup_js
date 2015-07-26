@@ -34,6 +34,15 @@ logChangesInDescription = (entityFromMS, field, oldv, newv) ->
     entityFromMS.description += "\n-------------\n#{moment().format('DD.MM.YY [в] HH:mm')} через приложение изменено поле '#{field}', со значения '#{(if oldv then oldv else '(пусто)')}' на '#{(if newv then newv else '(пусто)')}'"
 
 Meteor.methods
+  getMSAttributeValue: (object, attribs) ->
+    moyskladPackage = Meteor.npmRequire('moysklad-client')
+    tools = moyskladPackage.tools
+    res = {}
+    for attr in attribs
+      metadataUuid = findMetadataUuidByName(attr.entityName, attr.attrName)
+      res[attr.attrName] = tools.getAttr(object, metadataUuid)
+    return res
+
   updateEntityMS: (entityType, entityUuid, data, attributes) ->
     console.log 'updateEntityMS started, paremeters:' + arguments
     moyskladPackage = Meteor.npmRequire('moysklad-client')
@@ -263,3 +272,96 @@ Meteor.methods
     #   if not error?
     #     Meteor.call 'updateTimestampFlag', 'aplix_tracks'
     console.log "loadAllEntities ended"
+  closeOrdersInMS: () ->
+    console.log "closeOrdersInMS начата"
+    # ищем все заказы в статусе "Доставлен"
+    i = 0
+    CompletedOrderIDs = OrderAplixStatuses.find({"Status.Name": "Доставлен"}).fetch()
+
+    # подготовка переменных
+    stateWorkflow = Workflows.findOne name:"CustomerOrder"
+    newStateUuid = (_.find stateWorkflow.state, (state) -> state.name is "Выполнен").uuid
+    newStateUuid = (_.find stateWorkflow.state, (state) -> state.name is "Выполнен").uuid
+    moyskladPackage = Meteor.npmRequire('moysklad-client')
+    client = moyskladPackage.createClient()
+    tools = moyskladPackage.tools
+    client.setAuth 'admin@allshellac', 'qweasd'
+
+    for completedOrderID in CompletedOrderIDs
+      #if i > 50
+      #  break
+      i++
+      try
+        # Передавали его в МС?
+        order = Orders.findOne({name: completedOrderID.OrderID})
+        if not order?
+          throw new Meteor.Error 500, "Не найден заказ с id:#{completedOrderID.OrderID}"
+        console.log "Найден заказ:", order.name
+        # если нет, проверить, какой у него статус в МС
+        msState = null
+        temp = alasql('SEARCH /WHERE(name="CustomerOrder")//WHERE(uuid="' + order.stateUuid + '") FROM ?', [ Workflows ])[0]
+        if temp?
+          msState = temp.name
+        if not msState
+          throw new Meteor.Error 500, "Не найден статус заказа с id:#{completedOrderID.OrderID}"
+        #console.log "msState:", msState
+        # если не Выполнен, то
+        if msState != "Выполнен"
+          # вычислить сумму входящего платежа, вычтя сумму за обработку Апликсом, и указать ее в комментарии к заказу?
+          sum = 0
+          desc = "\n=== Информация об оплате за доставку Апликсу ниже"
+          billingForThisOrder = OrderAplixBilling.find({ExtNumber: order.name}).fetch()
+          if billingForThisOrder.length?
+            for billing in billingForThisOrder
+              sum += parseInt(billing.Amount)
+              desc += "\nПлата Апликс: #{billing.Amount}р за #{billing.Service}"
+          desc += "\n=== Итого: #{sum}р"
+
+          if sum > 0
+            console.log "Вычислены параметры, сумма: #{sum}"
+
+            # создать входящий платеж
+            newPaymentIn = {
+              customerOrderUuid: order.uuid
+              incomingNumber: ""
+              vatSum: 0.0
+              targetAgentUuid: order.targetAgentUuid
+              sourceAgentUuid: order.sourceAgentUuid
+              applicable: true
+              moment: completedOrderID.Date
+              targetAccountUuid: order.targetAccountUuid
+              sourceAccountUuid: order.sourceAccountUuid
+              #payerVat: "true"
+              rate: 1.0
+              #vatIncluded: "true"
+              #name: "0504"
+              accountUuid: order.accountUuid
+              accountId: order.accountId
+              groupUuid: order.groupUuid
+              sum: {
+                sum: order.sum.sum - sum * 100
+                sumInCurrency: order.sum.sum - sum * 100
+              }
+            }
+
+            response = Async.runSync((done) ->
+              try
+                # отправить входящий платеж в МС
+                entityFromMS = client.save("paymentIn", newPaymentIn)
+
+                # изменить статус заказа и его описание в МC
+                order.stateUuid = newStateUuid
+                if order.description?
+                  order.description += desc
+                else
+                  order.description = desc
+                resp = client.save("customerOrder", order)
+                console.log "Создание платежа и обновление заказа завершено"
+                done(null, null);
+              catch e
+                console.log "ошибка внутри runSync:", e
+                done(null, null);
+            )
+      catch error
+        console.log "Ошибка:", error
+    console.log "closeOrdersInMS завершена"

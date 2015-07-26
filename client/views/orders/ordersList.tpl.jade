@@ -21,18 +21,12 @@
         .menu(tabindex="-1")
           each suppliers
             .item(data-value="{{uuid}}") {{name}}
-//- .center.aligned
-//-   if isActive
-//-     .ui.horizontal.divider Подождите
-//-     with progress
-//-       .ui.indicating.progress.active
-//-         .bar(style="-webkit-transition-duration: 300ms; transition-duration: 300ms; width: {{dataPercent}}%;")
-//-         .label {{#if isActive}}{{countAlready}} из {{countTotal}}{{/if}}
 table.ui.compact.celled.definition.table
   thead
     tr
       th
       th Номер
+      th Способ доставки
       th Адрес доставки
       th Дата создания
       th Сумма
@@ -47,6 +41,7 @@ table.ui.compact.celled.definition.table
             input(type="checkbox", checked="{{checked}}")
             label
         td.collapsing {{name}}
+        td {{orderDeliveryWay}}
         td {{customerAddress}}
         td.collapsing {{prettifyDate created}}
         td.collapsing {{orderHelper.sum}}

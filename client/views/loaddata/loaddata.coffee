@@ -35,9 +35,12 @@ Template.loadData.events
     loadEntityGeneric 'customEntity', 'CustomEntity'
     loadEntityGeneric 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
   'click #load_aplix_tracks': (event, template) ->
+    console.log "loadTracksFromAplix started"
     Meteor.call 'loadTracksFromAplix', getLastTimeRun 'aplix_tracks', (error, result) ->
       if not error?
         Meteor.call 'updateTimestampFlag', 'aplix_tracks'
+      if result
+        console.log "result:", result
   'click #load_pics': (event, template) ->
     Meteor.call 'loadMagentoPics'
   'click #load_everything': (event, template) ->
@@ -54,3 +57,18 @@ Template.loadData.events
         console.log "sendStockToMagento успешно, результат: #{result}"
       else
         console.log "sendStockToMagento НЕуспешно, ошибка: #{error}"
+  'click #close_orders_in_ms': (event, template) ->
+    console.log "close_orders_in_ms"
+    Meteor.call "closeOrdersInMS", (error, result) ->
+      if error
+        console.log "error:", error
+      if result
+        console.log  "success:",result
+
+  'click #load_aplix_billing': (event, template) ->
+    console.log "load_aplix_billing"
+    Meteor.call "loadBillingInfo", (error, result) ->
+      if error
+        console.log "error:", error
+      if result
+        console.log  "success:", result
