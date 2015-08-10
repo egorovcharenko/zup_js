@@ -19,6 +19,11 @@ Router.map ->
         customer = Companies.findOne({uuid: order.sourceAgentUuid})
         if customer?
           order.customerAddress = customer.requisite.actualAddress
+          # Meteor.call "getMSAttributeValue", this, [{entityName: "CustomerOrder", attrName: "Способ доставки"}], (error, result) ->
+          #   if result
+          #     deliveryWay = result["Способ доставки"].valueString
+          #     console.log "deliveryWay:", deliveryWay
+          # return deliveryWay
         else
           console.log "Клиент в заказе #{order.name} не найден"
       return orders

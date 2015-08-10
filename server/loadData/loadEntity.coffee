@@ -46,9 +46,15 @@ Meteor.methods
                   if savedEntity.stockQty?
                     entity.stockQty = savedEntity.stockQty
 
-                  #dirty
+                  # dirty
                   if savedEntity.dirty?
                     entity.dirty = savedEntity.dirty
+
+                  # при изменении флажка "Отсутствует у поставщика - сбрасываем флажок"
+                  # пока сбрасываем у всех измененных товаров
+                  console.log "Updating good's stock, uuid:", entity.uuid
+                  Goods.update({uuid: entity.uuid}, {$set: {dirty: true}})
+
                 collection.remove uuid: entity.uuid
               collection.insert entity
               return

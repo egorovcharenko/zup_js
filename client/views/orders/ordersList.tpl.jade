@@ -1,4 +1,4 @@
-.ui.three.column.grid
+.ui.two.column.grid
   .column
     .ui.raised.segment
       .center.aligned
@@ -8,9 +8,6 @@
         .ui.basic.button.order-state Требуется связаться с клиентом
         .ui.button.allOrdersSelect Выделить все
         .ui.tag.label Выделено {{selectedCount}}
-  .column
-    .ui.raised.segment
-      #send-to-aplix.ui.red.button. Отправить выбранные в Апликс
   .column
     .ui.raised.segment
       #supplierSelector.ui.search.selection.dropdown
@@ -26,7 +23,6 @@ table.ui.compact.celled.definition.table
     tr
       th
       th Номер
-      th Способ доставки
       th Адрес доставки
       th Дата создания
       th Сумма
@@ -41,7 +37,6 @@ table.ui.compact.celled.definition.table
             input(type="checkbox", checked="{{checked}}")
             label
         td.collapsing {{name}}
-        td {{orderDeliveryWay}}
         td {{customerAddress}}
         td.collapsing {{prettifyDate created}}
         td.collapsing {{orderHelper.sum}}

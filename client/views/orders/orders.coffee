@@ -28,14 +28,6 @@ Template.ordersList.helpers
       console.log ex
     ret
 
-  orderDeliveryWay: ->
-    deliveryWay = {}
-    Meteor.call "getMSAttributeValue", this, [{entityName: "CustomerOrder", attrName: "Способ доставки"}], (error, result) ->
-      if result
-        deliveryWay = result["Способ доставки"].valueString
-        console.log deliveryWay
-    return deliveryWay
-
   suppliers: ->
     Companies.find({ tags: $in: [ 'поставщики' ] },
       name: 1
