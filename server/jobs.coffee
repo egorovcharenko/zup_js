@@ -56,22 +56,22 @@ Meteor.startup ->
   # загрузка данных из МС
   job = new Job myJobs, 'loadAllDataMoyskladPeriodic', {}
   job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 999*30*1000})
-    .repeat({ repeats: myJobs.forever, wait: 999*10*1000})
+    .retry({retries: myJobs.forever, wait: 15*1000})
+    .repeat({ repeats: myJobs.forever, wait: 10*1000})
     .save({cancelRepeats: true})
 
   # Загрузка остатков из МС
   job = new Job myJobs, 'loadStockFromMS', {}
   job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 999*60*1000})
-    .repeat({ repeats: myJobs.forever, wait: 999*30*1000})
+    .retry({retries: myJobs.forever, wait: 60*1000})
+    .repeat({ repeats: myJobs.forever, wait: 30*1000})
     .save({cancelRepeats: true})
 
   # Отправка остатков в Мадженто
   job = new Job myJobs, 'sendStockToMagento', {}
   job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 999*60*1000})
-    .repeat({ repeats: myJobs.forever, wait: 999*30*1000})
+    .retry({retries: myJobs.forever, wait: 60*1000})
+    .repeat({ repeats: myJobs.forever, wait: 30*1000})
     .save({cancelRepeats: true})
 
   # Начать обрабатывать задачи
