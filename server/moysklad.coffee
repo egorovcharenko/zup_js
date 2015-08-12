@@ -2,7 +2,7 @@ getLastTimeRun = (entityName) ->
   lastTimeLoaded = DataTimestamps.findOne(name: entityName)
   if lastTimeLoaded? then new Date(lastTimeLoaded.value) else '01-01-2014'
 
-findMetadataUuidByName = (entityName, attrName) ->
+@findMetadataUuidByName = (entityName, attrName) ->
   #console.log("findMetadataUuidByName: entityName:" + entityName + ", attrName: " + attrName);
   embEntityMetadata = EmbeddedEntityMetadata.findOne(name: entityName)
   #console.log("embEntityMetadata: " + objToString(embEntityMetadata));
@@ -172,9 +172,9 @@ Meteor.methods
       response.result
   sendStockToMagento: (job) ->
     # moysklad
-    moyskladPackage = Meteor.npmRequire('moysklad-client')
-    tools = moyskladPackage.tools
-    metadataUuid = findMetadataUuidByName('GoodFolder', "Отсутствует у поставщика")
+    #moyskladPackage = Meteor.npmRequire('moysklad-client')
+    #tools = moyskladPackage.tools
+    #metadataUuid = findMetadataUuidByName('GoodFolder', "Отсутствует у поставщика")
 
     # magento
     liveParams = {
@@ -201,9 +201,9 @@ Meteor.methods
           isInStock = 1
           stockQty = 9999 #good.stockQty
       if (not good.stockQty? or good.stockQty <= 0)
-        outOfStockInSupplier = tools.getAttrValue(good, metadataUuid)
-        #console.log "Отсутствует у поставщика: #{outOfStockInSupplier}"
-        if outOfStockInSupplier?
+        outOfStockInSupplier = good.outOfStockInSupplier #tools.getAttrValue(good, metadataUuid)
+        if outOfStockInSupplier
+          console.log "Флаг 'отсутствует у поставщика' у товара '#{good.name}': #{outOfStockInSupplier}"
           inStockStatus = "Временно нет в продаже"
           shipmentStatus = "Отправка возможна после появления в продаже. Когда товар появится - пока не известно."
           isInStock = 0
