@@ -3,6 +3,7 @@ Meteor.methods
     console.log 'loadEntityFromMS started'
     collection = CollectionNameMap[collectionName]
     moyskladPackage = Meteor.npmRequire('moysklad-client')
+    tools = moyskladPackage.tools
     response = Async.runSync((done) ->
       toReturn = []
       countTotal = countAlready = 0
@@ -52,8 +53,11 @@ Meteor.methods
 
                   # при изменении флажка "Отсутствует у поставщика - сбрасываем флажок"
                   # пока сбрасываем у всех измененных товаров
-                  console.log "Updating good's stock, uuid:", entity.uuid
-                  Goods.update({uuid: entity.uuid}, {$set: {dirty: true}})
+                  metadataUuid = findMetadataUuidByName('GoodFolder', "Отсутствует у поставщика")
+                  outOfStockInSupplier = tools.getAttrValue(entity, metadataUuid)
+                  entity.outOfStockInSupplier = outOfStockInSupplier
+                  entity.dirty = true
+                  console.log "Updating good's '#{entity.name}' stock, uuid:#{entity.uuid},  outOfStockInSupplier:#{entity.outOfStockInSupplier}"
 
                 collection.remove uuid: entity.uuid
               collection.insert entity
