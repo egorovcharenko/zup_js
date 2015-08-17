@@ -88,8 +88,8 @@ ui@1.0.6
 underscore@1.0.3
 underscorestring:underscore.string@3.0.3_1
 url@1.0.4
-useraccounts:core@1.12.1
-useraccounts:semantic-ui@1.12.1
+useraccounts:core@1.12.2
+useraccounts:semantic-ui@1.12.2
 vsivsi:job-collection@1.2.2
 webapp@1.2.0
 webapp-hashing@1.0.3
