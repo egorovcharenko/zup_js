@@ -5,7 +5,7 @@ Router.map ->
     path: '/orders/list/:orderState?'
     loadingTemplate: 'loading'
     waitOn: ->
-      orderState = @params.orderState or 'Требуется закупка'
+      orderState = @params.orderState or 'На сборку'
       [
         Meteor.subscribe('ordersWithStateAndAplix', orderState)
         Meteor.subscribe('allSuppliersSub')
