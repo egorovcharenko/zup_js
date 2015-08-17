@@ -7,6 +7,8 @@ Template.ordersList.rendered = ->
   Session.setDefault 'StateToLoad', 'Требуется закупка'
   return
 
+deliveryWayArray = {}
+
 Template.ordersList.helpers
   orderHelper: ->
     ret = {}
@@ -27,6 +29,20 @@ Template.ordersList.helpers
     catch ex
       console.log ex
     ret
+
+  orderDeliveryWay: ->
+    data = this
+    data.sessionVar = "order-" + data.name
+    Meteor.call "getMSAttributeValue", data, [{entityName: "CustomerOrder", attrName: "Способ доставки"}], (error, result) ->
+      if result
+        #deliveryWayArray[this.name] = new ReactiveVar('загрузка...')
+        #deliveryWayArray[this.name].set(result["Способ доставки"].valueString)
+        #deliveryWayArray[this.name].set("test1")
+        Session.set(data.sessionVar, result["Способ доставки"].valueString)
+        #console.log "Session(#{data.name}) = #{Session.get(data.name)}, data:", data
+    #console.log Session.get(this.name)
+    return Session.get(data.sessionVar)
+    #return deliveryWayArray[this.name].get()
 
   suppliers: ->
     Companies.find({ tags: $in: [ 'поставщики' ] },
