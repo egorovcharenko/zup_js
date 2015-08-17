@@ -34,18 +34,18 @@ Meteor.publishComposite 'ordersWithStateAndAplix', (orderState) ->
       Orders.find(stateUuid: orderStateUuid)
     children:
       [
-        {
-          find: (order) ->
-            OrderAplixStatuses.find OrderID: order.name
-        }
-        {
-          find: (order) ->
-            OrderTracks.find OrderID: order.name
-        }
-        {
-          find:(order) ->
-            Companies.find uuid: order.sourceAgentUuid
-        }
+        # {
+        #   find: (order) ->
+        #     OrderAplixStatuses.find OrderID: order.name
+        # }
+        # {
+        #   find: (order) ->
+        #     OrderTracks.find OrderID: order.name
+        # }
+        # {
+        #   find:(order) ->
+        #     Companies.find uuid: order.sourceAgentUuid
+        # }
       ]
   }
 Meteor.publishComposite 'buyingListPub',
