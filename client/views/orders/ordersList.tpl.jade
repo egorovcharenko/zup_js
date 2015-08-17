@@ -18,17 +18,18 @@
         .menu(tabindex="-1")
           each suppliers
             .item(data-value="{{uuid}}") {{name}}
-table.ui.compact.celled.definition.table
+table.ui.compact.celled.definition.table.table-style
   thead
     tr
       th
       th Номер
-      th Адрес доставки
+      th Способ доставки
+      //th Адрес доставки
       th Дата создания
       th Сумма
       th Статус
-      th Статус Апликс
-      th Трек Апликс
+      //- th Статус Апликс
+      //- th Трек Апликс 
   tbody
     each this
       tr
@@ -37,12 +38,13 @@ table.ui.compact.celled.definition.table
             input(type="checkbox", checked="{{checked}}")
             label
         td.collapsing {{name}}
-        td {{customerAddress}}
+        td.wrap-text {{orderDeliveryWay}}
+        //td {{customerAddress}}
         td.collapsing {{prettifyDate created}}
         td.collapsing {{orderHelper.sum}}
         td.collapsing {{orderHelper.state}}
           #packOrder.ui.teal.button Собрать
-        td {{orderHelper.aplixState}}
-        td 
-          a(href="http://www.aplix.ru/tools/tracking/?track={{orderHelper.aplixTrack}}",target="_blank").
-            {{orderHelper.aplixTrack}}
+        //- td {{orderHelper.aplixState}}
+        //- td 
+        //-   a(href="http://www.aplix.ru/tools/tracking/?track={{orderHelper.aplixTrack}}",target="_blank").
+        //-     {{orderHelper.aplixTrack}}

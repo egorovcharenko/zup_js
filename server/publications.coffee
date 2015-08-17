@@ -31,7 +31,7 @@ Meteor.publishComposite 'ordersWithStateAndAplix', (orderState) ->
   {
     find: ->
       orderStateUuid = alasql('SEARCH /WHERE(name="CustomerOrder")//WHERE(name="' + orderState + '") FROM ?', [ Workflows ])[0].uuid
-      Orders.find stateUuid: orderStateUuid
+      Orders.find(stateUuid: orderStateUuid)
     children:
       [
         {
