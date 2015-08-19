@@ -24,7 +24,7 @@ table.ui.compact.celled.definition.table.table-style
       th
       th Номер
       th Способ доставки
-      //th Адрес доставки
+      th Адрес доставки
       th Дата создания
       th Сумма
       th Статус
@@ -39,7 +39,7 @@ table.ui.compact.celled.definition.table.table-style
             label
         td.collapsing {{name}}
         td.wrap-text {{orderDeliveryWay}}
-        //td {{customerAddress}}
+        td {{customerAddress}}
         td.collapsing {{prettifyDate created}}
         td.collapsing {{orderHelper.sum}}
         td.collapsing {{orderHelper.state}}
