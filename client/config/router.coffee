@@ -13,7 +13,7 @@ Router.map ->
         Meteor.subscribe('workflows')
       ]
     data: ->
-      orders = (Orders.find {}, sort: name: 1)
+      orders = (Orders.find {}, sort: {name: 1})
       #for order in orders
         # адрес доставки
         #customer = Companies.findOne({uuid: order.sourceAgentUuid})
