@@ -47,7 +47,7 @@ Template.packOrder.events
       job = new Job myJobs, 'updateEntityMS', {entityType: 'customerOrder', entityUuid: orderUuid, data: null, attributes: attr}
 
       job.priority('high')
-        .retry({ retries: 5, wait: 30*1000})
+        .retry({ retries: 5, wait: 1*1000})
         .save()
 
     return
@@ -62,7 +62,7 @@ Template.packOrder.events
     job = new Job myJobs, 'setEntityStateByUuid', {entityType: 'customerOrder', entityUuid: orderUuid, newStateUuid: newOrderState}
 
     job.priority('high')
-      .retry({ retries: 5, wait: 30*1000})
+      .retry({ retries: 5, wait: 1*1000})
       .save()
 
     return
