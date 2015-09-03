@@ -28,6 +28,15 @@ processMSJobsWorker = (job, cb) ->
           job.log "ошибка: #{error}"
           job.fail()
       return cb()
+    when "resetTimestamps"
+      Meteor.call 'resetTimestamps', (error, result) ->
+        if not error?
+          job.log "успешно, результат: #{result}"
+          job.done()
+        else
+          job.log "ошибка: #{error}"
+          job.fail()
+      return cb()
 
 processStockJobsWorker = (job, cb) ->
   switch job.type
@@ -56,8 +65,8 @@ Meteor.startup ->
   # загрузка данных из МС
   job = new Job myJobs, 'loadAllDataMoyskladPeriodic', {}
   job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 15*1000})
-    .repeat({ repeats: myJobs.forever, wait: 10*1000})
+    .retry({retries: myJobs.forever, wait: 5*1000})
+    .repeat({ repeats: myJobs.forever, wait: 1*1000})
     .save({cancelRepeats: true})
 
   # Загрузка остатков из МС
@@ -72,6 +81,13 @@ Meteor.startup ->
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 60*1000})
     .repeat({ repeats: myJobs.forever, wait: 30*1000})
+    .save({cancelRepeats: true})
+
+  # Сброс флагов в полночь
+  job = new Job myJobs, 'resetTimestamps', {}
+  job.priority('normal')
+    .retry({retries: 5, wait: 60*1000})
+    .repeat({schedule: myJobs.later.parse.text('at 11:00 pm')})
     .save({cancelRepeats: true})
 
   # Начать обрабатывать задачи

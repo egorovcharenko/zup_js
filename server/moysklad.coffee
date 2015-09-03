@@ -44,44 +44,44 @@ Meteor.methods
     return res
 
   updateEntityMS: (entityType, entityUuid, data, attributes) ->
-    console.log 'updateEntityMS started, paremeters:' + arguments
+    #console.log 'updateEntityMS started, paremeters:' + arguments
     moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
       client = moyskladPackage.createClient()
       tools = moyskladPackage.tools
       client.setAuth 'admin@allshellac', 'qweasd'
-      console.log 'entityType: ' + entityType + ', entityUuid: ' + entityUuid
+      #console.log 'entityType: ' + entityType + ', entityUuid: ' + entityUuid
       entityFromMS = client.load(entityType, entityUuid)
-      console.log 'entityFromMS: ' + entityFromMS
-      console.log 'data:' + data
+      #console.log 'entityFromMS: ' + entityFromMS
+      #console.log 'data:' + data
       if data?
         for prop of data
           if data.hasOwnProperty(prop)
-            console.log '-property ' + prop
+            #console.log '-property ' + prop
             entityFromMS[prop] = data[prop]
-      console.log entityFromMSAfter1: entityFromMS
+      #console.log entityFromMSAfter1: entityFromMS
       # update attribs
       _.each attributes, (attrib) ->
         # {name: value}
-        console.log '-attrib: ' + attrib
+        #console.log '-attrib: ' + attrib
         metadataUuid = findMetadataUuidByName('CustomerOrder', attrib.name)
-        console.log 'metadataUuid: ' + metadataUuid
-        console.log entityFromMSBeforeGettingAttrib: entityFromMS.attribute.length
+        #console.log 'metadataUuid: ' + metadataUuid
+        #console.log entityFromMSBeforeGettingAttrib: entityFromMS.attribute.length
         test = tools.getAttr(entityFromMS, metadataUuid)
-        console.log 'test: ' + test
-        console.log entityFromMSAfterGettingAttrib: entityFromMS.attribute.length
+        #console.log 'test: ' + test
+        #console.log entityFromMSAfterGettingAttrib: entityFromMS.attribute.length
         oldValue = test.valueString
         test.valueString = attrib.value
-        console.log entityFromMSAfterSettingAttrib: entityFromMS.attribute.length
-        console.log 'new value: ' + tools.getAttrValue(entityFromMS, metadataUuid)
+        #console.log entityFromMSAfterSettingAttrib: entityFromMS.attribute.length
+        #console.log 'new value: ' + tools.getAttrValue(entityFromMS, metadataUuid)
         logChangesInDescription entityFromMS, attrib.name, oldValue, attrib.value
         return
-      console.log entityFromMSAfter2: entityFromMS
+      #console.log entityFromMSAfter2: entityFromMS
       newEntity = client.save(entityFromMS)
-      console.log 'newEntity: ', newEntity
+      #console.log 'newEntity: ', newEntity
       done null, "Заменено"
     )
-    console.log 'updateEntityMS ended'
+    #console.log 'updateEntityMS ended'
     response.result
 
   setEntityStateByUuid: (entityType, entityUuid, newStateUuid) ->
@@ -253,20 +253,20 @@ Meteor.methods
     client.endSession session
     return "Остатки отправлены в Мадженто: #{allDirtyGoods.count()} всего"
   loadAllEntities: () ->
-    console.log "loadAllEntities started"
-    Meteor._sleepForMs(1000);
-    Meteor.call 'loadEntityGenericMethod', 'good', 'Goods'
-    Meteor._sleepForMs(1000);
+    #console.log "loadAllEntities started"
+    #Meteor._sleepForMs(1000);
+    #Meteor.call 'loadEntityGenericMethod', 'good', 'Goods'
+    #Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'company', 'Companies'
     Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'customerOrder', 'Orders'
     Meteor._sleepForMs(1000);
-    Meteor.call 'loadEntityGenericMethod', 'workflow', 'Workflows'
-    Meteor._sleepForMs(1000);
-    Meteor.call 'loadEntityGenericMethod', 'customEntityMetadata', 'CustomEntityMetadata'
-    Meteor._sleepForMs(1000);
-    Meteor.call 'loadEntityGenericMethod', 'customEntity', 'CustomEntity'
-    Meteor._sleepForMs(1000);
+    #Meteor.call 'loadEntityGenericMethod', 'workflow', 'Workflows'
+    #Meteor._sleepForMs(1000);
+    #Meteor.call 'loadEntityGenericMethod', 'customEntityMetadata', 'CustomEntityMetadata'
+    #Meteor._sleepForMs(1000);
+    #Meteor.call 'loadEntityGenericMethod', 'customEntity', 'CustomEntity'
+    #Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
     # Meteor.call 'loadTracksFromAplix', getLastTimeRun 'aplix_tracks', (error, result) ->
     #   if not error?
