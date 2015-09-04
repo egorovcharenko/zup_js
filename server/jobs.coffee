@@ -37,6 +37,15 @@ processMSJobsWorker = (job, cb) ->
           job.log "ошибка: #{error}"
           job.fail()
       return cb()
+    when "loadNotPrimaryEntities"
+      Meteor.call 'loadNotPrimaryEntities', (error, result) ->
+        if not error?
+          job.log "успешно, результат: #{result}"
+          job.done()
+        else
+          job.log "ошибка: #{error}"
+          job.fail()
+      return cb()
 
 processStockJobsWorker = (job, cb) ->
   switch job.type
@@ -65,8 +74,8 @@ Meteor.startup ->
   # загрузка данных из МС
   job = new Job myJobs, 'loadAllDataMoyskladPeriodic', {}
   job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 5*1000})
-    .repeat({ repeats: myJobs.forever, wait: 1*1000})
+    .retry({retries: myJobs.forever, wait: 1*1000})
+    .repeat({ repeats: myJobs.forever, wait: 0})
     .save({cancelRepeats: true})
 
   # Загрузка остатков из МС
@@ -90,11 +99,17 @@ Meteor.startup ->
     .repeat({schedule: myJobs.later.parse.text('at 11:00 pm')})
     .save({cancelRepeats: true})
 
+  # Загрузка не главных сущностей раз в 5 минут
+  job = new Job myJobs, 'loadNotPrimaryEntities', {}
+  job.priority('normal')
+    .retry({retries: 5, wait: 60*1000})
+    .repeat({schedule: myJobs.later.parse.text('every 5 minutes')})
+    .save({cancelRepeats: true})
+
   # Начать обрабатывать задачи
-  myJobs.processJobs ['loadAllDataMoyskladPeriodic','setEntityStateByUuid','updateEntityMS'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
+  myJobs.processJobs ['loadAllDataMoyskladPeriodic','setEntityStateByUuid','updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
 
   myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
-
 
   # cleanups and remove stale jobs
   new Job(myJobs, 'cleanup', {})
