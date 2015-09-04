@@ -252,21 +252,24 @@ Meteor.methods
 
     client.endSession session
     return "Остатки отправлены в Мадженто: #{allDirtyGoods.count()} всего"
+    
+  loadNotPrimaryEntities: () ->
+    Meteor.call 'loadEntityGenericMethod', 'good', 'Goods'
+    Meteor._sleepForMs(1000);
+    Meteor.call 'loadEntityGenericMethod', 'workflow', 'Workflows'
+    Meteor._sleepForMs(1000);
+    Meteor.call 'loadEntityGenericMethod', 'customEntityMetadata', 'CustomEntityMetadata'
+    Meteor._sleepForMs(1000);
+    Meteor.call 'loadEntityGenericMethod', 'customEntity', 'CustomEntity'
+    Meteor._sleepForMs(1000);
+
   loadAllEntities: () ->
     #console.log "loadAllEntities started"
-    #Meteor._sleepForMs(1000);
-    #Meteor.call 'loadEntityGenericMethod', 'good', 'Goods'
     #Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'company', 'Companies'
     Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'customerOrder', 'Orders'
     Meteor._sleepForMs(1000);
-    #Meteor.call 'loadEntityGenericMethod', 'workflow', 'Workflows'
-    #Meteor._sleepForMs(1000);
-    #Meteor.call 'loadEntityGenericMethod', 'customEntityMetadata', 'CustomEntityMetadata'
-    #Meteor._sleepForMs(1000);
-    #Meteor.call 'loadEntityGenericMethod', 'customEntity', 'CustomEntity'
-    #Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
     # Meteor.call 'loadTracksFromAplix', getLastTimeRun 'aplix_tracks', (error, result) ->
     #   if not error?
