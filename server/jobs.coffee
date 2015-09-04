@@ -65,8 +65,8 @@ Meteor.startup ->
   # загрузка данных из МС
   job = new Job myJobs, 'loadAllDataMoyskladPeriodic', {}
   job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 5*1000})
-    .repeat({ repeats: myJobs.forever, wait: 1*1000})
+    .retry({retries: myJobs.forever, wait: 1*1000})
+    .repeat({ repeats: myJobs.forever, wait: 0*1000})
     .save({cancelRepeats: true})
 
   # Загрузка остатков из МС
