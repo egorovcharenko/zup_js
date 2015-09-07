@@ -96,7 +96,7 @@ Meteor.startup ->
   job = new Job myJobs, 'resetTimestamps', {}
   job.priority('normal')
     .retry({retries: 5, wait: 60*1000})
-    .repeat({schedule: myJobs.later.parse.text('at 11:00 pm')})
+    .repeat({schedule: myJobs.later.parse.text('at 05:00 am')})
     .save({cancelRepeats: true})
 
   # Загрузка не главных сущностей раз в 5 минут

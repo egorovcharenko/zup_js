@@ -106,11 +106,16 @@ Router.map ->
             # место хранения
             if good.description?
               temp.goodDesc = good.description.replace(new RegExp('\n', 'g'), '<br/>')
-              parse = temp.goodDesc.match(/^([a-Я])-([0-9])-([0-9]{1,3})/)
+              parse = temp.goodDesc.match(/^([a-Я0-9]+)-?([0-9]{0,3})-?([0-9]*)/)
               if parse and parse.length == 4
                 temp.pallet = parse[1]
                 temp.shelf = parse[2]
                 temp.place = parse[3]
+              else if parse and parse.length == 3
+                temp.pallet = parse[1]
+                temp.shelf = parse[2]
+              else if parse and parse.length == 2
+                temp.pallet = parse[1]
               else
                 temp.pallet = temp.shelf = temp.place = 'Нет'
             else

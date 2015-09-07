@@ -120,9 +120,11 @@ Meteor.methods
 
   loadEntityGenericMethod: (entityMSName, collectionName) ->
     console.log "loadEntityGenericMethod, entityMSName: #{entityMSName}"
+    Meteor.call 'updateTimestampFlag', entityMSName
     Meteor.call 'loadEntityFromMS', entityMSName, collectionName, getLastTimeRun(entityMSName), (error, result) ->
       if not error?
-        Meteor.call 'updateTimestampFlag', entityMSName
+        ;
+        #Meteor.call 'updateTimestampFlag', entityMSName
       else
         console.log "Error in loading entities: #{error}"
 
@@ -252,7 +254,7 @@ Meteor.methods
 
     client.endSession session
     return "Остатки отправлены в Мадженто: #{allDirtyGoods.count()} всего"
-    
+
   loadNotPrimaryEntities: () ->
     Meteor.call 'loadEntityGenericMethod', 'good', 'Goods'
     Meteor._sleepForMs(1000);
