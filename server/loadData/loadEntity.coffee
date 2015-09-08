@@ -93,4 +93,4 @@ Meteor.methods
     DataTimestamps.upsert { name: 'orders' }, $set: value: Date.now()
     return
   updateTimestampFlag: (timestampToSet) ->
-    DataTimestamps.upsert { name: timestampToSet }, $set: value: (Date.now() - 5000)
+    DataTimestamps.upsert { name: timestampToSet }, $set: value: (Date.now() - 10*60*1000)
