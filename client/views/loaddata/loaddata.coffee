@@ -3,11 +3,12 @@ getLastTimeRun = (entityName) ->
   if lastTimeLoaded? then new Date(lastTimeLoaded.value) else new Date('01-01-2014')
 
 loadEntityGeneric = (entityMSName, collectionName) ->
+  currentTime = Date.now()
   Meteor.call 'loadEntityFromMS', entityMSName, collectionName, getLastTimeRun(entityMSName), (error, result) ->
-    if not error?
-      Meteor.call 'updateTimestampFlag', entityMSName
-    else
-      console.log "Error in loading entities: #{error}"
+  if not error?
+    Meteor.call 'updateTimestampFlag', entityMSName, currentTime
+  else
+    console.log "Error in loading entities: #{error}"
 
 Template.loadData.helpers
   'progress': ->
@@ -38,7 +39,7 @@ Template.loadData.events
     console.log "loadTracksFromAplix started"
     Meteor.call 'loadTracksFromAplix', getLastTimeRun 'aplix_tracks', (error, result) ->
       if not error?
-        Meteor.call 'updateTimestampFlag', 'aplix_tracks'
+        Meteor.call 'updateTimestampFlag', 'aplix_tracks', Date.now()
       if result
         console.log "result:", result
   'click #load_pics': (event, template) ->

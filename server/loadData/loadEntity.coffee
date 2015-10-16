@@ -92,5 +92,5 @@ Meteor.methods
     Meteor.call 'loadEntityFromMS', 'customerOrder', 'Orders', temp
     DataTimestamps.upsert { name: 'orders' }, $set: value: Date.now()
     return
-  updateTimestampFlag: (timestampToSet) ->
-    DataTimestamps.upsert { name: timestampToSet }, $set: value: (Date.now() - 10*60*1000)
+  updateTimestampFlag: (timestampToSet, timeToSet) ->
+    DataTimestamps.upsert { name: timestampToSet }, $set: value: (timeToSet)

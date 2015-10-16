@@ -119,11 +119,11 @@ Meteor.methods
       response.result
 
   loadEntityGenericMethod: (entityMSName, collectionName) ->
+    currentTime = Date.now()
     console.log "loadEntityGenericMethod, entityMSName: #{entityMSName}"
-    #Meteor.call 'updateTimestampFlag', entityMSName
     Meteor.call 'loadEntityFromMS', entityMSName, collectionName, getLastTimeRun(entityMSName), (error, result) ->
       if not error?
-        Meteor.call 'updateTimestampFlag', entityMSName
+        Meteor.call 'updateTimestampFlag', entityMSName, currentTime
       else
         console.log "Error in loading entities: #{error}"
 
