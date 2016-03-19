@@ -42,5 +42,8 @@ Template.managers.events
 
     # открыть страницу модерации заказов
     Router.go 'moderation', 'orderName': @name
-
+    return
+  'click #openOrder': (event, template) ->
+    # открыть страницу модерации заказов
+    Router.go 'moderation', 'orderName': @name
     return

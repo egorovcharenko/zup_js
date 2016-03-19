@@ -16,19 +16,20 @@
                   "name": "setOrderStatus",
                   "params": {
                     "orderName": "%orderName%",
-                    "newStatus": "В работе"
+                    "newOrderStatusUuid": "abcf2f44-73c6-11e4-90a2-8ecb001ed0f3",
+                    "comment": "В работе"
                   }
                 },{
                   "name": "log",
                   "params": {
-                    "logType": "Заказ",
-                    "logText": "Заказ %orderName% взят в работу пользователем %userName%",
+                    "type": "Заказ",
+                    "text": "Заказ %orderName% взят в работу пользователем %userName%",
                     "orderName": "%orderName%"
                   }
                 }, {
                   "name": "setNextStep",
                   "params": {
-                    "nextStepId": "1"
+                    "nextStepId": "999"
                   }
                 } , {
                   "name": "setOrderField",

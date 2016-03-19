@@ -7,7 +7,8 @@ Router.map ->
     waitOn: ->
       orderName = @params.orderName
       [
-        Meteor.subscribe('moderation', orderName)
+        Meteor.subscribe 'moderation', orderName
+        Meteor.subscribe "orderWithGoods", orderName
       ]
     data: ->
       dataVar = {}
@@ -80,6 +81,13 @@ Router.map ->
     loadingTemplate: 'loading'
     waitOn: ->
       [
+      ]
+  @route 'viewlog',
+    path: '/viewlog'
+    loadingTemplate: 'loading'
+    waitOn: ->
+      [
+        #Meteor.subscribe('wholeLog')
       ]
   @route 'loadData',
     path: '/loaddata'

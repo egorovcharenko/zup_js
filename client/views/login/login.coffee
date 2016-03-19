@@ -14,9 +14,11 @@ Template.login.events {
         console.log 'success!'
   'click #setMsUuid': (event, template) ->
     msUserId = template.find('#msUuidInput').value
+    userName = template.find('#userNameInput').value
     id = Meteor.userId()
     Meteor.users.update id,
       $set:
         profile:
           msUserId: msUserId
+          userName: userName
 }

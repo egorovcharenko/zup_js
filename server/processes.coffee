@@ -1,3 +1,8 @@
+extend = (object, properties) ->
+  for key, val of properties
+    object[key] = val
+  object
+
 Meteor.methods
   startProcess: (processName, params) ->
     console.log "processName: ", processName
@@ -39,6 +44,9 @@ Meteor.methods
     processIns = ProcessesIns.findOne {id: dataObject.processInsId}
     #console.log "processIns ", processIns
 
+    dataObject.msUserId =  Meteor.user().profile.msUserId
+    dataObject.userName = Meteor.user().profile.userName
+
     if processIns?
       _.each processIns.steps, (step) ->
         _.each step.options, (option) ->
@@ -61,7 +69,7 @@ Meteor.methods
                     status: "finished"
                   }}
 
-                # TODO
+                # DONE
                 when "setOrderField"
                   orderName = dataObject.orderName
                   fieldName = action.params.fieldName
@@ -82,15 +90,34 @@ Meteor.methods
                     .retry({ retries: 5, wait: 1*1000})
                     .save()
 
+                when "log"
+                  logEntry = {
+                    "date": Date.now()
+                    "userName": dataObject.userName
+                  }
+                  logEntry = extend logEntry, action.params
+                  console.log "Пишем в лог: ", logEntry
+                  Log.insert logEntry
+
+                when "setOrderStatus"
+                  orderName = action.params.orderName
+                  orderStatusUuid = action.params.newOrderStatusUuid
+                  console.log "нужно у заказа #{orderName} заменить статус на #{orderStatusUuid}"
+
+                  orderUuid = Orders.findOne(name: orderName).uuid
+                  console.log "orderUuid: #{orderUuid}"
+
+                  job = new Job myJobs, 'setEntityStateByUuid', {entityType: 'customerOrder', entityUuid: orderUuid, newStateUuid: orderStatusUuid}
+
+                  job.priority('high')
+                    .retry({ retries: 5, wait: 1*1000})
+                    .save()
+
                 # TODO
                 when "startNewProcess"
                   processName = action.params.processName
                   processParams = action.params.processParams
                   console.log "Запускаем новый процесс: #{processName} с параметрами: #{processParams}"
-
-                # TODO
-                when "log"
-                  console.log "Пишем в лог"
 
                 # TODO
                 when "reserveOrder"
@@ -103,11 +130,6 @@ Meteor.methods
                   sku = action.params.sku
                   console.log "нужно в заказе #{orderName} добавить товар #{sku}";
 
-                # TODO
-                when "setOrderStatus"
-                  orderName = action.params.orderName
-                  orderStatus = action.params.newStatus
-                  console.log "нужно у заказа #{orderName} заменить статус на #{orderStatus}";
 
                 when "setNextStep"
                   # найти следующий шаг

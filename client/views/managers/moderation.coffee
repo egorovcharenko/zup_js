@@ -3,15 +3,14 @@ Template.moderation.events
     # определить какая кнопка была нажата и какое действие надо выполнить
     optionId = event.target.dataset.optionId
 
-    console.log "optionId ", optionId
-    console.log "data ", Router.current().data()
+    #console.log "optionId ", optionId
+    #console.log "data ", Router.current().data()
     dataObject = {}
     dataObject.orderName = Router.current().data().order.name
     dataObject.processInsId = Router.current().data().processIns.id
     dataObject.optionId = optionId
-    dataObject.msUserId = Meteor.user().profile.msUserId
 
-    console.log "dataObject ", dataObject
+    #console.log "dataObject ", dataObject
 
     # выполнить действие
     #dataObject.orderName =
@@ -22,3 +21,9 @@ Template.moderation.events
         console.log "ok", error
 
     return
+Template.moderation.helpers
+  orderPosHelper: ->
+    # название товара
+    good = Goods.findOne {uuid: @goodUuid}
+    good
+    #JSON.stringify(good, null, 4)

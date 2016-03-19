@@ -1,3 +1,8 @@
+# Meteor.publish "wholeLog", (args) ->
+#   return Log.find {}
+
+ReactiveTable.publish("log_special_publish", Log);
+
 Meteor.publish "ordersForModeration", () ->
   return [
     Orders.find {name: 'С10791'}
@@ -10,6 +15,23 @@ Meteor.publish "moderation", (orderName) ->
     Orders.find {name: orderName}
     ProcessesIns.find({name: "Модерация", "params.orderNumber": orderName, status: "active"})
   ]
+Meteor.publishComposite "orderWithGoods", (orderName) ->
+  {
+    find: ->
+      Orders.find(name: orderName)
+    children:
+      [
+        {
+          find: (order) ->
+            temp = []
+            _.each order.customerOrderPosition, (pos) ->
+              temp.push pos.goodUuid
+              return
+            Goods.find uuid: $in: temp
+        }
+      ]
+  }
+
 Meteor.publish 'allOrders', ->
   Orders.find {}
 Meteor.publish 'checkedOrders', ->

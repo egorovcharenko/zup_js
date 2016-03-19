@@ -43,34 +43,33 @@ Meteor.methods
       res[attr.attrName] = tools.getAttr(object, metadataUuid)
     return res
 
-  # STRINGS ATTRIBUTES ONLY!!!
   updateEntityMS: (entityType, entityUuid, data, attributes, attributeType) ->
-    console.log 'updateEntityMS started, parameters:' + arguments
+    #console.log 'updateEntityMS started, parameters:' + arguments
     moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
       client = moyskladPackage.createClient()
       tools = moyskladPackage.tools
       client.setAuth 'admin@allshellac', 'qweasd'
-      console.log 'entityType: ' + entityType + ', entityUuid: ' + entityUuid
+      #console.log 'entityType: ' + entityType + ', entityUuid: ' + entityUuid
       entityFromMS = client.load(entityType, entityUuid)
-      console.log 'entityFromMS: ' + entityFromMS
-      console.log 'data:' + data
+      #console.log 'entityFromMS: ' + entityFromMS
+      #console.log 'data:' + data
       if data?
         for prop of data
           if data.hasOwnProperty(prop)
-            console.log '-property ' + prop
+            #console.log '-property ' + prop
             entityFromMS[prop] = data[prop]
-      console.log entityFromMSAfter1: entityFromMS
+      #console.log entityFromMSAfter1: entityFromMS
       # update attribs
       _.each attributes, (attrib) ->
         # {name: value}
-        console.log 'attrib: ', JSON.stringify(attrib, null, 4)
+        #console.log 'attrib: ', JSON.stringify(attrib, null, 4)
         metadataUuid = findMetadataUuidByName('CustomerOrder', attrib.name)
         #console.log 'metadataUuid: ' + metadataUuid
-        console.log 'entityFromMSBeforeGettingAttrib:', entityFromMS.attribute.length
+        #console.log 'entityFromMSBeforeGettingAttrib:', entityFromMS.attribute.length
         test = tools.getAttr(entityFromMS, metadataUuid)
-        console.log 'test: ', JSON.stringify(test, null, 4)
-        console.log 'entityFromMSAfterGettingAttrib:', entityFromMS.attribute.length
+        #console.log 'test: ', JSON.stringify(test, null, 4)
+        #console.log 'entityFromMSAfterGettingAttrib:', entityFromMS.attribute.length
         switch attributeType
           when 'string'
             oldValue = test.valueString
@@ -78,16 +77,16 @@ Meteor.methods
           when 'employee'
             oldValue = test.employeeValueUuid
             test.employeeValueUuid = attrib.value
-        console.log 'entityFromMSAfterSettingAttrib:', entityFromMS.attribute.length
-        console.log 'new value: ' + tools.getAttrValue(entityFromMS, metadataUuid)
+        #console.log 'entityFromMSAfterSettingAttrib:', entityFromMS.attribute.length
+        #console.log 'new value: ' + tools.getAttrValue(entityFromMS, metadataUuid)
         logChangesInDescription entityFromMS, attrib.name, oldValue, attrib.value
         return
-      console.log entityFromMSAfter2: entityFromMS
+      #console.log entityFromMSAfter2: entityFromMS
       newEntity = client.save(entityFromMS)
-      console.log 'newEntity: ', newEntity
+      #console.log 'newEntity: ', newEntity
       done null, "Заменено"
     )
-    console.log 'updateEntityMS ended'
+    #console.log 'updateEntityMS ended'
     response.result
 
   setEntityStateByUuid: (entityType, entityUuid, newStateUuid) ->
