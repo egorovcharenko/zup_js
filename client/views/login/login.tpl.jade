@@ -1,0 +1,14 @@
++loginButtons
+if currentUser
+  h2 Залогинен
+    input#msUuidInput(type="text",placeholder="Введите Uuid в МС")
+    #setMsUuid.ui.teal.button Установить
+else
+  h2 Форма регистрации
+  form.register
+    p Email: 
+      input(type="email" name="email")
+    p Password
+      input(type="password" name="password")
+    p Зарегистрироваться
+      input(type="submit" value="Зарегистрироваться")

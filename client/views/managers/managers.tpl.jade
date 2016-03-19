@@ -1,0 +1,19 @@
+table.ui.compact.celled.definition.table.table-style
+  thead
+    tr
+      th Номер
+      th Сумма
+      th Находится на модерации уже
+      th Статус
+  tbody
+    each this
+      tr
+        td.collapsing {{name}}
+        td.collapsing {{orderHelper.sum}}
+        td.collapsing {{orderHelper.timeInModeration}}
+        td.collapsing {{orderHelper.state}}
+          #moderateOrder.ui.teal.button Промодерировать
+        //- td {{orderHelper.aplixState}}
+        //- td 
+        //-   a(href="http://www.aplix.ru/tools/tracking/?track={{orderHelper.aplixTrack}}",target="_blank").
+        //-     {{orderHelper.aplixTrack}}

@@ -1,0 +1,26 @@
+.ui.two.column.grid
+  .row
+    .eight.wide.column
+      h1 Действия
+      each this.activeSteps
+        .ui.existing.segment
+          .content
+            h2 #{name}
+            .description
+              | #{description}
+          .ui.buttons
+            each options
+              .option-button.ui.button(data-option-id="#{id}") #{name}
+    .eight.wide.column
+      h1 Информация о заказе
+  .row 
+    .sixteen.wide.column
+      h1 Позиции заказа
+      table.ui.celled.right.aligned.table
+        thead
+          tr
+            th Акртикул
+        tbody
+          each this.order.customerOrderPosition
+            tr
+              td #{goodUuid}

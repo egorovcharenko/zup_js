@@ -1,0 +1,10 @@
+.ui.menu
+  if currentUser
+    a.item(href="{{pathFor 'ordersList'}}")
+      | Заказы
+    a.item(href="{{pathFor 'managers'}}")
+      | Менеджеры
+    a.item(href="{{pathFor 'loadData'}}")
+      | Загрузить данные
+  a.item(href="{{pathFor 'login'}}")
+    | Аккаунт
