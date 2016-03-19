@@ -1,3 +1,15 @@
+Meteor.publish "ordersForModeration", () ->
+  return [
+    Orders.find {name: 'С10791'}
+  ]
+  return [
+    Orders.find {$or: [{stateUuid: '3f201baf-8d32-11e4-7a07-673d00307946'}, {stateUuid: '33cd998e-3090-11e5-7a07-673d0019b9ed'}]}
+  ]
+Meteor.publish "moderation", (orderName) ->
+  return [
+    Orders.find {name: orderName}
+    ProcessesIns.find({name: "Модерация", "params.orderNumber": orderName, status: "active"})
+  ]
 Meteor.publish 'allOrders', ->
   Orders.find {}
 Meteor.publish 'checkedOrders', ->

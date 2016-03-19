@@ -11,14 +11,11 @@ aldeed:collection2
 iron:router
 raix:handlebar-helpers
 fastclick
-zimme:iron-router-active
-manuelschoebel:ms-seo
 useraccounts:semantic-ui
 natestrauser:animate-css
 dburles:collection-helpers
 meteorhacks:fast-render
 
-semantic:ui-css
 meteorhacks:npm
 
 
@@ -28,9 +25,6 @@ meteorhacks:subs-manager
 reywood:publish-composite
 zardak:soap
 agershun:alasql
-aldeed:template-extension
-mrt:flash-messages
-mrt:moment
 coffeescript
 vsivsi:job-collection
 reactive-var
@@ -52,3 +46,10 @@ check
 
 
 npm-container
+jaywon:meteor-node-uuid
+streemo:reactive-date
+accounts-ui
+semantic:ui-css
+zimme:active-route
+aldeed:template-extension
+mrt:flash-messages

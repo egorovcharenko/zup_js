@@ -1,3 +1,5 @@
+reactiveDate = new ReactiveDate(60*1000) // как часто обновлять реактивное время
+
 Template.registerHelper('debug', function (optionalValue) {
   if (typeof console !== "undefined" || typeof console.log !== "undefined") {
     console.log("Current Context");

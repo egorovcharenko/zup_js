@@ -44,7 +44,7 @@ Template.packOrder.events
 
       orderUuid = Orders.findOne(name: Router.current().params.orderName).uuid
 
-      job = new Job myJobs, 'updateEntityMS', {entityType: 'customerOrder', entityUuid: orderUuid, data: null, attributes: attr}
+      job = new Job myJobs, 'updateEntityMS', {entityType: 'customerOrder', entityUuid: orderUuid, data: null, attributes: attr, attributeType:'string'}
 
       job.priority('high')
         .retry({ retries: 5, wait: 1*1000})
@@ -85,7 +85,7 @@ Template.packOrder.events
       value: oos
     } ]
 
-    job = new Job myJobs, 'updateEntityMS', {entityType: 'customerOrder', entityUuid: order.uuid, data: null, attributes: attr}
+    job = new Job myJobs, 'updateEntityMS', {entityType: 'customerOrder', entityUuid: order.uuid, data: null, attributes: attr, attributeType: 'string'}
 
     job.priority('high')
       .retry({ retries: 5, wait: 30*1000})
@@ -93,10 +93,10 @@ Template.packOrder.events
 
     return
 Template.packOrder.onRendered = ->
-  @$('.ui.sticky').sticky content: '#positions-list'
+  $('.ui.sticky').sticky content: '#positions-list'
   return
 
 Template.packOrder.rendered = ->
-  @$('.ui.checkbox').checkbox()
-  @$('.ui.dropdown').dropdown()
+  $('.ui.checkbox').checkbox()
+  $('.ui.dropdown').dropdown()
   return

@@ -20,7 +20,7 @@ processMSJobsWorker = (job, cb) ->
       return cb()
     when "updateEntityMS"
       job.log "entityType: #{job.data.entityType}, entityUuid:#{job.data.entityUuid}, data:#{job.data.data}, attributes: #{job.data.attributes}"
-      Meteor.call 'updateEntityMS', job.data.entityType, job.data.entityUuid, job.data.data, job.data.attributes, (error, result) ->
+      Meteor.call 'updateEntityMS', job.data.entityType, job.data.entityUuid, job.data.data, job.data.attributes, job.data.attributeType, (error, result) ->
         if not error?
           job.log "успешно, результат: #{result}"
           job.done()
@@ -74,14 +74,14 @@ Meteor.startup ->
   # загрузка данных из МС
   job = new Job myJobs, 'loadAllDataMoyskladPeriodic', {}
   job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 1*1000})
+    .retry({retries: myJobs.forever, wait: 10000000*1000}) # 1 * 1000
     .repeat({ repeats: myJobs.forever, wait: 0})
     .save({cancelRepeats: true})
 
   # Загрузка остатков из МС
   job = new Job myJobs, 'loadStockFromMS', {}
   job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 60*1000})
+    .retry({retries: myJobs.forever, wait: 60000000*1000}) # 60 * 1000
     .repeat({ repeats: myJobs.forever, wait: 30*1000})
     .save({cancelRepeats: true})
 
@@ -92,24 +92,27 @@ Meteor.startup ->
     .repeat({ repeats: myJobs.forever, wait: 30*1000})
     .save({cancelRepeats: true})
 
+
   # Сброс флагов в полночь
   job = new Job myJobs, 'resetTimestamps', {}
   job.priority('normal')
     .retry({retries: 5, wait: 60*1000})
-    .repeat({schedule: myJobs.later.parse.text('at 05:00 am')})
+    .repeat({schedule: myJobs.later.parse.text('at 03:00 am')})
     .save({cancelRepeats: true})
 
   # Загрузка не главных сущностей раз в 5 минут
   job = new Job myJobs, 'loadNotPrimaryEntities', {}
   job.priority('normal')
     .retry({retries: 5, wait: 60*1000})
-    .repeat({schedule: myJobs.later.parse.text('every 5 minutes')})
+    .repeat({schedule: myJobs.later.parse.text('every 500 minutes')}) # every 5 minutes
     .save({cancelRepeats: true})
 
   # Начать обрабатывать задачи
-  myJobs.processJobs ['loadAllDataMoyskladPeriodic','setEntityStateByUuid','updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
+  #myJobs.processJobs ['loadAllDataMoyskladPeriodic','setEntityStateByUuid','updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
 
-  myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
+  myJobs.processJobs ['updateEntityMS'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
+
+  #myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
 
   # cleanups and remove stale jobs
   new Job(myJobs, 'cleanup', {})

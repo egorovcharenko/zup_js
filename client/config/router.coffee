@@ -1,6 +1,51 @@
 #var subs = new SubsManager();
 Router.configure layoutTemplate: 'basicLayout'
 Router.map ->
+  @route 'moderation',
+    path: '/managers/moderation/:orderName'
+    loadingTemplate: 'loading'
+    waitOn: ->
+      orderName = @params.orderName
+      [
+        Meteor.subscribe('moderation', orderName)
+      ]
+    data: ->
+      dataVar = {}
+      orderName = @params.orderName
+      order = Orders.findOne {name: orderName}
+      dataVar.order = order
+
+      # все текущие задачи
+      Steps = new (Mongo.Collection)(null)
+      processIns = ProcessesIns.findOne({name:"Модерация", "params.orderNumber": orderName})
+      #console.log "processIns ", processIns
+      if processIns?
+        _.each processIns.steps, (step) ->
+          if step.status == "active"
+            Steps.insert step
+          #console.log "iteration step ", step
+
+        #console.log "steps ", Steps.find({}).fetch()
+        dataVar.activeSteps = Steps.find({})
+        dataVar.processIns = processIns
+      return dataVar
+    onBeforeAction: (pause) ->
+      @next()
+      return
+  @route 'managers',
+    path: '/managers'
+    loadingTemplate: 'loading'
+    waitOn: ->
+      [
+        Meteor.subscribe('ordersForModeration')
+        Meteor.subscribe('workflows')
+      ]
+    data: ->
+      orders = (Orders.find {}, sort: {name: 1})
+      return orders
+    onBeforeAction: (pause) ->
+      @next()
+      return
   @route 'ordersList',
     path: '/orders/list/:orderState?'
     loadingTemplate: 'loading'
@@ -30,6 +75,12 @@ Router.map ->
     onBeforeAction: (pause) ->
       @next()
       return
+  @route 'login',
+    path: '/login'
+    loadingTemplate: 'loading'
+    waitOn: ->
+      [
+      ]
   @route 'loadData',
     path: '/loaddata'
     loadingTemplate: 'loading'
@@ -70,11 +121,11 @@ Router.map ->
           retOrd.push order
         return
       { customerOrders: retOrd }
-  @route 'home',
-    path: '/'
-    action: ->
-      @render 'ordersList'
-      return
+  # @route 'home',
+  #   path: '/'
+  #   action: ->
+  #     @render 'ordersList'
+  #     return
   @route 'packOrder',
     path: '/packOrder/:orderName/:orderPosSelected?'
     loadingTemplate: 'loading'
