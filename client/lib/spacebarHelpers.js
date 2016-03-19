@@ -1,6 +1,6 @@
-reactiveDate = new ReactiveDate(60*1000) // как часто обновлять реактивное время
+reactiveDate = new ReactiveDate(60 * 1000) // как часто обновлять реактивное время
 
-Template.registerHelper('debug', function (optionalValue) {
+Template.registerHelper('debug', function(optionalValue) {
   if (typeof console !== "undefined" || typeof console.log !== "undefined") {
     console.log("Current Context");
     console.log("====================");
@@ -24,6 +24,6 @@ Template.registerHelper('debug', function (optionalValue) {
   return '';
 });
 
-Template.registerHelper('constant', function (what) {
+Template.registerHelper('constant', function(what) {
   return Meteor.App[what.toUpperCase()];
 });

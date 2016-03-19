@@ -125,20 +125,21 @@ Meteor.methods
 
   loadEntityGenericMethod: (entityMSName, collectionName) ->
     currentTime = Date.now()
-    console.log "loadEntityGenericMethod, entityMSName: #{entityMSName}"
+    Meteor.call "logSystemEvent", "loadEntityGeneric", "5. notice", "Вызов загрузки сущностей: entityMSName: #{entityMSName}"
     Meteor.call 'loadEntityFromMS', entityMSName, collectionName, getLastTimeRun(entityMSName), (error, result) ->
       if not error?
         Meteor.call 'updateTimestampFlag', entityMSName, currentTime
       else
-        console.log "Error in loading entities: #{error}"
+        Meteor.call "logSystemEvent", "loadEntityGeneric", "2. error", "Ошибка: #{error}"
 
   loadStockFromMS: () ->
     moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
       try
+        Meteor.call "logSystemEvent", "loadStock", "5. notice", "Начинаем получение с сервера всех остатков"
+
         client = moyskladPackage.createClient()
         client.setAuth 'admin@allshellac', 'qweasd'
-
         options = {
           #stockMode: ALL_STOCK,
           showConsignments: false
@@ -146,8 +147,9 @@ Meteor.methods
 
         stock = client.stock(options);
         if stock?
-          console.log "Получено с сервера #{stock.length} остатков"
+          Meteor.call "logSystemEvent", "loadStock", "5. notice", "Получено с сервера #{stock.length} остатков"
           for oneStock in stock
+            Meteor.call "logSystemEvent", "loadStock", "5. notice", "Остаток: #{oneStock}"
             if oneStock.goodRef?
               good = Goods.findOne uuid:oneStock.goodRef.uuid
               if good?
@@ -155,16 +157,28 @@ Meteor.methods
                 if (skipGoodStock good)
                   # do nothing
                 else
+                  needsUpdate = false
                   if good.stockQty?
                     if good.stockQty != oneStock.stock
-                      Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, dirty: true}})
+                      needsUpdate = true
+                  else if good.reserveQty?
+                    if good.reserveQty != oneStock.reserve
+                      needsUpdate = true
+                  else if good.quantityQty?
+                    if good.quantityQty != oneStock.quantity
+                      needsUpdate = true
+                  else if good.reserveForSelectedAgentQty?
+                    if good.reserveForSelectedAgentQty != oneStock.reserveForSelectedAgent
+                      needsUpdate = true
                   else
-                    Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, dirty: true}})
+                    needsUpdate = true
+                  if needsUpdate
+                    Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, reserveQty: oneStock.reserve, quantityQty: oneStock.quantity, reserveForSelectedAgentQty:oneStock.reserveForSelectedAgent, dirty: true}})
                   #console.log "Установлен остаток для товара #{oneStock.goodRef.name} - #{good.stockQty} штук"
               else
-                console.log "При загрузке остатков не нашли товар: #{oneStock.goodRef.name}"
+                Meteor.call "logSystemEvent", "loadStock", "5. notice", "При загрузке остатков не нашли товар: #{oneStock.goodRef.name}"
             else
-              console.log "В остатках нет информации о товаре"
+              Meteor.call "logSystemEvent", "loadStock", "5. notice", "В остатках нет информации о товаре"
           done null, "Остатки загружены успешно, количество: #{stock.length}"
         else
           done "Не получены остатки с сервера", null
@@ -172,7 +186,7 @@ Meteor.methods
         done error, null
     )
     if response.error?
-      console.log error
+      Meteor.call "logSystemEvent", "loadStock", "2. error", "Ошибка: #{error}"
       throw error
     else
       response.result
@@ -260,13 +274,13 @@ Meteor.methods
     return "Остатки отправлены в Мадженто: #{allDirtyGoods.count()} всего"
 
   loadNotPrimaryEntities: () ->
-    Meteor.call 'loadEntityGenericMethod', 'good', 'Goods'
-    Meteor._sleepForMs(1000);
-    Meteor.call 'loadEntityGenericMethod', 'workflow', 'Workflows'
-    Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'customEntityMetadata', 'CustomEntityMetadata'
     Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'customEntity', 'CustomEntity'
+    Meteor._sleepForMs(1000);
+    Meteor.call 'loadEntityGenericMethod', 'good', 'Goods'
+    Meteor._sleepForMs(1000);
+    Meteor.call 'loadEntityGenericMethod', 'workflow', 'Workflows'
     Meteor._sleepForMs(1000);
 
   loadAllEntities: () ->
@@ -277,6 +291,7 @@ Meteor.methods
     Meteor.call 'loadEntityGenericMethod', 'customerOrder', 'Orders'
     Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
+    Meteor._sleepForMs(1000);
     # Meteor.call 'loadTracksFromAplix', getLastTimeRun 'aplix_tracks', (error, result) ->
     #   if not error?
     #     Meteor.call 'updateTimestampFlag', 'aplix_tracks'

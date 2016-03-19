@@ -27,3 +27,10 @@ Template.moderation.helpers
     good = Goods.findOne {uuid: @goodUuid}
     good
     #JSON.stringify(good, null, 4)
+  inStock: ->
+    good = Goods.findOne {uuid: @goodUuid}
+    if good.quantityQty?
+      console.log "inStock: ", good.quantityQty, @quantity
+      good.quantityQty >= @quantity
+    else
+      true

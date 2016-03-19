@@ -3,6 +3,10 @@
 
 ReactiveTable.publish("log_special_publish", Log);
 
+ReactiveTable.publish("system_log_special_publish", SystemLog);
+
+ReactiveTable.publish("status_history_special_publish", StatusHistory);
+
 Meteor.publish "ordersForModeration", () ->
   return [
     Orders.find {name: 'С10791'}

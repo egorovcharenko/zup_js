@@ -79,16 +79,15 @@ Router.map ->
   @route 'login',
     path: '/login'
     loadingTemplate: 'loading'
-    waitOn: ->
-      [
-      ]
   @route 'viewlog',
     path: '/viewlog'
     loadingTemplate: 'loading'
-    waitOn: ->
-      [
-        #Meteor.subscribe('wholeLog')
-      ]
+  @route 'systemlog',
+    path: '/systemlog'
+    loadingTemplate: 'loading'
+  @route 'statushistory',
+    path: '/statushistory'
+    loadingTemplate: 'loading'
   @route 'loadData',
     path: '/loaddata'
     loadingTemplate: 'loading'
@@ -129,11 +128,11 @@ Router.map ->
           retOrd.push order
         return
       { customerOrders: retOrd }
-  # @route 'home',
-  #   path: '/'
-  #   action: ->
-  #     @render 'ordersList'
-  #     return
+  @route 'home',
+    path: '/'
+    action: ->
+      @render 'ordersList'
+      return
   @route 'packOrder',
     path: '/packOrder/:orderName/:orderPosSelected?'
     loadingTemplate: 'loading'

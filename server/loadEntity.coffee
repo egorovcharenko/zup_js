@@ -9,7 +9,7 @@ Meteor.methods
       countTotal = countAlready = 0
       client = moyskladPackage.createClient()
       client.setAuth 'admin@allshellac', 'qweasd'
-      maxCountToLoad = 20000
+      maxCountToLoad = 30000
       pageSize = 100
       query = moyskladPackage.createQuery(updated: $gte: fromLastUpdate)
       total = client.total(entityName, query)
@@ -36,6 +36,11 @@ Meteor.methods
                         if correspondingNewCOP?
                           correspondingNewCOP.packedQty = cOP.packedQty
                           console.log "packedQty saved for order: #{entity.name}, packedQty = #{cOP.packedQty}"
+
+                  # statusHistory
+                  if savedEntity.stateUuid != entity.stateUuid
+                    Meteor.call "logStatusChangeEvent", entity.updated, "customerOrder", entity.uuid, entity.stateUuid, savedEntity.stateUuid
+
                 else if entityName is "good"
 
                   #outOfStock
