@@ -36,7 +36,7 @@ Meteor.methods
                           console.log "packedQty saved for order: #{entity.name}, packedQty = #{cOP.packedQty}"
                   # statusHistory
                   if savedEntity.stateUuid != entity.stateUuid
-                    Meteor.call "logStatusChangeEvent", entity.updated, entityName, entity.uuid, entity.stateUuid, savedEntity.stateUuid
+                    Meteor.call "logStatusChangeEvent", entity.updated, entity.name, entityName, entity.uuid, entity.stateUuid, savedEntity.stateUuid
                 else if entityName is "good"
                   #outOfStock
                   if savedEntity.outOfStock?
@@ -90,9 +90,9 @@ Meteor.methods
     lastTimeLoaded = DataTimestamps.findOne(name: 'orders')
     temp = if lastTimeLoaded then new moment(lastTimeLoaded.value) else '01-01-1900'
     Meteor.call 'loadEntityFromMS', 'customerOrder', 'Orders', temp
-    console.log "*** lastUpdatedTimestamp:", temp
+    #console.log "*** lastUpdatedTimestamp:", temp
     DataTimestamps.upsert { name: 'orders' }, $set: value: moment()
     return
   updateTimestampFlag: (timestampToSet, timeToSet) ->
-    console.log "*** lastUpdatedTimestamp timeToSet:", timeToSet
+    #console.log "*** lastUpdatedTimestamp timeToSet:", timeToSet
     DataTimestamps.upsert { name: timestampToSet }, $set: value: (timeToSet)

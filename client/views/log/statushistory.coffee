@@ -18,23 +18,28 @@ Template.statushistory.helpers {
           key: 'newStateUuid'
           label: 'Новый статус'
           fn: (value, obj, key) ->
-            Workflows.findOne({uuid: value}).name
-        },
-        {
+              wf = Workflows.findOne({uuid: value})
+              console.log "wf:", wf
+              wf.name
+        },{
           key: 'oldStateUuid'
           label: 'Старый статус'
           fn: (value, obj, key) ->
             if value?
-              Workflows.findOne({uuid: value}).name
+              wf = Workflows.findOne({uuid: value})
+              console.log "wf:", wf
+              wf.name
             else
               "-"
-        },
-        {
+        },{
           key:'timeSinceLastStatus',
           label:"Время с последнего изменения",
           fn: (value, obj, key) ->
-            moment.locale('ru');
-            moment().from(timeSinceLastStatus)
+            if value?
+              moment.locale('ru');
+              moment().from(timeSinceLastStatus)
+            else
+              "-"
         }],
       class: "ui celled table",
 

@@ -88,6 +88,10 @@ Router.map ->
   @route 'statushistory',
     path: '/statushistory'
     loadingTemplate: 'loading'
+    waitOn: ->
+      [
+        Meteor.subscribe('workflows')
+      ]
   @route 'loadData',
     path: '/loaddata'
     loadingTemplate: 'loading'

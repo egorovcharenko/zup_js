@@ -4,5 +4,5 @@ Meteor.methods
     if lastStatusChangeRecord?
       timeSinceLastStatus = date - lastStatusChangeRecord.date
     else
-      timeSinceLastStatus = null
+      timeSinceLastStatus = "-"
     StatusHistory.insert {date: date, orderName: orderName, entityType:entityType, newStateUuid:newStateUuid, oldStateUuid:oldStateUuid, timeSinceLastStatus: timeSinceLastStatus}
