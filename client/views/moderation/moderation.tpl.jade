@@ -1,61 +1,65 @@
-.ui.two.column.grid
-  .row
-    .eight.wide.column
-      h1 Действия
-      each this.activeSteps
-        .ui.existing.segment
-          .content
-            h2 #{name}
-            .description
-              | #{description}
-          .ui.buttons
-            each options
-              .option-button.ui.button(data-option-id="#{id}") #{name}
-    .eight.wide.column
-      h1 Информация о заказе
-      h2 
-        a(href="https://online.moysklad.ru/app/#customerorder/edit?id=#{this.order.uuid}", target="blank") Открыть заказ в МС
-      h2 #{order.name}
-      h2 Клиент
-      p #{company.name}
-  .row 
-    .sixteen.wide.column
-      h1 Позиции заказа в наличии
-      table.ui.celled.right.aligned.table
-        thead
-          tr
-            th Артикул
-            th Название
-            th Остаток
-            th Резерв
-            th Доступно
-            th Отсутствует у поставщика?
-            th Вес
-            //th Описание
-            th Архивный
-            th Скидка
-            th Сумма
-            th Цена
-            th Кол-во
-            th Резерв в данном заказе
-            th Действия
-        tbody
-          each this.order.customerOrderPosition
-            if inStock
+.ui.segment
+  .ui.two.column.grid
+    .row
+      .eight.wide.column
+        .ui.segment
+          h1 Действия
+          each this.activeSteps
+            .ui.violet.inverted.segment
+              .content
+                h2 #{name}
+                .description
+                  | #{description}
+                p
+                .ui.buttons
+                  each options
+                    .option-button.ui.red.big.button(data-option-id="#{id}") #{name}
+      .eight.wide.column
+        .ui.segment
+          h2 
+            a(href="https://online.moysklad.ru/app/#customerorder/edit?id=#{this.order.uuid}", target="blank") #{order.name}
+          h3 #{company.name}
+          h3 #{company.contact.phones}
+          h3 #{company.requisite.actualAddress}
+          p Общая сумма заказа:
+          h3 {{sumHelper order.sum.sum}}
+    .row 
+      .sixteen.wide.column
+        .ui.segment
+          table.ui.celled.right.aligned.table
+            thead
               tr
-                td #{orderPosHelper.code}
-                td #{orderPosHelper.name}
-                td #{orderPosHelper.stockQty}
-                td {{sumHelper orderPosHelper.reserve}}
-                td #{orderPosHelper.quantityQty} 
-                td #{orderPosHelper.outOfStockInSupplier}
-                td #{orderPosHelper.weight}
-                //td #{orderPosHelper.description}
-                td #{orderPosHelper.archived}
-                td #{discount}
-                td {{sumHelper price.sum}}
-                td {{sumHelper basePrice.sum}}
-                td #{quantity}
-                td {{booleanYesNo reserve}}
-                td.collapsing
-                  #deletePosition.ui.teal.button Удалить из заказа
+                th Артикул
+                th Название
+                th Остаток
+                th Резерв
+                th Доступно
+                th Отсутствует у поставщика?
+                th Вес
+                //th Описание
+                th Архивный
+                th Цена
+                th Скидка
+                th Кол-во
+                th Сумма
+                th Резерв в данном заказе
+                th Действия
+            tbody
+              each this.order.customerOrderPosition
+                tr(class="{{#if inStock}}positive{{else}}negative{{/if}}")
+                  td #{orderPosHelper.code}
+                  td #{orderPosHelper.name}
+                  td #{orderPosHelper.stockQty}
+                  td {{orderPosHelper.reserveQty}}
+                  td #{orderPosHelper.quantityQty} 
+                  td {{booleanYesNo orderPosHelper.outOfStockInSupplier}}
+                  td #{orderPosHelper.weight} кг
+                  //td #{orderPosHelper.description}
+                  td {{booleanYesNo orderPosHelper.archived}}
+                  td {{sumHelper basePrice.sum}}
+                  td #{discount}
+                  td #{quantity} шт
+                  td {{sumHelper price.sum}}
+                  td {{booleanYesNo reserve}}
+                  td.collapsing
+                    #deletePosition.ui.teal.button Удалить из заказа

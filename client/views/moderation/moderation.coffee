@@ -23,10 +23,12 @@ Template.moderation.events
     return
 Template.moderation.helpers
   orderPosHelper: ->
-    # название товара
+    # название товара/услуги
     good = Goods.findOne {uuid: @goodUuid}
-    good
-    #JSON.stringify(good, null, 4)
+    if good?
+      return good
+    else
+      return Services.findOne {uuid: @goodUuid}
   booleanYesNo: (val) ->
     if val
       "Да"

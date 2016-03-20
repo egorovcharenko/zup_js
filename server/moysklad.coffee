@@ -23,6 +23,7 @@ objToString = (obj) ->
   str
 
 skipGoodStock = (good) ->
+  return false
   # пропускаем наборы
   if (good.name.lastIndexOf("Набор для шеллака", 0) == 0) or (good.name.lastIndexOf("Набор шеллака", 0) == 0) or (good.name.lastIndexOf("Гель-лак AllShellac Premiere", 0) == 0)
     true
@@ -207,10 +208,12 @@ Meteor.methods
         client.setAuth 'admin@allshellac', 'qweasd'
         options = {
           #stockMode: ALL_STOCK,
+          storeId: '8de95654-65fe-11e4-90a2-8ecb00148413',
           showConsignments: false
-        };
+        }
 
         stock = client.stock(options);
+        countUpdated = 0
         if stock?
           Meteor.call "logSystemEvent", "loadStock", "5. notice", "Получено с сервера #{stock.length} остатков"
           for oneStock in stock
@@ -221,6 +224,7 @@ Meteor.methods
                 # пропускаем товары
                 if (skipGoodStock good)
                   # do nothing
+
                 else
                   needsUpdate = false
                   if good.stockQty?
@@ -237,14 +241,16 @@ Meteor.methods
                       needsUpdate = true
                   else
                     needsUpdate = true
-                  if needsUpdate
-                    Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, reserveQty: oneStock.reserve, quantityQty: oneStock.quantity, reserveForSelectedAgentQty:oneStock.reserveForSelectedAgent, dirty: true}})
+                  Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, reserveQty: oneStock.reserve, quantityQty: oneStock.quantity, reserveForSelectedAgentQty: oneStock.reserveForSelectedAgent, dirty: needsUpdate}})
+                  console.log "uuid:#{oneStock.goodRef.uuid}, stockQty: #{oneStock.stock}, reserveQty: #{oneStock.reserve}, qty: #{oneStock.quantity}, reserveForSelectedAgent: #{oneStock.reserveForSelectedAgent}"
+                  countUpdated++ if needsUpdate
                   #console.log "Установлен остаток для товара #{oneStock.goodRef.name} - #{good.stockQty} штук"
               else
                 #Meteor.call "logSystemEvent", "loadStock", "5. notice", "При загрузке остатков не нашли товар: #{oneStock.goodRef.name}"
             else
               Meteor.call "logSystemEvent", "loadStock", "5. notice", "В остатках нет информации о товаре"
-          done null, "Остатки загружены успешно, количество: #{stock.length}"
+          Meteor.call "logSystemEvent", "loadStock", "5. notice", "Остатки загружены успешно, количество: #{stock.length}, обновлено: #{countUpdated}"
+          done null, "Остатки загружены успешно, количество: #{stock.length}, обновлено: #{countUpdated}"
         else
           done "Не получены остатки с сервера", null
       catch error
@@ -343,6 +349,8 @@ Meteor.methods
     Meteor._sleepForMs(300);
     Meteor.call 'loadEntityGenericMethod', 'customEntity', 'CustomEntity'
     Meteor._sleepForMs(300);
+    Meteor.call 'loadEntityGenericMethod', 'service', 'Services'
+    Meteor._sleepForMs(300);
     Meteor.call 'loadEntityGenericMethod', 'good', 'Goods'
     Meteor._sleepForMs(300);
     Meteor.call 'loadEntityGenericMethod', 'workflow', 'Workflows'
@@ -368,7 +376,6 @@ Meteor.methods
 
     # подготовка переменных
     stateWorkflow = Workflows.findOne name:"CustomerOrder"
-    newStateUuid = (_.find stateWorkflow.state, (state) -> state.name is "Выполнен").uuid
     newStateUuid = (_.find stateWorkflow.state, (state) -> state.name is "Выполнен").uuid
     moyskladPackage = Meteor.npmRequire('moysklad-client')
     client = moyskladPackage.createClient()

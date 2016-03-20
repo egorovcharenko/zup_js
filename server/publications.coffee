@@ -31,10 +31,17 @@ Meteor.publishComposite "orderWithGoodsAndCompany", (orderName) ->
             _.each order.customerOrderPosition, (pos) ->
               temp.push pos.goodUuid
               return
+            Services.find uuid: $in: temp
+        }, {
+          find: (order) ->
+            temp = []
+            _.each order.customerOrderPosition, (pos) ->
+              temp.push pos.goodUuid
+              return
             Goods.find uuid: $in: temp
         }, {
           find: (order) ->
-            Companies.find {uuid: order.targetAgentUuid}
+            Companies.find {uuid: order.sourceAgentUuid}
         }
       ]
   }

@@ -31,7 +31,8 @@ Router.map ->
         dataVar.activeSteps = Steps.find({})
         dataVar.processIns = processIns
       if order?
-        dataVar.company = Companies.findOne({uuid: order.targetAgentUuid})
+        console.log "order.sourceAgentUuid: ", order.sourceAgentUuid
+        dataVar.company = Companies.findOne({uuid: order.sourceAgentUuid})
       console.log "dataVar", dataVar
       return dataVar
     onBeforeAction: (pause) ->
