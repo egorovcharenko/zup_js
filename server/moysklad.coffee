@@ -1,6 +1,6 @@
 getLastTimeRun = (entityName) ->
   lastTimeLoaded = DataTimestamps.findOne(name: entityName)
-  if lastTimeLoaded? then new Date(lastTimeLoaded.value) else '01-01-2014'
+  if lastTimeLoaded? then moment(lastTimeLoaded.value) else moment('2016-03-20')
 
 @findMetadataUuidByName = (entityName, attrName) ->
   #console.log("findMetadataUuidByName: entityName:" + entityName + ", attrName: " + attrName);
@@ -125,7 +125,7 @@ Meteor.methods
 
   loadEntityGenericMethod: (entityMSName, collectionName) ->
     currentTime = Date.now()
-    Meteor.call "logSystemEvent", "loadEntityGeneric", "5. notice", "Вызов загрузки сущностей: entityMSName: #{entityMSName}"
+    #Meteor.call "logSystemEvent", "loadEntityGeneric", "5. notice", "Вызов загрузки сущностей: entityMSName: #{entityMSName}"
     Meteor.call 'loadEntityFromMS', entityMSName, collectionName, getLastTimeRun(entityMSName), (error, result) ->
       if not error?
         Meteor.call 'updateTimestampFlag', entityMSName, currentTime
@@ -292,7 +292,7 @@ Meteor.methods
     Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
     Meteor._sleepForMs(1000);
-    # Meteor.call 'loadTracksFromAplix', getLastTimeRun 'aplix_tracks', (error, result) ->
+    # Meteor.call 'loadTracksFromAplix', @getLastTimeRun 'aplix_tracks', (error, result) ->
     #   if not error?
     #     Meteor.call 'updateTimestampFlag', 'aplix_tracks'
     console.log "loadAllEntities ended"

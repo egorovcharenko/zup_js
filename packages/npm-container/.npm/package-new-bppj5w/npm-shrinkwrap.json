@@ -1,0 +1,225 @@
+{
+  "dependencies": {
+    "magento-api": {
+      "version": "0.0.10",
+      "dependencies": {
+        "request": {
+          "version": "2.34.0",
+          "dependencies": {
+            "qs": {
+              "version": "0.6.6"
+            },
+            "json-stringify-safe": {
+              "version": "5.0.1"
+            },
+            "forever-agent": {
+              "version": "0.5.2"
+            },
+            "node-uuid": {
+              "version": "1.4.3"
+            },
+            "mime": {
+              "version": "1.2.11"
+            },
+            "tough-cookie": {
+              "version": "2.2.0"
+            },
+            "form-data": {
+              "version": "0.1.4",
+              "dependencies": {
+                "combined-stream": {
+                  "version": "0.0.7",
+                  "dependencies": {
+                    "delayed-stream": {
+                      "version": "0.0.5"
+                    }
+                  }
+                },
+                "async": {
+                  "version": "0.9.2"
+                }
+              }
+            },
+            "tunnel-agent": {
+              "version": "0.3.0"
+            },
+            "http-signature": {
+              "version": "0.10.1",
+              "dependencies": {
+                "assert-plus": {
+                  "version": "0.1.5"
+                },
+                "asn1": {
+                  "version": "0.1.11"
+                },
+                "ctype": {
+                  "version": "0.5.3"
+                }
+              }
+            },
+            "oauth-sign": {
+              "version": "0.3.0"
+            },
+            "hawk": {
+              "version": "1.0.0",
+              "dependencies": {
+                "hoek": {
+                  "version": "0.9.1"
+                },
+                "boom": {
+                  "version": "0.4.2"
+                },
+                "cryptiles": {
+                  "version": "0.2.2"
+                },
+                "sntp": {
+                  "version": "0.2.4"
+                }
+              }
+            },
+            "aws-sign2": {
+              "version": "0.5.0"
+            }
+          }
+        },
+        "xmlrpc": {
+          "version": "1.2.0",
+          "dependencies": {
+            "sax": {
+              "version": "0.4.3"
+            },
+            "xmlbuilder": {
+              "version": "0.4.2"
+            }
+          }
+        }
+      }
+    },
+    "moysklad-client": {
+      "version": "0.2.6",
+      "dependencies": {
+        "colors": {
+          "version": "0.6.2"
+        },
+        "common-node": {
+          "version": "0.10.15",
+          "dependencies": {
+            "fibers": {
+              "version": "1.0.7"
+            }
+          }
+        },
+        "lodash": {
+          "version": "2.4.1"
+        },
+        "moment": {
+          "version": "2.5.0"
+        },
+        "request": {
+          "version": "2.37.0",
+          "dependencies": {
+            "qs": {
+              "version": "0.6.6"
+            },
+            "json-stringify-safe": {
+              "version": "5.0.1"
+            },
+            "mime-types": {
+              "version": "1.0.2"
+            },
+            "forever-agent": {
+              "version": "0.5.2"
+            },
+            "node-uuid": {
+              "version": "1.4.3"
+            },
+            "tough-cookie": {
+              "version": "2.2.0"
+            },
+            "form-data": {
+              "version": "0.1.4",
+              "dependencies": {
+                "combined-stream": {
+                  "version": "0.0.7",
+                  "dependencies": {
+                    "delayed-stream": {
+                      "version": "0.0.5"
+                    }
+                  }
+                },
+                "mime": {
+                  "version": "1.2.11"
+                },
+                "async": {
+                  "version": "0.9.2"
+                }
+              }
+            },
+            "tunnel-agent": {
+              "version": "0.4.1"
+            },
+            "http-signature": {
+              "version": "0.10.1",
+              "dependencies": {
+                "assert-plus": {
+                  "version": "0.1.5"
+                },
+                "asn1": {
+                  "version": "0.1.11"
+                },
+                "ctype": {
+                  "version": "0.5.3"
+                }
+              }
+            },
+            "oauth-sign": {
+              "version": "0.3.0"
+            },
+            "hawk": {
+              "version": "1.1.1",
+              "dependencies": {
+                "hoek": {
+                  "version": "0.9.1"
+                },
+                "boom": {
+                  "version": "0.4.2"
+                },
+                "cryptiles": {
+                  "version": "0.2.2"
+                },
+                "sntp": {
+                  "version": "0.2.4"
+                }
+              }
+            },
+            "aws-sign2": {
+              "version": "0.5.0"
+            }
+          }
+        },
+        "stampit": {
+          "version": "0.7.1",
+          "dependencies": {
+            "mout": {
+              "version": "0.5.0"
+            }
+          }
+        },
+        "tracer": {
+          "version": "0.6.1",
+          "dependencies": {
+            "dateformat": {
+              "version": "1.0.2-1.2.3"
+            },
+            "tinytim": {
+              "version": "0.1.1"
+            }
+          }
+        },
+        "xmldom": {
+          "version": "0.1.17"
+        }
+      }
+    }
+  }
+}

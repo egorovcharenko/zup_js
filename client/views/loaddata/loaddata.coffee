@@ -1,9 +1,9 @@
 getLastTimeRun = (entityName) ->
   lastTimeLoaded = DataTimestamps.findOne(name: entityName)
-  if lastTimeLoaded? then new Date(lastTimeLoaded.value) else new Date('01-01-2014')
+  if lastTimeLoaded? then moment(lastTimeLoaded.value) else moment('2016-03-20')
 
 loadEntityGeneric = (entityMSName, collectionName) ->
-  currentTime = Date.now()
+  currentTime = moment()
   Meteor.call 'loadEntityFromMS', entityMSName, collectionName, getLastTimeRun(entityMSName), (error, result) ->
   if not error?
     Meteor.call 'updateTimestampFlag', entityMSName, currentTime
@@ -37,9 +37,9 @@ Template.loadData.events
     loadEntityGeneric 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
   'click #load_aplix_tracks': (event, template) ->
     console.log "loadTracksFromAplix started"
-    Meteor.call 'loadTracksFromAplix', getLastTimeRun 'aplix_tracks', (error, result) ->
+    Meteor.call 'loadTracksFromAplix', @getLastTimeRun 'aplix_tracks', (error, result) ->
       if not error?
-        Meteor.call 'updateTimestampFlag', 'aplix_tracks', Date.now()
+        Meteor.call 'updateTimestampFlag', 'aplix_tracks', moment()
       if result
         console.log "result:", result
   'click #load_pics': (event, template) ->

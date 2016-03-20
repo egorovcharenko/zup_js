@@ -29,7 +29,7 @@
                 }, {
                   "name": "setNextStep",
                   "params": {
-                    "nextStepId": "999"
+                    "nextStepId": "1"
                   }
                 } , {
                   "name": "setOrderField",
@@ -59,8 +59,8 @@
                 },{
                   "name": "log",
                   "params": {
-                    "logType": "Звонок",
-                    "logText": "Не дозвонились по заказу %orderName%",
+                    "type": "Звонок",
+                    "text": "Не дозвонились",
                     "orderName": "%orderName%"
                   }
                 }, {
@@ -76,8 +76,8 @@
                 {
                   "name": "log",
                   "params": {
-                    "logType": "Звонок",
-                    "logText": "Дозвонились",
+                    "type": "Звонок",
+                    "text": "Дозвонились",
                     "orderName": "%orderName%"
                   }
                 }
@@ -87,16 +87,28 @@
         },
         {
           "id": "2",
-          "name": "Прочитать текст",
+          "name": "Сообщить про доставку",
           "description": "(Имя Менеджера), интернет-магазин AllShellac, добрый день. Вы делали заказ в интернет-магазине AllShellac.ru (назвать дату – напр. «сегодня», «вчера», «16 июня» итп). Я звоню, чтобы подтвердить заказ. Давайте проверим данные по заказу. Способ доставки: (называете способ доставки)",
           "options": [
             {
-              "name": "Доставка уже расчитана - курьерская по Москве",
+              "name": "Заказ подтвержден",
               "actions": [
                 {
                   "name": "setNextStep",
                   "params": {
                     "nextStepId": "3"
+                  }
+                }, {
+                  "name": "log",
+                  "params": {
+                    "type": "Звонок",
+                    "text": "Дозвонились",
+                    "orderName": "%orderName%"
+                  }
+                }, {
+                  "name": "setReserve",
+                  "params": {
+                    "orderName": "%orderName%"
                   }
                 }
               ]
