@@ -19,16 +19,22 @@ Template.statushistory.helpers {
           label: 'Новый статус'
           fn: (value, obj, key) ->
               wf = Workflows.findOne({uuid: value})
-              console.log "wf:", wf
-              wf.name
+              #console.log "wf:", wf
+              if wf?
+                wf.name
+              else
+                "-"
         },{
           key: 'oldStateUuid'
           label: 'Старый статус'
           fn: (value, obj, key) ->
             if value?
               wf = Workflows.findOne({uuid: value})
-              console.log "wf:", wf
-              wf.name
+              #console.log "wf:", wf
+              if wf?
+                wf.name
+              else
+                "-"
             else
               "-"
         },{
@@ -37,7 +43,10 @@ Template.statushistory.helpers {
           fn: (value, obj, key) ->
             if value?
               moment.locale('ru');
-              moment().from(timeSinceLastStatus)
+              if timeSinceLastStatus?
+                moment().from(timeSinceLastStatus)
+              else
+                "-"
             else
               "-"
         }],

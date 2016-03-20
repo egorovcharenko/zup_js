@@ -149,7 +149,7 @@ Meteor.methods
         if stock?
           Meteor.call "logSystemEvent", "loadStock", "5. notice", "Получено с сервера #{stock.length} остатков"
           for oneStock in stock
-            Meteor.call "logSystemEvent", "loadStock", "5. notice", "Остаток: #{oneStock}"
+            #Meteor.call "logSystemEvent", "loadStock", "5. notice", "Остаток: #{oneStock}"
             if oneStock.goodRef?
               good = Goods.findOne uuid:oneStock.goodRef.uuid
               if good?
