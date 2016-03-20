@@ -13,7 +13,11 @@
               .option-button.ui.button(data-option-id="#{id}") #{name}
     .eight.wide.column
       h1 Информация о заказе
-      a(href="https://online.moysklad.ru/app/#customerorder/edit?id=#{this.order.uuid}", target="blank") Открыть заказ в МС
+      h2 
+        a(href="https://online.moysklad.ru/app/#customerorder/edit?id=#{this.order.uuid}", target="blank") Открыть заказ в МС
+      h2 #{order.name}
+      h2 Клиент
+      p #{company.name}
   .row 
     .sixteen.wide.column
       h1 Позиции заказа в наличии
@@ -42,16 +46,16 @@
                 td #{orderPosHelper.code}
                 td #{orderPosHelper.name}
                 td #{orderPosHelper.stockQty}
-                td #{orderPosHelper.reserve} 
+                td {{sumHelper orderPosHelper.reserve}}
                 td #{orderPosHelper.quantityQty} 
                 td #{orderPosHelper.outOfStockInSupplier}
                 td #{orderPosHelper.weight}
                 //td #{orderPosHelper.description}
                 td #{orderPosHelper.archived}
                 td #{discount}
-                td #{price.sum}
-                td #{basePrice.sum}
+                td {{sumHelper price.sum}}
+                td {{sumHelper basePrice.sum}}
                 td #{quantity}
-                td #{reserve}
+                td {{sumHelper reserve}}
                 td.collapsing
                   #deletePosition.ui.teal.button Удалить из заказа

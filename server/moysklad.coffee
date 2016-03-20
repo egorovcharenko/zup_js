@@ -43,6 +43,22 @@ Meteor.methods
       res[attr.attrName] = tools.getAttr(object, metadataUuid)
     return res
 
+  setOrderReserve: (entityUuid, setReserve, attributeType) ->
+    #console.log 'updateEntityMS started, parameters:' + arguments
+    moyskladPackage = Meteor.npmRequire('moysklad-client')
+    response = Async.runSync((done) ->
+      client = moyskladPackage.createClient()
+      tools = moyskladPackage.tools
+      client.setAuth 'admin@allshellac', 'qweasd'
+      entityFromMS = client.load("customerOrder", entityUuid)
+      _.each entityFromMS.customerOrderPosition, (position) ->
+        position.reserve = 0
+      newEntity = client.save(entityFromMS)
+      done null, "Заменено"
+    )
+    #console.log 'updateEntityMS ended'
+    response.result
+
   updateEntityMS: (entityType, entityUuid, data, attributes, attributeType) ->
     #console.log 'updateEntityMS started, parameters:' + arguments
     moyskladPackage = Meteor.npmRequire('moysklad-client')
@@ -176,7 +192,7 @@ Meteor.methods
                     Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, reserveQty: oneStock.reserve, quantityQty: oneStock.quantity, reserveForSelectedAgentQty:oneStock.reserveForSelectedAgent, dirty: true}})
                   #console.log "Установлен остаток для товара #{oneStock.goodRef.name} - #{good.stockQty} штук"
               else
-                Meteor.call "logSystemEvent", "loadStock", "5. notice", "При загрузке остатков не нашли товар: #{oneStock.goodRef.name}"
+                #Meteor.call "logSystemEvent", "loadStock", "5. notice", "При загрузке остатков не нашли товар: #{oneStock.goodRef.name}"
             else
               Meteor.call "logSystemEvent", "loadStock", "5. notice", "В остатках нет информации о товаре"
           done null, "Остатки загружены успешно, количество: #{stock.length}"

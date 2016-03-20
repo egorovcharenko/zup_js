@@ -13,8 +13,8 @@ Meteor.methods
       pageSize = 100
       query = moyskladPackage.createQuery(updated: $gte: moment(fromLastUpdate).format("YYYYMMDDHHmmss"))
       total = client.total(entityName, query)
-      tempCol.upsert { 'name': 'countTotal' }, $set: 'value': total
-      tempCol.upsert { 'name': 'isActive' }, $set: 'value': true
+      #tempCol.upsert { 'name': 'countTotal' }, $set: 'value': total
+      #tempCol.upsert { 'name': 'isActive' }, $set: 'value': true
       if total > 0
         loop
           query.count(pageSize).start countAlready
@@ -63,12 +63,12 @@ Meteor.methods
               collection.insert entity
               return
             countAlready += entitiesFromMs.length
-            tempCol.upsert { 'name': 'countAlready' }, $set: 'value': countAlready
+            #tempCol.upsert { 'name': 'countAlready' }, $set: 'value': countAlready
           unless countAlready < maxCountToLoad and entitiesFromMs.length > 0
             break
-      tempCol.upsert { 'name': 'countTotal' }, $set: 'value': 10
-      tempCol.upsert { 'name': 'countAlready' }, $set: 'value': 0
-      tempCol.upsert { 'name': 'isActive' }, $set: 'value': false
+      #tempCol.upsert { 'name': 'countTotal' }, $set: 'value': 10
+      #tempCol.upsert { 'name': 'countAlready' }, $set: 'value': 0
+      #tempCol.upsert { 'name': 'isActive' }, $set: 'value': false
       #console.log(toReturn);
       done null, toReturn
       return

@@ -130,7 +130,17 @@ Meteor.methods
                   sku = action.params.sku
                   console.log "нужно в заказе #{orderName} добавить товар #{sku}";
 
-
+                # TODO
+                when "setReserve"
+                  orderName = action.params.orderName
+                  console.log "нужно в заказе #{orderName} поставить весь товар в резерв";
+                  order = Orders.findOne(name: orderName)
+                  Meteor.call "setOrderReserve", order.uuid, true, (error, result) ->
+                    if error
+                      console.log "error", error
+                    if result
+                      ;
+                      
                 when "setNextStep"
                   # найти следующий шаг
                   console.log "Переходим к действию #{action.params.nextStepId}"

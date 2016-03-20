@@ -27,10 +27,15 @@ Template.moderation.helpers
     good = Goods.findOne {uuid: @goodUuid}
     good
     #JSON.stringify(good, null, 4)
+  sumHelper: (sum) ->
+    Number(sum)/100 + ' р.'
   inStock: ->
     good = Goods.findOne {uuid: @goodUuid}
-    if good.quantityQty?
-      console.log "inStock: ", good.quantityQty, @quantity
-      good.quantityQty >= @quantity
+    if good?
+      if good.quantityQty?
+        console.log "inStock: ", good.quantityQty, @quantity
+        good.quantityQty >= @quantity
+      else
+        true
     else
       true

@@ -19,7 +19,7 @@ Meteor.publish "moderation", (orderName) ->
     Orders.find {name: orderName}
     ProcessesIns.find({name: "Модерация", "params.orderNumber": orderName, status: "active"})
   ]
-Meteor.publishComposite "orderWithGoods", (orderName) ->
+Meteor.publishComposite "orderWithGoodsAndCompany", (orderName) ->
   {
     find: ->
       Orders.find(name: orderName)
@@ -32,6 +32,9 @@ Meteor.publishComposite "orderWithGoods", (orderName) ->
               temp.push pos.goodUuid
               return
             Goods.find uuid: $in: temp
+        }, {
+          find: (order) ->
+            Companies.find {uuid: order.targetAgentUuid}
         }
       ]
   }

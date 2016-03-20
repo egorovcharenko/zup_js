@@ -8,7 +8,7 @@ Router.map ->
       orderName = @params.orderName
       [
         Meteor.subscribe 'moderation', orderName
-        Meteor.subscribe "orderWithGoods", orderName
+        Meteor.subscribe "orderWithGoodsAndCompany", orderName
       ]
     data: ->
       dataVar = {}
@@ -29,6 +29,8 @@ Router.map ->
         #console.log "steps ", Steps.find({}).fetch()
         dataVar.activeSteps = Steps.find({})
         dataVar.processIns = processIns
+      if order?
+        dataVar.company = Companies.findOne({uuid: order.targetAgentUuid})
       return dataVar
     onBeforeAction: (pause) ->
       @next()
