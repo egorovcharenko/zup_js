@@ -22,6 +22,7 @@ Router.map ->
       #console.log "processIns ", processIns
       if processIns?
         _.each processIns.steps, (step) ->
+          #console.log "step", step
           if step.status == "active"
             Steps.insert step
           #console.log "iteration step ", step
@@ -31,6 +32,7 @@ Router.map ->
         dataVar.processIns = processIns
       if order?
         dataVar.company = Companies.findOne({uuid: order.targetAgentUuid})
+      console.log "dataVar", dataVar
       return dataVar
     onBeforeAction: (pause) ->
       @next()

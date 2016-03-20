@@ -54,7 +54,8 @@
                   "name": "setOrderStatus",
                   "params": {
                     "orderName": "%orderName%",
-                    "newStatus": "Не дозвонились"
+                    "newOrderStatusUuid": "7a739cd4-68d0-11e4-7a07-673d00031c1d",
+                    "comment": "Не дозвонились"
                   }
                 },{
                   "name": "log",
@@ -66,7 +67,7 @@
                 }, {
                   "name": "setNextStep",
                   "params": {
-                    "nextStepId": "2"
+                    "nextStepId": "999"
                   }
                 }
               ]
@@ -79,6 +80,11 @@
                     "type": "Звонок",
                     "text": "Дозвонились",
                     "orderName": "%orderName%"
+                  }
+                }, {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "2"
                   }
                 }
               ]
@@ -122,8 +128,30 @@
                   }
                 }
               ]
+            }
+          ]
+        }, {
+          "id": "4",
+          "name": "Нужен наложенный платеж?",
+          "description": "Если это почта - добавьте наложенный платеж",
+          "options": [
+            {
+              "name": "Добавить наложенный платеж",
+              "actions": [
+                {
+                  "name": "addNalogenPayment",
+                  "params": {
+                    "orderName": "%orderName%"
+                  }
+                }, {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "5"
+                  }
+                }
+              ]
             }, {
-              "name": "Доставка уже расчитана - любой ПВЗ",
+              "name": "Пропустить",
               "actions": [
                 {
                   "name": "setNextStep",
@@ -132,8 +160,32 @@
                   }
                 }
               ]
+            }
+          ]
+        }, {
+          "id": "5",
+          "name": "Доставка дороже 600 рублей или сумма заказа больше 10 тысяч рублей?",
+          "description": "Тогда необходима предоплата",
+          "options": [
+            {
+              "name": "Поставить ожидание предоплаты",
+              "actions": [
+                {
+                  "name": "setOrderStatus",
+                  "params": {
+                    "orderName": "%orderName%",
+                    "newOrderStatusUuid": "731abfcd-aa2d-11e4-7a07-673d001484ff",
+                    "comment": "Ожидание предоплаты"
+                  }
+                }, {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "6"
+                  }
+                }
+              ]
             }, {
-              "name": "Доставка уже расчитана - самовывоз Аннино",
+              "name": "Пропустить",
               "actions": [
                 {
                   "name": "setNextStep",
@@ -142,8 +194,66 @@
                   }
                 }
               ]
+            }
+          ]
+        }, {
+          "id": "6",
+          "name": "Какие курьеры выбраны?",
+          "description": "Заполняется поле 'Курьеры'",
+          "options": [
+            {
+              "name": "Достависта",
+              "actions": [
+                {
+                  "name": "setOrderField",
+                  "params": {
+                    "fieldName": "Курьеры",
+                    "fieldValue": "07242d1a-691b-11e4-90a2-8ecb0052fa9f",
+                    "fieldType": "picklist"
+                  }
+                }, {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "7"
+                  }
+                }
+              ]
             }, {
-              "name": "Доставка уже расчитана - курьерская по России (не Москва)",
+              "name": "Апликс",
+              "actions": [
+                {
+                  "name": "setOrderField",
+                  "params": {
+                    "fieldName": "Курьеры",
+                    "fieldValue": "eee3b452-691a-11e4-90a2-8ecb0052f8d1",
+                    "fieldType": "picklist"
+                  }
+                }, {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "7"
+                  }
+                }
+              ]
+            }, {
+              "name": "Самовывоз",
+              "actions": [
+                {
+                  "name": "setOrderField",
+                  "params": {
+                    "fieldName": "Курьеры",
+                    "fieldValue": "c596ace1-7991-11e4-90a2-8eca00151dc4",
+                    "fieldType": "picklist"
+                  }
+                }, {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "7"
+                  }
+                }
+              ]
+            }, {
+              "name": "Пропустить",
               "actions": [
                 {
                   "name": "setNextStep",
@@ -152,137 +262,25 @@
                   }
                 }
               ]
-            }, {
-              "name": "Доставка не расчитана, нужно расчитать",
-              "actions": [
-                {
-                  "name": "setNextStep",
-                  "params": {
-                    "nextStepId": "8"
-                  }
-                }
-              ]
-            }
-          ]
-        }, {
-          "id": "3",
-          "name": "Сказать по доставке по Москве",
-          "description": "Доставка будет по адресу (называете адрес), курьер за час позвонит",
-          "options": [
-            {
-              "name": "Сообщили",
-              "actions": [
-                {
-                  "name": "setNextStep",
-                  "params": {
-                    "nextStepId": "9"
-                  }
-                }
-              ]
-            }
-          ]
-        } , {
-          "id": "4",
-          "name": "Сказать по доставке - почтовая",
-          "description": "Доставка будет по адресу (называете адрес)",
-          "options": [
-            {
-              "name": "Сообщили",
-              "actions": [
-                {
-                  "name": "setNextStep",
-                  "params": {
-                    "nextStepId": "9"
-                  }
-                }
-              ]
-            }
-          ]
-        }, {
-          "id": "5",
-          "name": "Сказать по доставке - ПВЗ",
-          "description": "Заказ прибудет в пункт самовывоза (называете адрес), по прибытии вам придет СМС",
-          "options": [
-            {
-              "name": "Сообщили",
-              "actions": [
-                {
-                  "name": "setNextStep",
-                  "params": {
-                    "nextStepId": "9"
-                  }
-                }
-              ]
-            }
-          ]
-        }, {
-          "id": "6",
-          "name": "Самовывоз Аннино - все ли есть в наличии?",
-          "description": "",
-          "options": [
-            {
-              "name": "Все в наличии",
-              "actions": [
-                {
-                  "name": "setNextStep",
-                  "params": {
-                    "nextStepId": "999"
-                  }
-                }
-              ]
-            },{
-              "name": "Чего-то нет в наличии",
-              "actions": [
-                {
-                  "name": "setNextStep",
-                  "params": {
-                    "nextStepId": "999"
-                  }
-                }
-              ]
             }
           ]
         }, {
           "id": "7",
-          "name": "Сказать по доставке - курьерская по России",
-          "description": "Мы передадим ваш заказ в курьерскую службу, по прибытии заказа в ваш город они с вами свяжутся для согласования времени доставки",
+          "name": "Проставить некоторые поля",
+          "description": "План. дата отгрузки, курьеры, статус",
           "options": [
             {
-              "name": "Сообщили",
+              "name": "Проставить все автоматом",
               "actions": [
                 {
-                  "name": "setNextStep",
+                  "name": "setOrderPlannedSendDate",
                   "params": {
-                    "nextStepId": "9"
+                    "orderName": "%orderName%"
                   }
                 }
               ]
-            }
-          ]
-        }, {
-          "id": "8",
-          "name": "Расчитать доставку",
-          "description": "Расчитать доставку по калькулятору, внести сюда код метода доставки",
-          "options": [
-            {
-              "name": "Сделали",
-              "actions": [
-                {
-                  "name": "setNextStep",
-                  "params": {
-                    "nextStepId": "9"
-                  }
-                }
-              ]
-            }
-          ]
-        }, {
-          "id": "9",
-          "name": "Расчитать доставку",
-          "description": "Расчитать доставку по калькулятору, внести сюда код метода доставки",
-          "options": [
-            {
-              "name": "Сделали",
+            }, {
+              "name": "Пропустить",
               "actions": [
                 {
                   "name": "setNextStep",

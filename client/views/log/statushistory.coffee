@@ -1,3 +1,11 @@
+stateNameByUuid = (value, obj, key) ->
+  wf = Workflows.findOne({code: "CustomerOrder"})
+  if wf?
+    _.each wf.state, (state) ->
+      if state.uuid is value
+        return state.name
+  "-"
+
 Template.statushistory.helpers {
   settings: () ->
     {
@@ -17,27 +25,12 @@ Template.statushistory.helpers {
         {
           key: 'newStateUuid'
           label: 'Новый статус'
-          fn: (value, obj, key) ->
-              wf = Workflows.findOne({uuid: value})
-              #console.log "wf:", wf
-              if wf?
-                wf.name
-              else
-                "-"
-        },{
+          fn: stateNameByUuid
+        }, {
           key: 'oldStateUuid'
           label: 'Старый статус'
-          fn: (value, obj, key) ->
-            if value?
-              wf = Workflows.findOne({uuid: value})
-              #console.log "wf:", wf
-              if wf?
-                wf.name
-              else
-                "-"
-            else
-              "-"
-        },{
+          fn: stateNameByUuid
+        }, {
           key:'timeSinceLastStatus',
           label:"Время с последнего изменения",
           fn: (value, obj, key) ->
@@ -51,6 +44,5 @@ Template.statushistory.helpers {
               "-"
         }],
       class: "ui celled table",
-
     }
 }

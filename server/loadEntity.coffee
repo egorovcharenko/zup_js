@@ -73,7 +73,7 @@ Meteor.methods
       done null, toReturn
       return
     )
-    console.log 'loadEntityFromMS ended'
+    #console.log 'loadEntityFromMS ended'
     response.result
   toggleChecked: (entity) ->
     Orders.update entity._id, $set: checked: !entity.checked

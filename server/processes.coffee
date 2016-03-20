@@ -130,7 +130,15 @@ Meteor.methods
                   sku = action.params.sku
                   console.log "нужно в заказе #{orderName} добавить товар #{sku}";
 
-                # TODO
+                when "addNalogenPayment"
+                  orderName = action.params.orderName
+                  console.log "Добавляем к #{orderName} наложенный платеж"
+                  Meteor.call "addNalogenPaymentMethod", orderName, (error, result) ->
+                    if error
+                      console.log "error", error
+                    if result
+                      ;
+                      
                 when "setReserve"
                   orderName = action.params.orderName
                   console.log "нужно в заказе #{orderName} поставить весь товар в резерв";
@@ -140,7 +148,7 @@ Meteor.methods
                       console.log "error", error
                     if result
                       ;
-                      
+
                 when "setNextStep"
                   # найти следующий шаг
                   console.log "Переходим к действию #{action.params.nextStepId}"

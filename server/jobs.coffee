@@ -74,14 +74,14 @@ Meteor.startup ->
   # загрузка данных из МС
   job = new Job myJobs, 'loadAllDataMoyskladPeriodic', {}
   job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 10000000*1000}) # 1 * 1000
+    .retry({retries: myJobs.forever, wait: 1*1000}) # 1 * 1000
     .repeat({ repeats: myJobs.forever, wait: 0})
     .save({cancelRepeats: true})
 
   # Загрузка остатков из МС
   job = new Job myJobs, 'loadStockFromMS', {}
   job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 60000000*1000}) # 60 * 1000
+    .retry({retries: myJobs.forever, wait: 60*1000}) # 60 * 1000
     .repeat({ repeats: myJobs.forever, wait: 30*1000})
     .save({cancelRepeats: true})
 
@@ -92,7 +92,7 @@ Meteor.startup ->
     .repeat({ repeats: myJobs.forever, wait: 30*1000})
     .save({cancelRepeats: true})
 
-  # Сброс флагов в полночь
+  # Сброс флагов в 3 ночи
   job = new Job myJobs, 'resetTimestamps', {}
   job.priority('normal')
     .retry({retries: 5, wait: 60*1000})
@@ -103,7 +103,7 @@ Meteor.startup ->
   job = new Job myJobs, 'loadNotPrimaryEntities', {}
   job.priority('normal')
     .retry({retries: 5, wait: 60*1000})
-    .repeat({schedule: myJobs.later.parse.text('every 500 minutes')}) # every 5 minutes
+    .repeat({schedule: myJobs.later.parse.text('every 5 minutes')}) # every 5 minutes
     .save({cancelRepeats: true})
 
   # Начать обрабатывать задачи

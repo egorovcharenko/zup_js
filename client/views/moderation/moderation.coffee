@@ -27,6 +27,11 @@ Template.moderation.helpers
     good = Goods.findOne {uuid: @goodUuid}
     good
     #JSON.stringify(good, null, 4)
+  booleanYesNo: (val) ->
+    if val
+      "Да"
+    else
+      "Нет"
   sumHelper: (sum) ->
     Number(sum)/100 + ' р.'
   inStock: ->

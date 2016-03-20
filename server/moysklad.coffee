@@ -1,6 +1,6 @@
 getLastTimeRun = (entityName) ->
   lastTimeLoaded = DataTimestamps.findOne(name: entityName)
-  if lastTimeLoaded? then moment(lastTimeLoaded.value) else moment('2014-01-01')
+  if lastTimeLoaded? then moment(lastTimeLoaded.value).subtract(5, 'seconds') else moment('2014-01-01')
 
 @findMetadataUuidByName = (entityName, attrName) ->
   #console.log("findMetadataUuidByName: entityName:" + entityName + ", attrName: " + attrName);
@@ -43,20 +43,66 @@ Meteor.methods
       res[attr.attrName] = tools.getAttr(object, metadataUuid)
     return res
 
+  addNalogenPaymentMethod: (orderName) ->
+    moyskladPackage = Meteor.npmRequire('moysklad-client')
+    response = Async.runSync((done) ->
+      client = moyskladPackage.createClient()
+      tools = moyskladPackage.tools
+      client.setAuth 'admin@allshellac', 'qweasd'
+      entityFromMS = client.load("customerOrder", Orders.findOne(name:orderName).uuid)
+
+      nalogPlatUuid = '82c43187-4743-11e5-90a2-8ecb001a04c5'
+      nalogPlatPercent = 0.04;
+      nalogPlatPrice = (Math.ceil (entityFromMS.sum.sum * nalogPlatPercent / 100)) * 100
+
+      entityFromMS.customerOrderPosition.push {
+        "TYPE_NAME" : "moysklad.customerOrderPosition",
+        "discount" : 0,
+        "quantity" : 1,
+        "consignmentUuid" : "82c439da-4743-11e5-90a2-8ecb001a04c9",
+        "goodUuid" : nalogPlatUuid,
+        "vat" : 0,
+        "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
+        "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
+        #"uuid" : "8c13b12e-ee93-11e5-7a69-9715002c22db",
+        "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
+        "ownerUid" : "admin@allshellac",
+        "shared" : false,
+        "basePrice" : {
+                "TYPE_NAME" : "moysklad.moneyAmount",
+                "sum" : nalogPlatPrice,
+                "sumInCurrency" : nalogPlatPrice
+        },
+        "price" : {
+                "TYPE_NAME" : "moysklad.moneyAmount",
+                "sum" : nalogPlatPrice,
+                "sumInCurrency" : nalogPlatPrice
+        },
+        "reserve" : 0
+      }
+      newEntity = client.save(entityFromMS)
+      done null, "Добавлено"
+    )
+    response.result
+
   setOrderReserve: (entityUuid, setReserve, attributeType) ->
-    #console.log 'updateEntityMS started, parameters:' + arguments
     moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
       client = moyskladPackage.createClient()
       tools = moyskladPackage.tools
       client.setAuth 'admin@allshellac', 'qweasd'
       entityFromMS = client.load("customerOrder", entityUuid)
+      tools.reserve(entityFromMS)
+      ###
       _.each entityFromMS.customerOrderPosition, (position) ->
-        position.reserve = 0
+        if setReserve
+          position.reserve = 1
+        else
+          position.reserve = 0
+      ###
       newEntity = client.save(entityFromMS)
       done null, "Заменено"
     )
-    #console.log 'updateEntityMS ended'
     response.result
 
   updateEntityMS: (entityType, entityUuid, data, attributes, attributeType) ->
@@ -93,6 +139,9 @@ Meteor.methods
           when 'employee'
             oldValue = test.employeeValueUuid
             test.employeeValueUuid = attrib.value
+          when 'picklist'
+            oldValue = test.metadataUuid
+            test.metadataUuid = attrib.value
         #console.log 'entityFromMSAfterSettingAttrib:', entityFromMS.attribute.length
         #console.log 'new value: ' + tools.getAttrValue(entityFromMS, metadataUuid)
         logChangesInDescription entityFromMS, attrib.name, oldValue, attrib.value
@@ -115,20 +164,20 @@ Meteor.methods
         entityFromMS = client.load(entityType, entityUuid)
         #console.log "entityFromMS before: #{objToString entityFromMS}"
         stateWorkflow = Workflows.findOne name:"CustomerOrder"
+        if stateWorkflow
+          oldStateName = (_.find stateWorkflow.state, (state) -> state.uuid is entityFromMS.stateUuid).name
+          newStateName = (_.find stateWorkflow.state, (state) -> state.uuid is newStateUuid).name
+          #console.log "newStateUuid: #{newStateUuid}"
 
-        oldStateName = (_.find stateWorkflow.state, (state) -> state.uuid is entityFromMS.stateUuid).name
-        newStateName = (_.find stateWorkflow.state, (state) -> state.uuid is newStateUuid).name
-        #console.log "newStateUuid: #{newStateUuid}"
+          entityFromMS.stateUuid = newStateUuid
+          logChangesInDescription entityFromMS, "Статус", oldStateName, newStateName
+          #console.log "entityFromMS after: #{objToString entityFromMS}"
 
-        entityFromMS.stateUuid = newStateUuid
-        logChangesInDescription entityFromMS, "Статус", oldStateName, newStateName
-        #console.log "entityFromMS after: #{objToString entityFromMS}"
-
-        client.save(entityFromMS)
-
-        #fake on the client
-        if entityType is "customerOrder"
-          Orders.update({uuid: entityUuid}, {$set:{stateUuid: newStateUuid}})
+          result = client.save(entityFromMS)
+          #console.log "order state change result: ", result
+          #fake on the client
+          if entityType is "customerOrder"
+            Orders.update({uuid: entityUuid}, {$set:{stateUuid: newStateUuid}})
 
         done null, oldStateName + "->" + newStateName
       catch error
@@ -291,27 +340,26 @@ Meteor.methods
 
   loadNotPrimaryEntities: () ->
     Meteor.call 'loadEntityGenericMethod', 'customEntityMetadata', 'CustomEntityMetadata'
-    Meteor._sleepForMs(1000);
+    Meteor._sleepForMs(300);
     Meteor.call 'loadEntityGenericMethod', 'customEntity', 'CustomEntity'
-    Meteor._sleepForMs(1000);
+    Meteor._sleepForMs(300);
     Meteor.call 'loadEntityGenericMethod', 'good', 'Goods'
-    Meteor._sleepForMs(1000);
+    Meteor._sleepForMs(300);
     Meteor.call 'loadEntityGenericMethod', 'workflow', 'Workflows'
-    Meteor._sleepForMs(1000);
+    Meteor._sleepForMs(300);
+    Meteor.call 'loadEntityGenericMethod', 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
+    Meteor._sleepForMs(300);
 
   loadAllEntities: () ->
     #console.log "loadAllEntities started"
     #Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'company', 'Companies'
-    Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'customerOrder', 'Orders'
-    Meteor._sleepForMs(1000);
-    Meteor.call 'loadEntityGenericMethod', 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
-    Meteor._sleepForMs(1000);
+    Meteor._sleepForMs(300);
     # Meteor.call 'loadTracksFromAplix', @getLastTimeRun 'aplix_tracks', (error, result) ->
     #   if not error?
     #     Meteor.call 'updateTimestampFlag', 'aplix_tracks'
-    console.log "loadAllEntities ended"
+    #console.log "loadAllEntities ended"
   closeOrdersInMS: () ->
     console.log "closeOrdersInMS начата"
     # ищем все заказы в статусе "Доставлен"
