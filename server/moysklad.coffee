@@ -169,16 +169,14 @@ Meteor.methods
           oldStateName = (_.find stateWorkflow.state, (state) -> state.uuid is entityFromMS.stateUuid).name
           newStateName = (_.find stateWorkflow.state, (state) -> state.uuid is newStateUuid).name
           #console.log "newStateUuid: #{newStateUuid}"
-
           entityFromMS.stateUuid = newStateUuid
           logChangesInDescription entityFromMS, "Статус", oldStateName, newStateName
           #console.log "entityFromMS after: #{objToString entityFromMS}"
-
           result = client.save(entityFromMS)
           #console.log "order state change result: ", result
           #fake on the client
-          if entityType is "customerOrder"
-            Orders.update({uuid: entityUuid}, {$set:{stateUuid: newStateUuid}})
+          #if entityType is "customerOrder"
+          #  Orders.update({uuid: entityUuid}, {$set:{stateUuid: newStateUuid}})
 
         done null, oldStateName + "->" + newStateName
       catch error
@@ -224,7 +222,6 @@ Meteor.methods
                 # пропускаем товары
                 if (skipGoodStock good)
                   # do nothing
-
                 else
                   needsUpdate = false
                   if good.stockQty?
@@ -242,7 +239,7 @@ Meteor.methods
                   else
                     needsUpdate = true
                   Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, reserveQty: oneStock.reserve, quantityQty: oneStock.quantity, reserveForSelectedAgentQty: oneStock.reserveForSelectedAgent, dirty: needsUpdate}})
-                  console.log "uuid:#{oneStock.goodRef.uuid}, stockQty: #{oneStock.stock}, reserveQty: #{oneStock.reserve}, qty: #{oneStock.quantity}, reserveForSelectedAgent: #{oneStock.reserveForSelectedAgent}"
+                  #console.log "uuid:#{oneStock.goodRef.uuid}, stockQty: #{oneStock.stock}, reserveQty: #{oneStock.reserve}, qty: #{oneStock.quantity}, reserveForSelectedAgent: #{oneStock.reserveForSelectedAgent}"
                   countUpdated++ if needsUpdate
                   #console.log "Установлен остаток для товара #{oneStock.goodRef.name} - #{good.stockQty} штук"
               else

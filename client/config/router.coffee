@@ -9,6 +9,7 @@ Router.map ->
       [
         Meteor.subscribe 'moderation', orderName
         Meteor.subscribe "orderWithGoodsAndCompany", orderName
+        Meteor.subscribe('workflows')
       ]
     data: ->
       dataVar = {}
@@ -31,7 +32,7 @@ Router.map ->
         dataVar.activeSteps = Steps.find({})
         dataVar.processIns = processIns
       if order?
-        console.log "order.sourceAgentUuid: ", order.sourceAgentUuid
+        #console.log "order.sourceAgentUuid: ", order.sourceAgentUuid
         dataVar.company = Companies.findOne({uuid: order.sourceAgentUuid})
       console.log "dataVar", dataVar
       return dataVar

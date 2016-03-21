@@ -2,7 +2,7 @@ Template.viewlog.helpers {
   settings: () ->
     {
       collection: "log_special_publish",
-      rowsPerPage: 100,
+      rowsPerPage: 25,
       showFilter: true,
       fields: [{
         key:'date'

@@ -33,7 +33,7 @@ Meteor.methods
                         correspondingNewCOP = _.find entity.customerOrderPosition, (newCOP) -> newCOP.uuid == cOP.uuid
                         if correspondingNewCOP?
                           correspondingNewCOP.packedQty = cOP.packedQty
-                          console.log "packedQty saved for order: #{entity.name}, packedQty = #{cOP.packedQty}"
+                          #console.log "packedQty saved for order: #{entity.name}, packedQty = #{cOP.packedQty}"
                   # statusHistory
                   if savedEntity.stateUuid != entity.stateUuid
                     Meteor.call "logStatusChangeEvent", entity.updated, entity.name, entityName, entity.uuid, entity.stateUuid, savedEntity.stateUuid
@@ -45,6 +45,12 @@ Meteor.methods
                   # stockQty
                   if savedEntity.stockQty?
                     entity.stockQty = savedEntity.stockQty
+                  if savedEntity.reserveQty?
+                    entity.reserveQty = savedEntity.reserveQty
+                  if savedEntity.quantityQty?
+                    entity.quantityQty = savedEntity.quantityQty
+                  if savedEntity.reserveForSelectedAgentQty?
+                    entity.reserveForSelectedAgentQty = savedEntity.reserveForSelectedAgentQty
                   # dirty
                   if savedEntity.dirty?
                     entity.dirty = savedEntity.dirty
@@ -54,7 +60,7 @@ Meteor.methods
                   outOfStockInSupplier = tools.getAttrValue(entity, metadataUuid)
                   entity.outOfStockInSupplier = outOfStockInSupplier
                   entity.dirty = true
-                  console.log "Updating good's '#{entity.name}' stock, uuid:#{entity.uuid},  outOfStockInSupplier:#{entity.outOfStockInSupplier}"
+                  #console.log "Updating good's '#{entity.name}' stock, uuid:#{entity.uuid},  outOfStockInSupplier:#{entity.outOfStockInSupplier}"
                 collection.remove uuid: entity.uuid
               else
                 if entityName is "customerOrder"

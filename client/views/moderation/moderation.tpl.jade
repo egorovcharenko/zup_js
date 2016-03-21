@@ -18,6 +18,7 @@
         .ui.segment
           h2 
             a(href="https://online.moysklad.ru/app/#customerorder/edit?id=#{this.order.uuid}", target="blank") #{order.name}
+            .ui.big.tag.red.label {{statusHelper order.stateUuid}}
           h3 #{company.name}
           h3 #{company.contact.phones}
           h3 #{company.requisite.actualAddress}

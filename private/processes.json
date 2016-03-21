@@ -102,7 +102,7 @@
                 {
                   "name": "setNextStep",
                   "params": {
-                    "nextStepId": "3"
+                    "nextStepId": "4"
                   }
                 }, {
                   "name": "log",
@@ -124,7 +124,7 @@
                 {
                   "name": "setNextStep",
                   "params": {
-                    "nextStepId": "4"
+                    "nextStepId": "999"
                   }
                 }
               ]
@@ -276,6 +276,11 @@
                   "name": "setOrderPlannedSendDate",
                   "params": {
                     "orderName": "%orderName%"
+                  }
+                }, {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "999"
                   }
                 }
               ]

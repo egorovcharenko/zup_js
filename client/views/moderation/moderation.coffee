@@ -34,13 +34,21 @@ Template.moderation.helpers
       "Да"
     else
       "Нет"
+  statusHelper: (stateUuid) ->
+    wf = Workflows.findOne({code: "CustomerOrder"})
+    result = '-'
+    if wf?
+      _.each wf.state, (state) ->
+        if state.uuid is stateUuid
+          result = state.name
+    return result
   sumHelper: (sum) ->
     Number(sum)/100 + ' р.'
   inStock: ->
     good = Goods.findOne {uuid: @goodUuid}
     if good?
       if good.quantityQty?
-        console.log "inStock: ", good.quantityQty, @quantity
+        #console.log "inStock: ", good.quantityQty, @quantity
         good.quantityQty >= @quantity
       else
         true

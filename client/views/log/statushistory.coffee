@@ -1,16 +1,18 @@
 stateNameByUuid = (value, obj, key) ->
   wf = Workflows.findOne({code: "CustomerOrder"})
+  result = "-"
   if wf?
     _.each wf.state, (state) ->
       if state.uuid is value
-        return state.name
-  "-"
+        result = state.name
+        return
+  return result
 
 Template.statushistory.helpers {
   settings: () ->
     {
       collection: "status_history_special_publish",
-      rowsPerPage: 100,
+      rowsPerPage: 25,
       showFilter: true,
       fields: [
         "orderName",
@@ -19,9 +21,8 @@ Template.statushistory.helpers {
           label:"Дата"
           fn: (value, obj, key) ->
             moment.locale('ru');
-            moment(new Date(value)).format('DD.MM.YYYY в HH:mm')
+            moment(value).format('DD.MM.YYYY в HH:mm:ss')
         },
-        'entityType',
         {
           key: 'newStateUuid'
           label: 'Новый статус'
@@ -35,11 +36,7 @@ Template.statushistory.helpers {
           label:"Время с последнего изменения",
           fn: (value, obj, key) ->
             if value?
-              moment.locale('ru');
-              if timeSinceLastStatus?
-                moment().from(timeSinceLastStatus)
-              else
-                "-"
+              (Number(moment(value).utc().format("DDD")) - 1) + " дней, " + moment(value).utc().format("HH:mm:ss")
             else
               "-"
         }],
