@@ -31,6 +31,7 @@
               th Коробка
               th Артикул
               th Название
+              th Ост/рез
               th Собрано
               th Кнопки
               th Отсут.
@@ -43,6 +44,7 @@
                 td #{place}
                 td #{sku}
                 td #{goodName}
+                td #{stockQty}/#{reserveQty}
                 td.collapsing
                   h2.ui.header #{packedQty} / #{qty}
                     if isQtyMoreThan1

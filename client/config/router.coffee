@@ -159,6 +159,7 @@ Router.map ->
           isNeeded = true
           temp = {}
           temp.qty = pos.quantity
+
           temp.uuid = pos.uuid
           good = Goods.findOne(uuid: pos.goodUuid)
           if good
@@ -192,6 +193,11 @@ Router.map ->
 
             # артикул
             temp.sku = good.productCode
+
+            # остатки
+            temp.stockQty = good.stockQty
+            temp.reserveQty = good.reserveQty
+            temp.quantityQty = good.quantityQty
 
             # отсутствие на складе
             temp.outOfStock = good.outOfStock
