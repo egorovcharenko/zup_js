@@ -32,6 +32,7 @@
               th Артикул
               th Название
               th Собрано
+              th Кнопки
               th Отсут.
               th
           tbody
@@ -43,17 +44,14 @@
                 td #{sku}
                 td #{goodName}
                 td.collapsing
-                  .ui.grid
-                    .ui.five.wide.column
-                      #minus-qty.ui.icon.basic.button
-                        i.big.minus.circle.icon
-                    .ui.six.wide.column
-                      h2.ui.header #{packedQty} / #{qty}
-                        if isQtyMoreThan1
-                          i.big.warning.sign.icon
-                    .ui.five.wide.column
-                      #plus-qty.ui.icon.button
-                        i.big.add.circle.icon
+                  h2.ui.header #{packedQty} / #{qty}
+                    if isQtyMoreThan1
+                      i.big.warning.sign.icon
+                td.collapsing
+                  #minus-qty.ui.icon.basic.button
+                    i.big.minus.circle.icon
+                  #plus-qty.ui.icon.button
+                    i.big.add.circle.icon
                 td.collapsing.center.aligned
                   #out-of-stock(class="ui fitted checkbox {{#if outOfStock}}checked{{/if}}")
                     input(type="checkbox", checked="#{outOfStock}")
