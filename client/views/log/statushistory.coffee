@@ -22,14 +22,16 @@ Template.statushistory.helpers {
           fn: (value, obj, key) ->
             moment.locale('ru');
             moment(value).format('DD.MM.YYYY в HH:mm:ss')
+          sortOrder: 1
+          sortDirection: 'descending' 
         },
         {
-          key: 'newStateUuid'
-          label: 'Новый статус'
-          fn: stateNameByUuid
-        }, {
           key: 'oldStateUuid'
           label: 'Старый статус'
+          fn: stateNameByUuid
+        }, {
+          key: 'newStateUuid'
+          label: 'Новый статус'
           fn: stateNameByUuid
         }, {
           key:'timeSinceLastStatus',

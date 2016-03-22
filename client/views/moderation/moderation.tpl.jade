@@ -19,6 +19,9 @@
           h2 
             a(href="https://online.moysklad.ru/app/#customerorder/edit?id=#{this.order.uuid}", target="blank") #{order.name}
             .ui.big.tag.red.label {{statusHelper order.stateUuid}}
+          h3 Заказ создан: {{prettifyDateTime order.created}}
+          h3 Нет в наличии: #{order.outOfStock}
+          h3 Способ доставки: #{order.deliveryWay}
           h3 #{company.name}
           h3 #{company.contact.phones}
           h3 #{company.requisite.actualAddress}
@@ -35,14 +38,20 @@
                 th Остаток
                 th Резерв
                 th Доступно
-                th Отсутствует у поставщика?
+                th Действительно доступно
+                th Отс. по инф. склада?
+                th Отс. у поставщика?
+                th Плановая дата поступления если закупим
+                th Ожидаемая дата поступления
+                th Собственно дата поступления
                 th Вес
                 //th Описание
                 th Архивный
-                th Цена
+                th Цена без скидки
                 th Скидка
+                th Цена со скидкой
                 th Кол-во
-                th Сумма
+                th Цена итого
                 th Резерв в данном заказе
                 th Действия
             tbody
@@ -53,14 +62,21 @@
                   td #{orderPosHelper.stockQty}
                   td {{orderPosHelper.reserveQty}}
                   td #{orderPosHelper.quantityQty} 
+                  td #{orderPosHelper.realAvailableQty} 
+                  td
+                    {{#if orderPosHelper.outOfStock}}i.attention.icon{{/if}}
                   td {{booleanYesNo orderPosHelper.outOfStockInSupplier}}
-                  td #{orderPosHelper.weight} кг
+                  td {{prettifyDate orderPosHelper.nextPlannedRecieveDate}}
+                  td {{prettifyDate orderPosHelper.nextFactRecieveDate}}
+                  td {{prettifyDate orderPosHelper.nextDate}}
+                  td #{orderPosHelper.weight}
                   //td #{orderPosHelper.description}
                   td {{booleanYesNo orderPosHelper.archived}}
                   td {{sumHelper basePrice.sum}}
                   td #{discount}
-                  td #{quantity} шт
                   td {{sumHelper price.sum}}
-                  td {{booleanYesNo reserve}}
+                  td #{quantity} шт
+                  td {{rowSum}}
+                  td {{reserve}} шт
                   td.collapsing
                     #deletePosition.ui.teal.button Удалить из заказа

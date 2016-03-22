@@ -42,14 +42,15 @@ Template.moderation.helpers
         if state.uuid is stateUuid
           result = state.name
     return result
+  rowSum: () ->
+    Number(@quantity * @price.sum)/100 + ' р.'
   sumHelper: (sum) ->
     Number(sum)/100 + ' р.'
   inStock: ->
     good = Goods.findOne {uuid: @goodUuid}
     if good?
-      if good.quantityQty?
-        #console.log "inStock: ", good.quantityQty, @quantity
-        good.quantityQty >= @quantity
+      if good.realAvailableQty?
+        good.realAvailableQty >= @quantity
       else
         true
     else

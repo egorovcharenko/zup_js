@@ -1,44 +1,6 @@
 #var subs = new SubsManager();
 Router.configure layoutTemplate: 'basicLayout'
 Router.map ->
-  @route 'moderation',
-    path: '/managers/moderation/:orderName'
-    loadingTemplate: 'loading'
-    waitOn: ->
-      orderName = @params.orderName
-      [
-        Meteor.subscribe 'moderation', orderName
-        Meteor.subscribe "orderWithGoodsAndCompany", orderName
-        Meteor.subscribe('workflows')
-      ]
-    data: ->
-      dataVar = {}
-      orderName = @params.orderName
-      order = Orders.findOne {name: orderName}
-      dataVar.order = order
-
-      # все текущие задачи
-      Steps = new (Mongo.Collection)(null)
-      processIns = ProcessesIns.findOne({name:"Модерация", "params.orderNumber": orderName})
-      #console.log "processIns ", processIns
-      if processIns?
-        _.each processIns.steps, (step) ->
-          #console.log "step", step
-          if step.status == "active"
-            Steps.insert step
-          #console.log "iteration step ", step
-
-        #console.log "steps ", Steps.find({}).fetch()
-        dataVar.activeSteps = Steps.find({})
-        dataVar.processIns = processIns
-      if order?
-        #console.log "order.sourceAgentUuid: ", order.sourceAgentUuid
-        dataVar.company = Companies.findOne({uuid: order.sourceAgentUuid})
-      console.log "dataVar", dataVar
-      return dataVar
-    onBeforeAction: (pause) ->
-      @next()
-      return
   @route 'managers',
     path: '/managers'
     loadingTemplate: 'loading'

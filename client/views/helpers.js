@@ -1,6 +1,9 @@
-
 Template.registerHelper("prettifyDate", function(timestamp) {
-  return moment(timestamp).format("DD.MM.YYYY");
+  if (!!timestamp) {
+    return moment(timestamp).format("DD.MM.YYYY");
+  } else {
+    return "-";
+  }
 });
 
 Template.registerHelper("prettifyDateTime", function(timestamp) {
