@@ -1,6 +1,6 @@
 Meteor.methods
   loadEntityFromMS: (entityName, collectionName, fromLastUpdate) ->
-    #console.log 'loadEntityFromMS started, fromLastUpdate:', moment(fromLastUpdate).format("YYYYMMDDHHmmss")
+    #console.log "loadEntityFromMS started, collectionName:#{collectionName}, fromLastUpdate:", moment(fromLastUpdate).format("YYYYMMDDHHmmss")
     collection = CollectionNameMap[collectionName]
     moyskladPackage = Meteor.npmRequire('moysklad-client')
     tools = moyskladPackage.tools
@@ -23,6 +23,10 @@ Meteor.methods
                 savedEntity = collection.findOne(uuid: entity.uuid)
                 if savedEntity?
                   if entityName is "customerOrder"
+                    if savedEntity.timeLeft?
+                      entity.timeLeft = savedEntity.timeLeft
+                    if savedEntity.actions?
+                      entity.actions = savedEntity.actions
                     #checked
                     entity.checked = savedEntity.checked
                     #pos.packedQty
@@ -36,6 +40,10 @@ Meteor.methods
                     # statusHistory
                     if savedEntity.stateUuid != entity.stateUuid
                       Meteor.call "logStatusChangeEvent", entity.updated, entity.name, entityName, entity.uuid, entity.stateUuid, savedEntity.stateUuid
+                      if entity.actions?
+                        entity.actions.push {type:"stateChange", date: new Date()}
+                      else
+                        entity.actions = [{type:"stateChange", date: new Date()}]
                   else if entityName is "good"
                     if savedEntity.outOfStock?
                       entity.outOfStock = savedEntity.outOfStock
@@ -70,6 +78,10 @@ Meteor.methods
                   if entityName is "customerOrder"
                     # statusHistory - создать первую запись
                     Meteor.call "logStatusChangeEvent", entity.updated, entity.name, entityName, entity.uuid, entity.stateUuid, null
+                    if entity.actions?
+                      entity.actions.push {type:"stateChange", date: new Date()}
+                    else
+                      entity.actions = [{type:"stateChange", date: new Date()}]
                 collection.insert entity
                 # workflow
                 if entityName is "workflow"

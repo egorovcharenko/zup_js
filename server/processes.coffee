@@ -99,6 +99,15 @@ Meteor.methods
                   console.log "Пишем в лог: ", logEntry
                   Log.insert logEntry
 
+                when "setAction"
+                  try
+                    orderName = dataObject.orderName
+                    actionType = action.params.type
+                    console.log "Начинаем добавлять действие в заказ #{orderName}"
+                    Orders.update {name: orderName}, {$push: {actions:{date: new Date(), type: actionType}}}
+                  catch error
+                    console.log "error:", error
+
                 when "setOrderStatus"
                   orderName = action.params.orderName
                   orderStatusUuid = action.params.newOrderStatusUuid
@@ -138,7 +147,7 @@ Meteor.methods
                       console.log "error", error
                     if result
                       ;
-                      
+
                 when "setReserve"
                   orderName = action.params.orderName
                   console.log "нужно в заказе #{orderName} поставить весь товар в резерв";

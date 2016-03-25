@@ -4,6 +4,10 @@ myJobs.allow admin: (userId, method, params) ->
 
 processMSJobsWorker = (job, cb) ->
   switch job.type
+    when "setOrderActionsParameters"
+      Meteor.call 'setOrderActionsParameters'
+      job.done()
+      return cb()
     when "loadAllDataMoyskladPeriodic"
       Meteor.call 'loadAllEntities'
       job.done()
@@ -105,25 +109,32 @@ processStockJobsWorker = (job, cb) ->
 Meteor.startup ->
   myJobs.startJobServer()
 
-  # расчет дат поступления товаров
+  # перодически обновлять в заказах сколько осталось времени до следующей задачи
+  job = new Job myJobs, 'setOrderActionsParameters', {}
+  job.priority('normal')
+    .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
+    .repeat({schedule: myJobs.later.parse.text('every 1 minute')})
+    .save({cancelRepeats: true})
+
+  # автоматический сброс резервов
   job = new Job myJobs, 'periodicalDropReserve', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('every 10 seconds')})
+    .repeat({schedule: myJobs.later.parse.text('at 22:00 pm')})
     .save({cancelRepeats: true})
 
   # расчет дат поступления товаров
   job = new Job myJobs, 'calculateNextArrivalDates', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('every 10 minute')})
+    .repeat({schedule: myJobs.later.parse.text('every 60 minute')})
     .save({cancelRepeats: true})
 
   # расчет списка на закупку
   job = new Job myJobs, 'calculateBuyingQty', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('every 10 minute')})
+    .repeat({schedule: myJobs.later.parse.text('at 22:00 pm')})
     .save({cancelRepeats: true})
 
   # загрузка данных из МС
@@ -151,24 +162,24 @@ Meteor.startup ->
   job = new Job myJobs, 'resetTimestamps', {}
   job.priority('normal')
     .retry({retries: 5, wait: 60*1000})
-    .repeat({schedule: myJobs.later.parse.text('at 03:00 am')})
+    .repeat({schedule: myJobs.later.parse.text('at 01:00 am')})
     .save({cancelRepeats: true})
 
   # Загрузка не главных сущностей раз в 5 минут
   job = new Job myJobs, 'loadNotPrimaryEntities', {}
   job.priority('normal')
     .retry({retries: 5, wait: 1*1000})
-    .repeat({schedule: myJobs.later.parse.text('every 10 seconds')}) # every 5 minutes
+    .repeat({schedule: myJobs.later.parse.text('every 5 minutes')}) # every 5 minutes
     .save({cancelRepeats: true})
 
   # Начать обрабатывать задачи
   #myJobs.processJobs ['loadAllDataMoyskladPeriodic','setEntityStateByUuid','updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
 
-  myJobs.processJobs ['periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
+  myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
 
   #myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
 
-  myJobs.processJobs ['loadStockFromMS'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
+  myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
 
   # cleanups and remove stale jobs
   new Job(myJobs, 'cleanup', {})

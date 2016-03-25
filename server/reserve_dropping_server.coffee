@@ -30,6 +30,7 @@ Meteor.methods
                       console.log "error:", error
                     if result
                       ;
+                else console.log "заказ слишком свежий: #{order.name}"
     catch error
       console.log "error:", error
 
@@ -43,9 +44,10 @@ Meteor.methods
       changed = false
       _.each order.customerOrderPosition, (position) ->
         if setReserve
-          good = Goods.findOne({uuid: position.goodRef.uuid})
+          good = Goods.findOne({uuid: position.goodUuid})
           if good?
-            resQty = Math.min(position.quantity, position.quantity - good.realAvailableQty)
+            resQty = Math.max(Math.min(position.quantity, good.realAvailableQty), 0)
+            console.log "#{position.quantity}, #{good.realAvailableQty}, #{resQty}"
           else
             resQty = position.quantity
           if position.reserve != resQty
@@ -57,7 +59,7 @@ Meteor.methods
             changed = true
         #console.log "position.reserve:", position.reserve
       if changed
-        #newEntity = client.save(entityFromMS)
+        newEntity = client.save(order)
         console.log "new reserve sent to MS for order #{order.name}"
       done null, "Заменено"
     )

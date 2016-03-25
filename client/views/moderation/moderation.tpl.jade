@@ -14,13 +14,18 @@
                 .ui.buttons
                   each options
                     .option-button.ui.red.big.button(data-option-id="#{id}") #{name}
+        .ui.segment
+          h1 Действия на любом шаге
+          .ui.buttons
+            #set-reserve.ui.red.button Установить резерв
+            #remove-reserve.ui.red.button Снять резерв
       .eight.wide.column
         .ui.segment
           h2 
             a(href="https://online.moysklad.ru/app/#customerorder/edit?id=#{this.order.uuid}", target="blank") #{order.name}
             .ui.big.tag.red.label {{statusHelper order.stateUuid}}
           h3 Заказ создан: {{prettifyDateTime order.created}}
-          h3 Нет в наличии: #{order.outOfStock}
+          //h3 Нет в наличии: #{order.outOfStock}
           h3 Способ доставки: #{order.deliveryWay}
           h3 #{company.name}
           h3 #{company.contact.phones}
@@ -35,18 +40,18 @@
               tr
                 th Артикул
                 th Название
-                th Остаток
-                th Резерв
+                //th Остаток
+                //th Резерв
+                //th Доступно
                 th Доступно
-                th Действительно доступно
                 th Отс. по инф. склада?
                 th Отс. у поставщика?
-                th Плановая дата поступления если закупим
-                th Ожидаемая дата поступления
-                th Собственно дата поступления
-                th Вес
+                //th Плановая дата поступления если закупим
+                //th Ожидаемая дата поступления
+                th Дата поступления
+                //th Вес
                 //th Описание
-                th Архивный
+                //th Архивный
                 th Цена без скидки
                 th Скидка
                 th Цена со скидкой
@@ -59,21 +64,21 @@
                 tr(class="{{#if inStock}}positive{{else}}negative{{/if}}")
                   td #{orderPosHelper.code}
                   td #{orderPosHelper.name}
-                  td #{orderPosHelper.stockQty}
-                  td {{orderPosHelper.reserveQty}}
-                  td #{orderPosHelper.quantityQty} 
+                  //td #{orderPosHelper.stockQty}
+                  //td {{orderPosHelper.reserveQty}}
+                  //td #{orderPosHelper.quantityQty} 
                   td #{orderPosHelper.realAvailableQty} 
                   td
                     {{#if orderPosHelper.outOfStock}}i.attention.icon{{/if}}
                   td {{booleanYesNo orderPosHelper.outOfStockInSupplier}}
-                  td {{prettifyDate orderPosHelper.nextPlannedRecieveDate}}
-                  td {{prettifyDate orderPosHelper.nextFactRecieveDate}}
+                  //td {{prettifyDate orderPosHelper.nextPlannedRecieveDate}}
+                  //td {{prettifyDate orderPosHelper.nextFactRecieveDate}}
                   td {{prettifyDate orderPosHelper.nextDate}}
-                  td #{orderPosHelper.weight}
+                  //td #{orderPosHelper.weight}
                   //td #{orderPosHelper.description}
-                  td {{booleanYesNo orderPosHelper.archived}}
+                  //td {{booleanYesNo orderPosHelper.archived}}
                   td {{sumHelper basePrice.sum}}
-                  td #{discount}
+                  td {{formatNumber discount}}
                   td {{sumHelper price.sum}}
                   td #{quantity} шт
                   td {{rowSum}}

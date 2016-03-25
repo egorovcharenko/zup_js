@@ -1,6 +1,6 @@
 getLastTimeRun = (entityName) ->
   lastTimeLoaded = DataTimestamps.findOne(name: entityName)
-  if lastTimeLoaded? then moment(lastTimeLoaded.value).subtract(3, 'seconds') else moment('2014-01-01')
+  if lastTimeLoaded? then moment(lastTimeLoaded.value).subtract(5, 'seconds') else moment('2014-01-01')
 
 @findMetadataUuidByName = (entityName, attrName) ->
   #console.log("findMetadataUuidByName: entityName:" + entityName + ", attrName: " + attrName);
@@ -42,7 +42,7 @@ Meteor.methods
       client = moyskladPackage.createClient()
       tools = moyskladPackage.tools
       client.setAuth 'admin@allshellac', 'qweasd'
-      entityFromMS = client.load("customerOrder", Orders.findOne(name:orderName).uuid)
+      entityFromMS = Orders.findOne(name:orderName)
 
       nalogPlatUuid = '82c43187-4743-11e5-90a2-8ecb001a04c5'
       nalogPlatPercent = 0.04;
@@ -128,28 +128,21 @@ Meteor.methods
     response.result
 
   setEntityStateByUuid: (entityType, entityUuid, newStateUuid) ->
-    #console.log "setEntityState started, newState: #{newStateUuid}"
     moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
       try
         client = moyskladPackage.createClient()
         client.setAuth 'admin@allshellac', 'qweasd'
-        entityFromMS = client.load(entityType, entityUuid)
-        #console.log "entityFromMS before: #{objToString entityFromMS}"
-        stateWorkflow = Workflows.findOne name:"CustomerOrder"
-        if stateWorkflow
-          oldStateName = (_.find stateWorkflow.state, (state) -> state.uuid is entityFromMS.stateUuid).name
-          newStateName = (_.find stateWorkflow.state, (state) -> state.uuid is newStateUuid).name
-          #console.log "newStateUuid: #{newStateUuid}"
-          entityFromMS.stateUuid = newStateUuid
-          logChangesInDescription entityFromMS, "Статус", oldStateName, newStateName
-          #console.log "entityFromMS after: #{objToString entityFromMS}"
-          result = client.save(entityFromMS)
-          #console.log "order state change result: ", result
-          #fake on the client
-          #if entityType is "customerOrder"
-          #  Orders.update({uuid: entityUuid}, {$set:{stateUuid: newStateUuid}})
-
+        if entityType is "customerOrder"
+          # добавить действие по переводу в др. статус
+          Orders.update {uuid: entityUuid}, {$push: {actions: {type:"stateChange", date: new Date()}}}
+          entityFromMS = Orders.findOne uuid: entityUuid
+          stateWorkflow = Workflows.findOne name:"CustomerOrder"
+          if stateWorkflow
+            oldStateName = (_.find stateWorkflow.state, (state) -> state.uuid is entityFromMS.stateUuid).name
+            newStateName = (_.find stateWorkflow.state, (state) -> state.uuid is newStateUuid).name
+            entityFromMS.stateUuid = newStateUuid
+            result = client.save(entityFromMS)
         done null, oldStateName + "->" + newStateName
       catch error
         done error, null
@@ -172,7 +165,7 @@ Meteor.methods
     moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
       try
-        Meteor.call "logSystemEvent", "loadStock", "5. notice", "Начинаем получение с сервера всех остатков"
+        #Meteor.call "logSystemEvent", "loadStock", "5. notice", "Начинаем получение с сервера всех остатков"
 
         client = moyskladPackage.createClient()
         client.setAuth 'admin@allshellac', 'qweasd'
@@ -192,7 +185,7 @@ Meteor.methods
                 good = Goods.findOne uuid:oneStock.goodRef.uuid
                 if good?
                   # устанавливаем реальное наличие наличия
-                  if (good.name.lastIndexOf("Набор для шеллака", 0) == 0) or (good.name.lastIndexOf("Набор шеллака", 0) == 0) or (good.name.lastIndexOf("Гель-лак AllShellac Premiere", 0) == 0) or (good.name.lastIndexOf("Гель-лак Bluesky Shellac, цвет NS", 0) == 0)
+                  if (good.name.lastIndexOf("Доставка", 0) == 0) or (good.name.lastIndexOf("Наложенный платеж", 0) == 0) or (good.name.lastIndexOf("Набор для шеллака", 0) == 0) or (good.name.lastIndexOf("Набор шеллака", 0) == 0) or (good.name.lastIndexOf("Гель-лак AllShellac Premiere", 0) == 0) or (good.name.lastIndexOf("Гель-лак Bluesky Shellac, цвет NS", 0) == 0)
                     if good.outOfStockInSupplier?
                       if good.outOfStockInSupplier
                         realAvailableQty = 0
@@ -208,7 +201,7 @@ Meteor.methods
                 else
                   ;#Meteor.call "logSystemEvent", "loadStock", "5. notice", "При загрузке остатков не нашли товар: #{oneStock.goodRef.name}"
               else
-                Meteor.call "logSystemEvent", "loadStock", "5. notice", "В остатках нет информации о товаре"
+                ;#Meteor.call "logSystemEvent", "loadStock", "5. notice", "В остатках нет информации о товаре"
             catch error
               console.log "error:", error
           Meteor.call "logSystemEvent", "loadStock", "5. notice", "Остатки загружены успешно, количество: #{stock.length}, обновлено: #{countUpdated}"
@@ -315,6 +308,16 @@ Meteor.methods
       Meteor.call 'loadEntityGenericMethod', 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
       Meteor._sleepForMs(500);
       Meteor.call 'loadEntityGenericMethod', 'PurchaseOrder', 'PurchaseOrders'
+      Meteor._sleepForMs(500);
+      Meteor.call 'loadEntityGenericMethod', 'Employee', 'Employees'
+      Meteor._sleepForMs(500);
+      Meteor.call 'loadEntityGenericMethod', 'ProcessingPlan', 'ProcessingPlans'
+      Meteor._sleepForMs(500);
+      Meteor.call 'loadEntityGenericMethod', 'Processing', 'Processings'
+      Meteor._sleepForMs(500);
+      Meteor.call 'loadEntityGenericMethod', 'Demand', 'Demands'
+      Meteor._sleepForMs(500);
+      Meteor.call 'loadEntityGenericMethod', 'Supply', 'Supplies'
       Meteor._sleepForMs(500);
     catch error
       console.log "error in loadNotPrimaryEntities:", error

@@ -57,41 +57,48 @@ Template.packOrder.events
   'click #setState': (event, template) ->
     newOrderState = template.find("#realStateSelector").value
     orderUuid = Orders.findOne(name: Router.current().params.orderName).uuid
-    console.log "orderUuid: #{orderUuid}"
-
     job = new Job myJobs, 'setEntityStateByUuid', {entityType: 'customerOrder', entityUuid: orderUuid, newStateUuid: newOrderState}
-
     job.priority('high')
       .retry({ retries: 5, wait: 1*1000})
       .save()
-
     return
   'click #setOutOfStockField': (event, template) ->
     order = Orders.findOne(name: Router.current().params.orderName);
     oos = "";
     for pos in order.customerOrderPosition
-      console.log "pos: #{pos}"
       good = Goods.findOne uuid: pos.goodUuid
-      console.log "good: #{good}"
       if good?
-        console.log "ooss: #{good.outOfStock}"
         if good.outOfStock
           oos += "#{good.productCode}  "
-
-    console.log "out of stock: #{oos}"
-
     attr = [ {
       name: 'Нет в наличии'
       value: oos
     } ]
-
     job = new Job myJobs, 'updateEntityMS', {entityType: 'customerOrder', entityUuid: order.uuid, data: null, attributes: attr, attributeType: 'string'}
-
     job.priority('high')
       .retry({ retries: 5, wait: 30*1000})
       .save()
-
     return
+
+  'click #otgruzit': (event, template) ->
+    order = Orders.findOne(name: Router.current().params.orderName);
+    Meteor.call "otgruzitZakaz", order.uuid, (error, result) ->
+      if error?
+        console.log "error:", error
+        FlashMessages.sendError error
+      if result?
+        console.log "result:", result
+        FlashMessages.sendSuccess result
+    # снять резерв
+    Meteor.call "setOrderReserve", order.uuid, false, (error, result) ->
+      if error
+        console.log "error:", error
+        FlashMessages.sendError error
+      if result
+        console.log "result:", result
+        FlashMessages.sendSuccess result
+
+
 Template.packOrder.onRendered = ->
   $('.ui.sticky').sticky content: '#positions-list'
   return

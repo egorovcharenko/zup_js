@@ -1,5 +1,6 @@
 # Meteor.publish "wholeLog", (args) ->
 #   return Log.find {}
+ReactiveTable.publish("all_goods_special_publish", Goods);
 
 ReactiveTable.publish("log_special_publish", Log);
 
@@ -9,7 +10,26 @@ ReactiveTable.publish("goods_special_publish", Goods, {includeInNextBuyingQty: {
 
 ReactiveTable.publish("system_log_special_publish", SystemLog);
 
+ReactiveTable.publish("orders_special_publish", Orders, $or:
+  [
+    {stateUuid: '3f201baf-8d32-11e4-7a07-673d00307946'},
+    {stateUuid: '33cd998e-3090-11e5-7a07-673d0019b9ed'},
+    {stateUuid: '5753d0b0-a6fb-11e4-90a2-8ecb0011be7f'},
+    {stateUuid: '731abfcd-aa2d-11e4-7a07-673d001484ff'},
+    {stateUuid: '7a739cd4-68d0-11e4-7a07-673d00031c1d'},
+    {stateUuid: '7c29fdd4-68d0-11e4-7a07-673d00031d3a'},
+    {stateUuid: 'abcf2f44-73c6-11e4-90a2-8ecb001ed0f3'},
+    {stateUuid: 'b189a90a-304f-11e5-7a07-673d00256353'},
+    {stateUuid: 'e7d700fd-4a8e-11e5-7a40-e8970020ae51'}
+    ]);
+
 ReactiveTable.publish("status_history_special_publish", StatusHistory);
+
+Meteor.publish "orderRules", () ->
+  return OrderRules.find {}
+
+Meteor.publish "employees", () ->
+  return Employees.find {}
 
 Meteor.publish "ordersForModeration", () ->
   return [
@@ -21,7 +41,7 @@ Meteor.publish "ordersForModeration", () ->
 Meteor.publish "moderation", (orderName) ->
   return [
     Orders.find {name: orderName}
-    ProcessesIns.find({name: "Модерация", "params.orderNumber": orderName, status: "active"})
+    ProcessesIns.find({"params.orderNumber": orderName, status: "active"})
   ]
 Meteor.publishComposite "orderWithGoodsAndCompany", (orderName) ->
   {

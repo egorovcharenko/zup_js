@@ -1,9 +1,9 @@
 .ui.menu
   if currentUser
     a.item(href="{{pathFor 'ordersList'}}")
-      | Заказы
+      | Заказы на сборку
     a.item(href="{{pathFor 'managers'}}")
-      | Менеджеры
+      | Задачи для менеджеров
     a.item(href="{{pathFor 'loadData'}}")
       | Загрузить данные
     a.item(href="{{pathFor 'viewlog'}}")
@@ -16,5 +16,7 @@
       | Статусы
     a.item(href="{{pathFor 'buyinglist'}}")
       | Список на закупку
+    a.item(href="{{pathFor 'goods'}}")
+      | Товары
   a.item(href="{{pathFor 'login'}}")
     | Аккаунт

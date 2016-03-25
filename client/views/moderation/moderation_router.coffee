@@ -13,19 +13,19 @@ Router.map ->
       dataVar = {}
       orderName = @params.orderName
       order = Orders.findOne {name: orderName}
-
       # все текущие задачи
       Steps = new (Mongo.Collection)(null)
-      processIns = ProcessesIns.findOne({name:"Модерация", "params.orderNumber": orderName})
-      #console.log "processIns ", processIns
+      #processIns = ProcessesIns.findOne({name:"Модерация", "params.orderNumber": orderName})
+      processIns = ProcessesIns.findOne({"params.orderNumber": orderName, status: "active"})
+      console.log "orderName:", orderName
+      console.log "processIns ", processIns
       if processIns?
         _.each processIns.steps, (step) ->
-          #console.log "step", step
+          console.log "step", step
           if step.status == "active"
             Steps.insert step
-          #console.log "iteration step ", step
-
-        #console.log "steps ", Steps.find({}).fetch()
+          console.log "iteration step ", step
+        console.log "steps ", Steps.find({}).fetch()
         dataVar.activeSteps = Steps.find({})
         dataVar.processIns = processIns
       if order?

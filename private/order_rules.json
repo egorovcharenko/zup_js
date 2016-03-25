@@ -1,0 +1,93 @@
+{
+  "orderRules":[
+    {
+      "comment": "модерация заказа",
+      "stateUuid": "3f201baf-8d32-11e4-7a07-673d00307946",
+      "ruleAction": "Промодерировать заказ",
+      "ruleStartMinutesOffset": 0,
+      "ruleDeadlineMinutesOffset": 15,
+      "ruleResetTimerAction": null,
+      "processName": "Модерация",
+      "gotoScreen": "order",
+      "statusChangeAffects": false
+    }, {
+      "comment": "Не дозвонились",
+      "stateUuid": "7a739cd4-68d0-11e4-7a07-673d00031c1d",
+      "ruleAction": "Позвонить снова и промодерировать",
+      "ruleStartMinutesOffset": 60,
+      "ruleDeadlineMinutesOffset": 180,
+      "ruleResetTimerAction": "Звонок",
+      "processName": "Модерация",
+      "gotoScreen": "order",
+      "statusChangeAffects": false
+    }, {
+      "comment": "В работе",
+      "stateUuid": "abcf2f44-73c6-11e4-90a2-8ecb001ed0f3",
+      "ruleAction": "Перевести в другой статус",
+      "ruleStartMinutesOffset": 30,
+      "ruleDeadlineMinutesOffset": 120,
+      "ruleResetTimerAction": null,
+      "statusChangeAffects": false,
+      "gotoScreen": "order"
+    }, {
+      "comment": "Требуется связаться с клиентом",
+      "stateUuid": "7c29fdd4-68d0-11e4-7a07-673d00031d3a",
+      "ruleAction": "Связаться с клиентом по поводу заказа",
+      "ruleStartMinutesOffset": 0,
+      "ruleDeadlineMinutesOffset": 120,
+      "ruleResetTimerAction": "Звонок",
+      "statusChangeAffects": true,
+      "gotoScreen": "order"
+    }, {
+      "comment": "Модерация (заказ оплачен)",
+      "stateUuid": "33cd998e-3090-11e5-7a07-673d0019b9ed",
+      "ruleAction": "Промодерировать предопл. заказ",
+      "ruleStartMinutesOffset": 0,
+      "ruleDeadlineMinutesOffset": 15,
+      "ruleResetTimerAction": null,
+      "processName": "Модерация",
+      "gotoScreen": "order",
+      "statusChangeAffects": false
+    }, {
+      "comment": "Самовывоз (не приезжают)",
+      "stateUuid": "e7d700fd-4a8e-11e5-7a40-e8970020ae51",
+      "ruleAction": "Связаться с клиентом",
+      "ruleStartMinutesOffset": 0,
+      "ruleDeadlineMinutesOffset": 480,
+      "ruleResetTimerAction": "Звонок",
+      "processName": "Звонок",
+      "statusChangeAffects": true,
+      "gotoScreen": "order"
+    }, {
+      "comment": "Ожидание оплаты",
+      "stateUuid": "731abfcd-aa2d-11e4-7a07-673d001484ff",
+      "ruleAction": "Связаться с клиентом",
+      "ruleStartMinutesOffset": 1440,
+      "ruleDeadlineMinutesOffset": 2880,
+      "ruleResetTimerAction": "Звонок",
+      "processName": "Звонок",
+      "statusChangeAffects": true,
+      "gotoScreen": "order"
+    }, {
+      "comment": "Заказ выполняется",
+      "stateUuid": "b189a90a-304f-11e5-7a07-673d00256353",
+      "ruleAction": "Связаться с клиентом",
+      "ruleStartMinutesOffset": 120,
+      "ruleDeadlineMinutesOffset": 480,
+      "ruleResetTimerAction": "Звонок",
+      "processName": "Звонок",
+      "statusChangeAffects": true,
+      "gotoScreen": "order"
+    }, {
+      "comment": "Заказ в пункте выдачи - требуется связь",
+      "stateUuid": "5753d0b0-a6fb-11e4-90a2-8ecb0011be7f",
+      "ruleAction": "Связаться с клиентом",
+      "ruleStartMinutesOffset": 0,
+      "ruleDeadlineMinutesOffset": 240,
+      "ruleResetTimerAction": "Звонок",
+      "processName": "Звонок",
+      "statusChangeAffects": true,
+      "gotoScreen": "order"
+    }
+  ]
+}

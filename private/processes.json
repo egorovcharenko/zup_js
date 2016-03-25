@@ -69,6 +69,11 @@
                   "params": {
                     "nextStepId": "999"
                   }
+                }, {
+                  "name": "setAction",
+                  "params": {
+                    "type": "Звонок"
+                  }
                 }
               ]
             }, {
@@ -85,6 +90,11 @@
                   "name": "setNextStep",
                   "params": {
                     "nextStepId": "2"
+                  }
+                }, {
+                  "name": "setAction",
+                  "params": {
+                    "type": "Звонок"
                   }
                 }
               ]
@@ -291,6 +301,79 @@
                   "name": "setNextStep",
                   "params": {
                     "nextStepId": "999"
+                  }
+                }
+              ]
+            }
+          ]
+        }, {
+          "id": "999",
+          "name": "Завершить процесс",
+          "description": "Завершить процесс",
+          "options": [
+            {
+              "name": "Завершить",
+              "actions": [
+                {
+                  "name": "finishProcess",
+                  "params": {
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }, {
+      "name": "Звонок",
+      "steps": [
+        {
+          "status": "active",
+          "id": "0",
+          "name": "Позвонить клиенту",
+          "description": "-",
+          "options": [
+            {
+              "name": "Дозвонились",
+              "actions": [
+                {
+                  "name": "log",
+                  "params": {
+                    "type": "Звонок",
+                    "text": "По заказу %orderName% дозвонились клиенту",
+                    "orderName": "%orderName%"
+                  }
+                }, {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "999"
+                  }
+                }, {
+                  "name": "setAction",
+                  "params": {
+                    "type": "Звонок"
+                  }
+                }
+              ]
+            }, {
+              "name": "Не дозвонились",
+              "actions": [
+                {
+                  "name": "log",
+                  "params": {
+                    "type": "Звонок",
+                    "text": "По заказу %orderName% НЕ дозвонились клиенту",
+                    "orderName": "%orderName%"
+                  }
+                }, {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "999"
+                  }
+                }, {
+                  "name": "setAction",
+                  "params": {
+                    "type": "Звонок"
                   }
                 }
               ]
