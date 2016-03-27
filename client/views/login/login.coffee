@@ -1,4 +1,4 @@
-Template.login.events {
+Template.login.events
   'submit form': (event) ->
     console.log "register form submitted"
     event.preventDefault()
@@ -21,4 +21,7 @@ Template.login.events {
         profile:
           msUserId: msUserId
           userName: userName
-}
+
+Template.login.helpers
+  currentUserProfile: () ->
+    Meteor.user().profile

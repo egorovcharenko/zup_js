@@ -6,7 +6,7 @@ ReactiveTable.publish("log_special_publish", Log);
 
 ReactiveTable.publish("order_statuses_special_publish", OrderStatuses);
 
-ReactiveTable.publish("goods_special_publish", Goods, {includeInNextBuyingQty: {$gt: 0}});
+ReactiveTable.publish("goods_special_publish", Goods, {$or: [{includeInNextBuyingQty: {$gt: 0}}, {perWeekQtyNeeded: {$gt: 0}}]});
 
 ReactiveTable.publish("system_log_special_publish", SystemLog);
 

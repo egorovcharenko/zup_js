@@ -80,11 +80,12 @@ Meteor.methods
                   attr = [ {
                     name: fieldName
                     value: fieldValue
+                    type: fieldType
                   } ]
 
                   orderUuid = Orders.findOne(name: orderName).uuid
 
-                  job = new Job myJobs, 'updateEntityMS', {entityType: 'customerOrder', entityUuid: orderUuid, data: null, attributes: attr, attributeType: fieldType}
+                  job = new Job myJobs, 'updateEntityMS', {entityType: 'customerOrder', entityUuid: orderUuid, data: null, attributes: attr }
 
                   job.priority('high')
                     .retry({ retries: 5, wait: 1*1000})

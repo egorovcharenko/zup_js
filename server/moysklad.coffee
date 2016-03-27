@@ -23,6 +23,7 @@ objToString = (obj) ->
   str
 
 logChangesInDescription = (entityFromMS, field, oldv, newv) ->
+  return
   if entityFromMS.hasOwnProperty('description')
     entityFromMS.description += "\n-------------\n#{moment().format('DD.MM.YY [в] HH:mm')} через приложение изменено поле '#{field}', со значения '#{(if oldv then oldv else '(пусто)')}' на '#{(if newv then newv else '(пусто)')}'"
 
@@ -55,10 +56,10 @@ Meteor.methods
         "consignmentUuid" : "82c439da-4743-11e5-90a2-8ecb001a04c9",
         "goodUuid" : nalogPlatUuid,
         "vat" : 0,
-        "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-        "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
+        "accountUuid" : entityFromMS.accountUuid,
+        "accountId" : entityFromMS.accountId,
         #"uuid" : "8c13b12e-ee93-11e5-7a69-9715002c22db",
-        "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
+        "groupUuid" : entityFromMS.groupUuid,
         "ownerUid" : "admin@allshellac",
         "shared" : false,
         "basePrice" : {
@@ -78,34 +79,23 @@ Meteor.methods
     )
     response.result
 
-  updateEntityMS: (entityType, entityUuid, data, attributes, attributeType) ->
+  updateEntityMS: (entityType, entityUuid, data, attributes) ->
     #console.log 'updateEntityMS started, parameters:' + arguments
     moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
       client = moyskladPackage.createClient()
       tools = moyskladPackage.tools
       client.setAuth 'admin@allshellac', 'qweasd'
-      #console.log 'entityType: ' + entityType + ', entityUuid: ' + entityUuid
       entityFromMS = client.load(entityType, entityUuid)
-      #console.log 'entityFromMS: ' + entityFromMS
-      #console.log 'data:' + data
       if data?
         for prop of data
           if data.hasOwnProperty(prop)
-            #console.log '-property ' + prop
             entityFromMS[prop] = data[prop]
-      #console.log entityFromMSAfter1: entityFromMS
       # update attribs
       _.each attributes, (attrib) ->
-        # {name: value}
-        #console.log 'attrib: ', JSON.stringify(attrib, null, 4)
         metadataUuid = findMetadataUuidByName('CustomerOrder', attrib.name)
-        #console.log 'metadataUuid: ' + metadataUuid
-        #console.log 'entityFromMSBeforeGettingAttrib:', entityFromMS.attribute.length
         test = tools.getAttr(entityFromMS, metadataUuid)
-        #console.log 'test: ', JSON.stringify(test, null, 4)
-        #console.log 'entityFromMSAfterGettingAttrib:', entityFromMS.attribute.length
-        switch attributeType
+        switch attrib.type
           when 'string'
             oldValue = test.valueString
             test.valueString = attrib.value
@@ -115,13 +105,9 @@ Meteor.methods
           when 'picklist'
             oldValue = test.metadataUuid
             test.metadataUuid = attrib.value
-        #console.log 'entityFromMSAfterSettingAttrib:', entityFromMS.attribute.length
-        #console.log 'new value: ' + tools.getAttrValue(entityFromMS, metadataUuid)
         logChangesInDescription entityFromMS, attrib.name, oldValue, attrib.value
         return
-      #console.log entityFromMSAfter2: entityFromMS
       newEntity = client.save(entityFromMS)
-      #console.log 'newEntity: ', newEntity
       done null, "Заменено"
     )
     #console.log 'updateEntityMS ended'
@@ -136,7 +122,7 @@ Meteor.methods
         if entityType is "customerOrder"
           # добавить действие по переводу в др. статус
           Orders.update {uuid: entityUuid}, {$push: {actions: {type:"stateChange", date: new Date()}}}
-          entityFromMS = Orders.findOne uuid: entityUuid
+          entityFromMS = client.load(entityType, entityUuid)
           stateWorkflow = Workflows.findOne name:"CustomerOrder"
           if stateWorkflow
             oldStateName = (_.find stateWorkflow.state, (state) -> state.uuid is entityFromMS.stateUuid).name
@@ -188,7 +174,7 @@ Meteor.methods
                   if (good.name.lastIndexOf("Доставка", 0) == 0) or (good.name.lastIndexOf("Наложенный платеж", 0) == 0) or (good.name.lastIndexOf("Набор для шеллака", 0) == 0) or (good.name.lastIndexOf("Набор шеллака", 0) == 0) or (good.name.lastIndexOf("Гель-лак AllShellac Premiere", 0) == 0) or (good.name.lastIndexOf("Гель-лак Bluesky Shellac, цвет NS", 0) == 0)
                     if good.outOfStockInSupplier?
                       if good.outOfStockInSupplier
-                        realAvailableQty = 0
+                        realAvailableQty = oneStock.quantity
                       else
                         realAvailableQty = 100
                     else
@@ -197,7 +183,6 @@ Meteor.methods
                     realAvailableQty = oneStock.quantity
                   if good.stockQty is oneStock.stock and good.reserveQty is oneStock.reserve and good.quantityQty is oneStock.quantity and good.reserveForSelectedAgentQty is oneStock.reserveForSelectedAgent and good.realAvailableQty is realAvailableQty then needsUpdate = true else needsUpdate = false
                   Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, reserveQty: oneStock.reserve, quantityQty: oneStock.quantity, reserveForSelectedAgentQty: oneStock.reserveForSelectedAgent, realAvailableQty: realAvailableQty, dirty: needsUpdate}})
-
                 else
                   ;#Meteor.call "logSystemEvent", "loadStock", "5. notice", "При загрузке остатков не нашли товар: #{oneStock.goodRef.name}"
               else
@@ -249,7 +234,7 @@ Meteor.methods
       if (not good.realAvailableQty? or good.realAvailableQty <= 0)
         outOfStockInSupplier = good.outOfStockInSupplier #tools.getAttrValue(good, metadataUuid)
         if outOfStockInSupplier
-          console.log "Флаг 'отсутствует у поставщика' у товара '#{good.name}': #{outOfStockInSupplier}"
+          #console.log "Флаг 'отсутствует у поставщика' у товара '#{good.name}': #{outOfStockInSupplier}"
           inStockStatus = "Временно нет в продаже"
           shipmentStatus = "Отправка возможна после появления в продаже. Когда товар появится - пока не известно."
           isInStock = 0
@@ -260,7 +245,7 @@ Meteor.methods
           isInStock = 1
           stockQty = 999
 
-      console.log "Товар: #{good.productCode}, кол-во #{good.stockQty} наличие: #{inStockStatus}, отгрузка: #{shipmentStatus}"
+      console.log "Товар: #{good.productCode}, кол-во #{good.realAvailableQty} наличие: #{inStockStatus}, отгрузка: #{shipmentStatus}"
 
       # send to magento
       request = {}

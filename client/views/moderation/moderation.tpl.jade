@@ -69,7 +69,7 @@
                   //td #{orderPosHelper.quantityQty} 
                   td #{orderPosHelper.realAvailableQty} 
                   td
-                    {{#if orderPosHelper.outOfStock}}i.attention.icon{{/if}}
+                    {{#if orderPosHelper.outOfStock}}Отсутствует{{/if}}
                   td {{booleanYesNo orderPosHelper.outOfStockInSupplier}}
                   //td {{prettifyDate orderPosHelper.nextPlannedRecieveDate}}
                   //td {{prettifyDate orderPosHelper.nextFactRecieveDate}}

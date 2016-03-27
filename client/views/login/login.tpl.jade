@@ -1,6 +1,12 @@
 +loginButtons
 if currentUser
   h2 Залогинен
+  h3 Uuid: 
+  span #{currentUserProfile.msUserId}
+  h3 Имя:
+  span #{currentUserProfile.userName}
+  h2 Изменить данные:
+  br
   input#msUuidInput(type="text",placeholder="Введите Uuid в МС")
   input#userNameInput(type="text",placeholder="Введите имя пользователя")
   #setMsUuid.ui.teal.button Установить

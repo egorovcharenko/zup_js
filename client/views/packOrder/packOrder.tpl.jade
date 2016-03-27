@@ -6,25 +6,17 @@
   .ui.action.left.icon.input
     i.barcode.icon
     input#markerInput(type="text",placeholder="Введите маркер")
-    #add_marker.ui.teal.button Установить
-  #stateSelector.ui.search.selection.dropdown
-    input#realStateSelector(type="hidden", name="state")
-    i.dropdown.icon
-    input.search(type="text", tabindex="0")
-    .default.text Выберите статус
-    .menu(tabindex="-1")
-      each states
-        .item(data-value="{{uuid}}") {{name}}
-  #setState.ui.teal.button
-    | Установить статус
-  #setOutOfStockField.ui.teal.button
-    | Записать отсутствующие товары
-  #otgruzit.ui.teal.button
+    #orderFinished.ui.teal.button Заказ собран
+  #orderNotFinished.ui.red.button
+    | Заказ не собран, не хватает товара
+  Не трогать:
+  #otgruzit.ui.gray.button
     | Отгрузить заказ
+  span {{orderDeliveryWay}}
 .ui.segment
   .ui.grid
     .three.column.row
-      #positions-list(class="twelve wide column")
+      #positions-list.twelve.wide.column
         table.ui.compact.celled.definition.table
           thead
             tr 
@@ -33,7 +25,7 @@
               th Коробка
               th Артикул
               th Название
-              th Ост/рез
+              th Остаток
               th Собрано
               th Кнопки
               th Отсут.
@@ -46,7 +38,9 @@
                 td #{place}
                 td #{sku}
                 td #{goodName}
-                td #{stockQty}/#{reserveQty}
+                td #{stockQty}
+                  if absent
+                    i.big.warning.sign.icon
                 td.collapsing
                   h2.ui.header #{packedQty} / #{qty}
                     if isQtyMoreThan1
@@ -67,30 +61,8 @@
         .four.wide.column
           .ui.sticky.fixed
             .ui.card
-              .ui.slide.reveal.image
-                img.visible.content(src="{{goodDetails.imageUrl}}")
-                .ui.grid.hidden.content 
-                  .four.wide.column
-                    .ui.vertical.buttons
-                      .ui.button А
-                      .ui.button Б
-                      .ui.button В
-                      .ui.button Г
-                      .ui.button Д
-                      .ui.button Е
-                      .ui.button Ж
-                      .ui.button З
-                      .ui.button И
-                  .four.wide.column
-                    .ui.vertical.buttons
-                      .ui.button 0
-                      .ui.button 1
-                      .ui.button 2
-                      .ui.button 3
-                      .ui.button 4
-                      .ui.button 5
-                  .four.wide.column
-                    #new-place-input.ui.input
+              .image
+                img(src="{{goodDetails.imageUrl}}")
               .content
                 .header {{goodDetails.goodName}}
                 .meta {{goodDetails.sku}}

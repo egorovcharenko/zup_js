@@ -13,7 +13,7 @@ Meteor.methods
         console.log "#{state.name} \t\t #{daysToDropReserve}"
         if not isNaN(daysToDropReserve)
           # нужно в этом статусе сбрасывать резерв?
-          if daysToDropReserve > 0
+          if daysToDropReserve >= 0
             # пройтись по всем заказам
             _.each Orders.find({stateUuid: state.uuid}).fetch(), (order) ->
               # сколько времени прошло с последнего статуса?
@@ -21,7 +21,7 @@ Meteor.methods
                 # прошло больше времени чем нужно?
                 testResult = (moment().add(daysToDropReserve, 'days')).isAfter(moment().add(historyRecord.date))
                 #console.log "order: #{order.name}, daysToDropReserve:#{daysToDropReserve}, lastChangeDate:#{moment(historyRecord.date).format()}, testResult:", testResult
-                if testResult
+                if testResult or daysToDropReserve == 0
                   # снять резерв
                   dataObject = {}
                   dataObject.orderName = order.name
@@ -40,7 +40,7 @@ Meteor.methods
       client = moyskladPackage.createClient()
       tools = moyskladPackage.tools
       client.setAuth 'admin@allshellac', 'qweasd'
-      order = Orders.findOne({uuid: entityUuid})
+      order = client.load('customerOrder', entityUuid) #Orders.findOne({uuid: entityUuid})
       changed = false
       _.each order.customerOrderPosition, (position) ->
         if setReserve
@@ -61,6 +61,6 @@ Meteor.methods
       if changed
         newEntity = client.save(order)
         console.log "new reserve sent to MS for order #{order.name}"
-      done null, "Заменено"
+      done null, "Резерв изменен"
     )
     response.result

@@ -2,16 +2,44 @@ Template.buyinglist.helpers
   settings: () ->
     {
       collection: "goods_special_publish"
-      rowsPerPage: 500
+      rowsPerPage: 5000
       showFilter: true
       fields: [{
-          fieldId: "includeInNextBuyingQty"
-          key:'includeInNextBuyingQty'
-          label:"Сколько будет включено в следующую закупку"
-        }, {
           fieldId: "name"
           key:'name'
           label:"Название"
+        },{
+          fieldId: "stockQty"
+          key:'stockQty'
+          label:"Остаток"
+        },{
+          fieldId: "reserveQty"
+          key:'reserveQty'
+          label:"Резерв"
+        },{
+          fieldId: "realAvailableQty"
+          key:'realAvailableQty'
+          label:"Доступно"
+        },{
+          fieldId: "includeInNextBuyingQty"
+          key:'includeInNextBuyingQty'
+          label:"Сколько будет включено в следующую закупку под заказ"
+        },{
+          fieldId: "boughtOnLastPeriodsQty"
+          key:'boughtOnLastPeriodsQty'
+          label:"Закуплено в пред период"
+        }, {
+          fieldId: "boughtOnLastPeriodsOrders"
+          key:'boughtOnLastPeriodsOrders'
+          label:"Заказов за пред период"
+        }, {
+          fieldId: "perWeekQtyNeeded"
+          key:'perWeekQtyNeeded'
+          label:"Расход в неделю"
+        },{
+          fieldId: "includeInNextBuyingStockQty"
+          key:'includeInNextBuyingStockQty'
+          label:"Сколько будет включено в следующую закупку про запас"
         }, {
           fieldId: "supplier"
           key:'supplierUuid'

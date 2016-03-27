@@ -45,6 +45,16 @@ Meteor.methods
                       else
                         entity.actions = [{type:"stateChange", date: new Date()}]
                   else if entityName is "good"
+                    if savedEntity.perWeekQtyNeeded?
+                      entity.perWeekQtyNeeded = savedEntity.perWeekQtyNeeded
+                    if savedEntity.includeInNextBuyingStockQty?
+                      entity.includeInNextBuyingStockQty = savedEntity.includeInNextBuyingStockQty
+                    if savedEntity.boughtOnLastPeriodsQty?
+                      entity.boughtOnLastPeriodsQty = savedEntity.boughtOnLastPeriodsQty
+                    if savedEntity.boughtOnLastPeriodsOrders?
+                      entity.boughtOnLastPeriodsOrders = savedEntity.boughtOnLastPeriodsOrders
+                    if savedEntity.includeInNextStockBuyingQty?
+                      entity.includeInNextStockBuyingQty = savedEntity.includeInNextStockBuyingQty
                     if savedEntity.outOfStock?
                       entity.outOfStock = savedEntity.outOfStock
                     if savedEntity.stockQty?

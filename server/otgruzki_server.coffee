@@ -6,6 +6,13 @@ Meteor.methods
     tools = moyskladPackage.tools
     client.setAuth 'admin@allshellac', 'qweasd'
     order = Orders.findOne {uuid:orderUuid}
+
+    # проверить чтобы отгрузок не было уже
+    existingDemand = Demands.findOne {customerOrderUuid: orderUuid, applicable: true}
+    if existingDemand?
+      console.log "Отгрузка для данного заказа уже создана:", existingDemand
+      throw new Meteor.Error "stock-exists", "Отгрузка для данного заказа уже создана"
+
     demand = {
       "TYPE_NAME" : "moysklad.demand",
       "customerOrderUuid" : orderUuid,
@@ -19,11 +26,11 @@ Meteor.methods
       "payerVat" : true,
       "rate" : 1,
       "vatIncluded" : true,
-      "name" : uuid.v4(),
-      "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-      "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-      "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
-      "ownerUid" : "admin@allshellac",
+      #"name" : uuid.v4(),
+      "accountUuid" : order.accountUuid,
+      "accountId" : order.accountId,
+      "groupUuid" : order.groupUuid,
+      "ownerUid" : order.ownerUid,
       "shared" : false,
       "shipmentOut": []
     }
@@ -57,11 +64,11 @@ Meteor.methods
                 "payerVat" : true,
                 "rate" : 1,
                 "vatIncluded" : true,
-                "name" : uuid.v4(),
-                "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-                "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-                "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
-                "ownerUid" : "alina@allshellac",
+                #"name" : uuid.v4(),
+                "accountUuid" : order.accountUuid,
+                "accountId" : order.accountId,
+                "groupUuid" : order.groupUuid,
+                "ownerUid" : order.ownerUid,
                 "shared" : false,
                 "results": [],
                 "material": []
@@ -81,9 +88,9 @@ Meteor.methods
                       "discount" : 0,
                       "quantity" : material.quantity * qtyMultiplier,
                       "goodUuid" : material.goodUuid,
-                      "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-                      "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-                      "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
+                      "accountUuid" : order.accountUuid,
+                      "accountId" : order.accountId,
+                      "groupUuid" : order.groupUuid,
                       "ownerUid" : "alina@allshellac",
                       "shared" : false,
                       "basePrice" : {
@@ -107,9 +114,9 @@ Meteor.methods
                   "goodUuid" : product.goodUuid,
                   "planUuid" : plan.uuid,
                   "quantity" : qtyNeeded * product.quantity,
-                  "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-                  "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-                  "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
+                  "accountUuid" : order.accountUuid,
+                  "accountId" : order.accountId,
+                  "groupUuid" : order.groupUuid,
                   "ownerUid" : "admin@allshellac",
                   "shared" : true
                 }
@@ -124,13 +131,13 @@ Meteor.methods
               throw new Meteor.Error "stock-insufficient", "При отгрузке произошла ошибка - не достаточно товара #{good.name}, нужно #{pos.quantity}, а в наличии только #{good.stockQty}"
           demand.shipmentOut.push {
             "TYPE_NAME" : "moysklad.shipmentOut",
-            "discount" : 0,
+            "discount" : pos.discount,
             "quantity" : pos.quantity,
             "goodUuid" : good.uuid,
             "vat" : 0,
-            "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-            "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-            "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
+            "accountUuid" : order.accountUuid,
+            "accountId" : order.accountId,
+            "groupUuid" : order.groupUuid,
             "ownerUid" : "admin@allshellac",
             "shared" : false,
             "basePrice" : pos.basePrice,
@@ -153,9 +160,9 @@ Meteor.methods
                 "quantity" : 1,
                 "goodUuid" : deliveryGood.uuid,
                 "vat" : 0,
-                "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-                "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-                "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
+                "accountUuid" : order.accountUuid,
+                "accountId" :  order.accountId,
+                "groupUuid" : order.groupUuid,
                 "ownerUid" : "admin@allshellac",
                 "shared" : false,
                 "basePrice" : 0,
@@ -164,6 +171,7 @@ Meteor.methods
             else
               throw new Meteor.Error "stock-insufficient", "Нужно завести и оприходовать доставку с названием #{deliveryName}"
             if deliveryGood.stockQty < 1
+              throw new Meteor.Error "stock-insufficient", "Не достаточное количество доставки с именем: #{deliveryName}"
               # создать приемку для нужной доставки
               supply = {
                 "TYPE_NAME" : "moysklad.supply",
