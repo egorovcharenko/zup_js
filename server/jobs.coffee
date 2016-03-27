@@ -54,13 +54,6 @@ processMSJobsWorker = (job, cb) ->
       Meteor.call 'calculateBuyingQty', (error, result) ->
         if not error?
           job.log "успешно, результат: #{result}"
-          #job.done()
-        else
-          job.log "ошибка: #{error}"
-          #job.fail()
-      Meteor.call 'createBuyingRequest', (error, result) ->
-        if not error?
-          job.log "успешно, результат: #{result}"
           job.done()
         else
           job.log "ошибка: #{error}"
@@ -85,6 +78,7 @@ processMSJobsWorker = (job, cb) ->
           job.fail()
       return cb()
 
+
 processStockJobsWorker = (job, cb) ->
   switch job.type
     when "loadStockFromMS"
@@ -95,7 +89,7 @@ processStockJobsWorker = (job, cb) ->
         else
           job.log "ошибка: #{error}"
           job.fail()
-      return cb()
+          return cb()
     when "sendStockToMagento"
       Meteor.call 'sendStockToMagento', job, (error, result) ->
         if not error?
@@ -104,7 +98,7 @@ processStockJobsWorker = (job, cb) ->
         else
           job.log "ошибка: #{error}"
           job.fail()
-      return cb()
+          return cb()
 
 Meteor.startup ->
   myJobs.startJobServer()
@@ -175,9 +169,9 @@ Meteor.startup ->
   # Начать обрабатывать задачи
   #myJobs.processJobs ['loadAllDataMoyskladPeriodic','setEntityStateByUuid','updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
 
-  myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento', 'setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
+  myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
 
-  #myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
+  myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
 
   #myJobs.processJobs [], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
 
