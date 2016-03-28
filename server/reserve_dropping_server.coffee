@@ -15,7 +15,7 @@ Meteor.methods
           # нужно в этом статусе сбрасывать резерв?
           if daysToDropReserve >= 0
             # пройтись по всем заказам
-            _.each Orders.find({stateUuid: state.uuid}).fetch(), (order) ->
+            _.each Orders.find({stateUuid: state.uuid, reservedSum: {$gt: 0}}).fetch(), (order) ->
               needToDropReserve = false
               if daysToDropReserve == 0
                 needToDropReserve = true
@@ -26,8 +26,6 @@ Meteor.methods
                 if testResult
                   # снять резерв
                   needToDropReserve = true
-                else
-                  console.log "заказ слишком свежий: #{order.name}"
               if needToDropReserve
                 dataObject = {}
                 dataObject.orderName = order.name
