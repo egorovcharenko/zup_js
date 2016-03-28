@@ -76,20 +76,13 @@ Meteor.methods
                   fieldValue = action.params.fieldValue
                   fieldType = action.params.fieldType
                   console.log "Устанавливаем у заказа #{orderName} параметр #{fieldName} в значение #{fieldValue}"
-
                   attr = [ {
                     name: fieldName
                     value: fieldValue
                     type: fieldType
                   } ]
-
                   orderUuid = Orders.findOne(name: orderName).uuid
-
-                  job = new Job myJobs, 'updateEntityMS', {entityType: 'customerOrder', entityUuid: orderUuid, data: null, attributes: attr }
-
-                  job.priority('high')
-                    .retry({ retries: 5, wait: 1*1000})
-                    .save()
+                  Meteor.call "updateEntityMS", 'customerOrder', orderUuid, null, attr
 
                 when "log"
                   logEntry = {
@@ -159,6 +152,24 @@ Meteor.methods
                     if result
                       ;
 
+                when "setOrderNeededState"
+                  # проходимся по всем товарам
+                  orderName = action.params.orderName
+                  console.log "нужно в заказе #{orderName} проставить нужный статус в зависимости от наличия";
+                  order = Orders.findOne(name: orderName)
+                  needToBuy = false
+                  _.each order.customerOrderPosition, (pos) ->
+                    good = Goods.findOne {uuid: pos.goodUuid}
+                    if good?
+                      if good.realAvailableQty < pos.quantity
+                        needToBuy = true
+                  if needToBuy
+                    # если чего-то нет, то выставляем "Требуется закупка"
+                    result = Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid, "7f224366-68d0-11e4-7a07-673d0003202a", (error, result) ->
+                  else
+                    # если все есть в наличии, то выставляем статус "На сборку"
+                    result = Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid, "ba02cb40-691b-11e4-90a2-8ecb0052ff42", (error, result) ->
+                  console.log "result:", result
                 when "setNextStep"
                   # найти следующий шаг
                   console.log "Переходим к действию #{action.params.nextStepId}"

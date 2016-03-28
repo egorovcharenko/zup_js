@@ -4,7 +4,7 @@ getLastTimeRun = (entityName) ->
 
 @findMetadataUuidByName = (entityName, attrName) ->
   #console.log("findMetadataUuidByName: entityName:" + entityName + ", attrName: " + attrName);
-  embEntityMetadata = EmbeddedEntityMetadata.findOne(name: entityName)
+  embEntityMetadata = EmbeddedEntityMetadata.findOne {name: entityName}
   #console.log("embEntityMetadata: " + objToString(embEntityMetadata));
   result = undefined
   _.every embEntityMetadata.attributeMetadata, (attr) ->
@@ -12,8 +12,8 @@ getLastTimeRun = (entityName) ->
     if attr.name == attrName
       result = attr.uuid
       return false
-    true
-  result
+    return true
+  return result
 
 objToString = (obj) ->
   str = ''
@@ -94,6 +94,9 @@ Meteor.methods
       # update attribs
       _.each attributes, (attrib) ->
         metadataUuid = findMetadataUuidByName('CustomerOrder', attrib.name)
+        if not metadataUuid?
+          throw new Meteor.Error "Не нашли нужный атрибут", "attrib-not-found"
+        console.log "metadataUuid: #{metadataUuid}"
         test = tools.getAttr(entityFromMS, metadataUuid)
         switch attrib.type
           when 'string'
@@ -104,9 +107,11 @@ Meteor.methods
             test.employeeValueUuid = attrib.value
           when 'picklist'
             oldValue = test.metadataUuid
-            test.metadataUuid = attrib.value
-        logChangesInDescription entityFromMS, attrib.name, oldValue, attrib.value
+            test.entityValueUuid = attrib.value
+        #console.log "test:", test
+        #logChangesInDescription entityFromMS, attrib.name, oldValue, attrib.value
         return
+      #console.log "entity:", entityFromMS
       newEntity = client.save(entityFromMS)
       done null, "Заменено"
     )

@@ -27,16 +27,16 @@
                     "orderName": "%orderName%"
                   }
                 }, {
-                  "name": "setNextStep",
-                  "params": {
-                    "nextStepId": "1"
-                  }
-                } , {
                   "name": "setOrderField",
                   "params": {
                     "fieldName": "Сотрудник",
                     "fieldValue": "%msUserId%",
                     "fieldType": "employee"
+                  }
+                }, {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "1"
                   }
                 }
               ]
@@ -65,14 +65,14 @@
                     "orderName": "%orderName%"
                   }
                 }, {
-                  "name": "setNextStep",
-                  "params": {
-                    "nextStepId": "999"
-                  }
-                }, {
                   "name": "setAction",
                   "params": {
                     "type": "Звонок"
+                  }
+                }, {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "999"
                   }
                 }
               ]
@@ -87,14 +87,14 @@
                     "orderName": "%orderName%"
                   }
                 }, {
-                  "name": "setNextStep",
-                  "params": {
-                    "nextStepId": "2"
-                  }
-                }, {
                   "name": "setAction",
                   "params": {
                     "type": "Звонок"
+                  }
+                }, {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "2"
                   }
                 }
               ]
@@ -110,11 +110,6 @@
               "name": "Заказ подтвержден",
               "actions": [
                 {
-                  "name": "setNextStep",
-                  "params": {
-                    "nextStepId": "4"
-                  }
-                }, {
                   "name": "log",
                   "params": {
                     "type": "Заказ",
@@ -126,15 +121,10 @@
                   "params": {
                     "orderName": "%orderName%"
                   }
-                }
-              ]
-            }, {
-              "name": "Попытка отказа от заказа",
-              "actions": [
-                {
+                }, {
                   "name": "setNextStep",
                   "params": {
-                    "nextStepId": "999"
+                    "nextStepId": "4"
                   }
                 }
               ]
@@ -277,13 +267,13 @@
         }, {
           "id": "7",
           "name": "Проставить некоторые поля",
-          "description": "План. дата отгрузки, курьеры, статус",
+          "description": "Статус в зависимости от наличия",
           "options": [
             {
-              "name": "Проставить все автоматом",
+              "name": "Проставить автоматом",
               "actions": [
                 {
-                  "name": "setOrderPlannedSendDate",
+                  "name": "setOrderNeededState",
                   "params": {
                     "orderName": "%orderName%"
                   }
@@ -374,6 +364,16 @@
                   "name": "setAction",
                   "params": {
                     "type": "Звонок"
+                  }
+                }
+              ]
+            }, {
+              "name": "Пропустить",
+              "actions": [
+                {
+                  "name": "setNextStep",
+                  "params": {
+                    "nextStepId": "999"
                   }
                 }
               ]
