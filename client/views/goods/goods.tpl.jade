@@ -1,6 +1,16 @@
 +reactiveTable(collection=collection fields=fields settings=settings)
 .ui.modal
   .header Что сделать с товаром?
-  .content 
+  .content
+    .ui.segment
+      .ui.button Списать все что есть в наличии
+    .ui.segment
+      .ui.button Очистить место хранения
+    .ui.segment
+      .ui.button Установить новый остаток
+    .ui.segment
+      .ui.action.input
+        input(name="new_qty" type="text" placeholder="Введите новое количество ...")
+        button#set-new-qty.ui.button Установить новое количество
   .actions
     .ui.approve.button Закрыть

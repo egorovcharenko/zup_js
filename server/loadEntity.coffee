@@ -23,6 +23,10 @@ Meteor.methods
                 savedEntity = collection.findOne(uuid: entity.uuid)
                 if savedEntity?
                   if entityName is "customerOrder"
+                    if savedEntity.processingResult?
+                      entity.processingResult = savedEntity.processingResult
+                    if savedEntity.pendingChanges?
+                      entity.pendingChanges = savedEntity.pendingChanges
                     if savedEntity.timeLeft?
                       entity.timeLeft = savedEntity.timeLeft
                     if savedEntity.actions?
@@ -111,12 +115,13 @@ Meteor.methods
             unless countAlready < maxCountToLoad and entitiesFromMs.length > 0
               break
         catch error
+          done null, toReturn
           console.log "error:", error
       done null, toReturn
       return
     )
     #console.log 'loadEntityFromMS ended'
-    response.result
+    return response.result
   toggleChecked: (entity) ->
     Orders.update entity._id, $set: checked: !entity.checked
     return

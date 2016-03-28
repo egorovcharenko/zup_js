@@ -144,7 +144,9 @@ Meteor.methods
     Meteor.call 'loadEntityFromMS', entityMSName, collectionName, getLastTimeRun(entityMSName), (error, result) ->
       if not error?
         Meteor.call 'updateTimestampFlag', entityMSName, currentTime
+        #console.log "Все ок"
       else
+        console.log "ошибка:", error
         Meteor.call "logSystemEvent", "loadEntityGeneric", "2. error", "Ошибка: #{error}"
 
   loadStockFromMS: () ->
@@ -309,13 +311,10 @@ Meteor.methods
 
   loadAllEntities: () ->
     #console.log "loadAllEntities started"
-    #Meteor._sleepForMs(1000);
     Meteor.call 'loadEntityGenericMethod', 'company', 'Companies'
+    Meteor._sleepForMs(500);
     Meteor.call 'loadEntityGenericMethod', 'customerOrder', 'Orders'
     Meteor._sleepForMs(500);
-    # Meteor.call 'loadTracksFromAplix', @getLastTimeRun 'aplix_tracks', (error, result) ->
-    #   if not error?
-    #     Meteor.call 'updateTimestampFlag', 'aplix_tracks'
     #console.log "loadAllEntities ended"
   closeOrdersInMS: () ->
     console.log "closeOrdersInMS начата"

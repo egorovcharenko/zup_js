@@ -6,4 +6,10 @@ Meteor.startup(function () {
 
   var basicAuth = new HttpBasicAuth("alex", "qweasd");
   basicAuth.protect();
+
+  // создать коллекцию настроек если ее нет
+  settingsCount = Settings.find({}).count();
+  if (settingsCount == 0) {
+    Settings.insert({name: "empty", value: "0"});
+  }
 });

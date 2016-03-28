@@ -58,3 +58,12 @@ Template.goods.events
   'click .open-good': (event, template) ->
     goodUuid = event.target.dataset.goodUuid
     $('.ui.modal').modal('show')
+  'click #set-new-qty': (event, template) ->
+    dataObject = {}
+    newQty = $('[name=new_qty]').val()
+    dataObject.newQty = newQty
+    Meteor.call "setNewGoodQty", dataObject, (error, result) ->
+      if error
+        console.log "error", error
+      if result
+        ;

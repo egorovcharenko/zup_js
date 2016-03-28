@@ -1,4 +1,7 @@
 .ui.segment
+   p Результат обработки:
+   h1 {{{order.processingResult}}}
+.ui.segment
   #goBack.ui.basic.button
     i.arrow.left.icon
     | Назад
@@ -9,7 +12,7 @@
     #orderFinished.ui.teal.button Заказ собран
   #orderNotFinished.ui.red.button
     | Заказ не собран, не хватает товара
-  Не трогать:
+  | Не трогать:
   #otgruzit.ui.gray.button
     | Отгрузить заказ
   span {{orderDeliveryWay}}

@@ -24,6 +24,16 @@ Template.loadData.helpers
     else
       false
 Template.loadData.events
+  'click #drop_reserve': (event, template) ->
+    job = new Job myJobs, 'periodicalDropReserve', {}
+    job.priority('high')
+      .retry({ retries: 1, wait: 1*1000})
+      .save()
+  'click #make_buying_request': (event, template) ->
+    job = new Job myJobs, 'calculateBuyingQty', {}
+    job.priority('high')
+      .retry({ retries: 1, wait: 1*1000})
+      .save()
   'click #load_goods': (event, template) ->
     loadEntityGeneric 'good', 'Goods'
   'click #load_companies': (event, template) ->

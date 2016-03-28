@@ -1,1 +1,3 @@
-i18n.setLanguage('ru')
+Meteor.startup ->
+  i18n.setLanguage('ru')
+  return

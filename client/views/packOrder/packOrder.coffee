@@ -48,6 +48,8 @@ Template.packOrder.events
   'click #orderFinished': (event, template) ->
     try
       console.log "orderFinished"
+      orderUuid = Orders.findOne(name: Router.current().params.orderName).uuid
+      pendingChanges = []
       attr = [ {
         name: 'Кто собрал'
         value: Meteor.user().profile.msUserId
@@ -65,38 +67,28 @@ Template.packOrder.events
           value: marker
           type: 'string'
         }
-      orderUuid = Orders.findOne(name: Router.current().params.orderName).uuid
-      # изменить маркер и сборщика
-      job = new Job myJobs, 'updateEntityMS', {entityType: 'customerOrder', entityUuid: orderUuid, data: null, attributes: attr}
-      job.priority('high')
-        .retry({ retries: 2, wait: 1*1000})
-        .save()
-
-      # изменить статус на "Заказ собран"
-      job = new Job myJobs, 'setEntityStateByUuid', {entityType: 'customerOrder', entityUuid: orderUuid, newStateUuid: "7a657fee-68d0-11e4-7a07-673d00031c07"}
-      job.priority('high')
-        .retry({ retries: 2, wait: 1*1000})
-        .save()
-
       # отгрузить заказ
-      Meteor.call "otgruzitZakaz", orderUuid, (error, result) ->
-        if error?
-          FlashMessages.sendError "Заказ не отгружен, ошибка: #{error.message}"
-          console.log "error:", error
-        if result?
-          FlashMessages.sendSuccess "Заказ успешно отгружен, результат: #{result.message}"
-          console.log "result:", result
-
+      pendingChanges.push {
+        type: "otgruzitZakaz"
+        value: ""
+      }
+      # изменить маркер и сборщика
+      pendingChanges.push {
+        type: "changeAttributes"
+        value: attr
+      }
+      # изменить статус на "Заказ собран"
+      pendingChanges.push {
+        type: "setState"
+        value: "7a657fee-68d0-11e4-7a07-673d00031c07"
+      }
       # снять резерв
-      Meteor.call "setOrderReserve", orderUuid, false, (error, result) ->
-        if error
-          FlashMessages.sendError "С заказа не снят резерв, ошибка: #{error.message}"
-          console.log "error:", error
-        if result
-          FlashMessages.sendSuccess "С заказа успешно снят резерв, результат: #{result.message}"
-          console.log "result:", result
-
-      Router.go 'ordersList', orderState: 'На сборку'
+      pendingChanges.push {
+        type: "setOrderReserve"
+        value: false
+      }
+      Meteor.call "startProcessingChanges", orderUuid, pendingChanges
+      #Router.go 'ordersList', orderState: 'На сборку'
       console.log "orderFinished finished"
     catch error
       console.log "error:", error
