@@ -25,7 +25,7 @@ Meteor.methods
                 Goods.update {uuid: good.uuid}, {$set: {includeInNextBuyingQty: qtyToOrder}, $push: {ordersForBuy: {name: order.name, state: state.name, qty: pos.quantity}}}
       # закупка про запас
       # пройтись по всем отгрузкам за x недель
-      weekToAnalyze = 12
+      weekToAnalyze = 1
       minNumberOfOtgruzhenoQty = 3
       minNumberOfOrders = 2
       maxPriceToIncNumber = 150
@@ -104,6 +104,7 @@ Meteor.methods
           #console.log "podZapasString:#{podZapasString}, d:#{d}"
           #console.log "test: #{later.schedule(later.parse.text(podZapasString)).next(5)}"
           if later.schedule(later.parse.text(podZapasString)).isValid(d) or dataObject.forceBuying?
+            console.log "today is the day!"
             weekToBuyInAdvanceMetadata = _.find(supplier.attribute, (attr) -> attr.metadataUuid == "c5723e59-f3f7-11e5-7a69-970d0029005d")
             if weekToBuyInAdvanceMetadata?
               weekToBuyInAdvance = weekToBuyInAdvanceMetadata.longValue
@@ -159,6 +160,7 @@ Meteor.methods
         if podZakazStringMeta?
           podZakazString = podZakazStringMeta.valueString
           if later.schedule(later.parse.text(podZakazString)).isValid(d) or dataObject.forceBuying?
+            console.log "today is the day 2!"
             # пройтись по списку товаров этого поставщика в списке на закупку
             _.each Goods.find({includeInNextBuyingQty: {$gt: 0}, supplierUuid: supplier.uuid}).fetch(), (good) ->
               purchaseOrderPosition = {

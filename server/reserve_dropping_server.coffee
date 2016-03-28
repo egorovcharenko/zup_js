@@ -16,21 +16,26 @@ Meteor.methods
           if daysToDropReserve >= 0
             # пройтись по всем заказам
             _.each Orders.find({stateUuid: state.uuid}).fetch(), (order) ->
+              needToDropReserve = false
+              if daysToDropReserve == 0
+                needToDropReserve = true
               # сколько времени прошло с последнего статуса?
               _.each StatusHistory.find({orderName: order.name, newStateUuid: state.uuid}).fetch(), (historyRecord) ->
                 # прошло больше времени чем нужно?
                 testResult = (moment().add(daysToDropReserve, 'days')).isAfter(moment().add(historyRecord.date))
-                #console.log "order: #{order.name}, daysToDropReserve:#{daysToDropReserve}, lastChangeDate:#{moment(historyRecord.date).format()}, testResult:", testResult
-                if testResult or daysToDropReserve == 0
+                if testResult
                   # снять резерв
-                  dataObject = {}
-                  dataObject.orderName = order.name
-                  Meteor.call "setOrderReserve", order.uuid, false, (error, result) ->
-                    if error
-                      console.log "error:", error
-                    if result
-                      ;
-                else console.log "заказ слишком свежий: #{order.name}"
+                  needToDropReserve = true
+                else
+                  console.log "заказ слишком свежий: #{order.name}"
+              if needToDropReserve
+                dataObject = {}
+                dataObject.orderName = order.name
+                Meteor.call "setOrderReserve", order.uuid, false, (error, result) ->
+                  if error
+                    console.log "error:", error
+                  if result
+                    ;
     catch error
       console.log "error:", error
 

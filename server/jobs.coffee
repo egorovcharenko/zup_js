@@ -70,7 +70,10 @@ processMSJobsWorker = (job, cb) ->
           job.fail()
       return cb()
     when "calculateBuyingQty"
-      Meteor.call 'calculateBuyingQty', (error, result) ->
+      dataObject = {}
+      if job.data.forceBuying?
+        dataObject.forceBuying = job.data.forceBuying
+      Meteor.call 'calculateBuyingQty', dataObject, (error, result) ->
         if not error?
           job.log "успешно, результат: #{result}"
           job.done()

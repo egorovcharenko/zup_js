@@ -60,8 +60,3 @@ Template.buyinglist.helpers
     }
   supplierHelper: (supplierUuid) ->
     Companies.findOne {uuid: supplierUuid}
-
-Template.buyinglist.events
-  "click #calculateBuyingQty": (event, template) ->
-    dataObject = {}
-    Meteor.call "calculateBuyingQty", dataObject
