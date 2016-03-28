@@ -147,7 +147,7 @@ Meteor.startup ->
   job = new Job myJobs, 'calculateNextArrivalDates', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('every 60 minute')})
+    .repeat({schedule: myJobs.later.parse.text('every 1 minute')})
     .save({cancelRepeats: true})
 
   # расчет списка на закупку

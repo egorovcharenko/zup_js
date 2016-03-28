@@ -103,7 +103,7 @@ Meteor.methods
           podZapasString = podZapasMetadata.valueString
           #console.log "podZapasString:#{podZapasString}, d:#{d}"
           #console.log "test: #{later.schedule(later.parse.text(podZapasString)).next(5)}"
-          if later.schedule(later.parse.text(podZapasString)).isValid(d)
+          if later.schedule(later.parse.text(podZapasString)).isValid(d) or dataObject.forceBuying?
             weekToBuyInAdvanceMetadata = _.find(supplier.attribute, (attr) -> attr.metadataUuid == "c5723e59-f3f7-11e5-7a69-970d0029005d")
             if weekToBuyInAdvanceMetadata?
               weekToBuyInAdvance = weekToBuyInAdvanceMetadata.longValue
@@ -158,7 +158,7 @@ Meteor.methods
         podZakazStringMeta = _.find(supplier.attribute, (attr) -> attr.metadataUuid == "c5723a4e-f3f7-11e5-7a69-970d0029005c")
         if podZakazStringMeta?
           podZakazString = podZakazStringMeta.valueString
-          if later.schedule(later.parse.text(podZakazString)).isValid(d)
+          if later.schedule(later.parse.text(podZakazString)).isValid(d) or dataObject.forceBuying?
             # пройтись по списку товаров этого поставщика в списке на закупку
             _.each Goods.find({includeInNextBuyingQty: {$gt: 0}, supplierUuid: supplier.uuid}).fetch(), (good) ->
               purchaseOrderPosition = {

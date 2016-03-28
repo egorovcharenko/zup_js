@@ -30,7 +30,7 @@ Template.loadData.events
       .retry({ retries: 1, wait: 1*1000})
       .save()
   'click #make_buying_request': (event, template) ->
-    job = new Job myJobs, 'calculateBuyingQty', {}
+    job = new Job myJobs, 'calculateBuyingQty', {forceBuying:true}
     job.priority('high')
       .retry({ retries: 1, wait: 1*1000})
       .save()
