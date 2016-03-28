@@ -11,7 +11,6 @@ Template.viewlog.helpers {
           moment.locale('ru');
           moment(new Date(value)).format('DD.MM.YYYY в HH:mm')
           }, 'orderName', 'userName', "text", 'type'],
-      class: "ui celled table",
-
+      class: "ui celled table"
     }
 }

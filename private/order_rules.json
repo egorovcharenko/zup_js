@@ -35,6 +35,7 @@
       "ruleAction": "Связаться с клиентом по поводу заказа",
       "ruleStartMinutesOffset": 0,
       "ruleDeadlineMinutesOffset": 1,
+      "processName": "Звонок",
       "ruleResetTimerAction": "Звонок",
       "statusChangeAffects": true,
       "gotoScreen": "order"

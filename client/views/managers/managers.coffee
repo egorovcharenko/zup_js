@@ -73,12 +73,13 @@ Template.managers.helpers
           key:'buyGoodsInThisState'
           label:"Владелец заказа"
           fn: (value, object, key)->
-            res = {}
+            res = '-'
             _.each object.attribute, (attr) ->
               if attr.metadataUuid is "7b7ebcf8-d4db-11e4-ac81-0cc47a0658aa"
                 empl = Employees.findOne({uuid: attr.employeeValueUuid})
-                return empl
-            return '-'
+                if empl?
+                  res = empl.name
+            return res
         }, {
           fieldId: "nextAction"
           key:'uuid'
@@ -111,7 +112,7 @@ Template.managers.helpers
             fn: (value, object, key)->
               res = orderActionHelper object
               return res.nextActionEnd
-            }, {
+          }, {
               fieldId: "timeLeft"
               key:'timeLeft'
               label:"Осталось времени"

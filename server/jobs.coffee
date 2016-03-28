@@ -133,7 +133,7 @@ Meteor.startup ->
   job = new Job myJobs, 'setOrderActionsParameters', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('every 1 minute')})
+    .repeat({schedule: myJobs.later.parse.text('every 15 seconds')})
     .save({cancelRepeats: true})
 
   # автоматический сброс резервов
@@ -196,7 +196,7 @@ Meteor.startup ->
   job = new Job myJobs, 'loadNotPrimaryEntities', {}
   job.priority('normal')
     .retry({retries: 5, wait: 1*1000})
-    .repeat({schedule: myJobs.later.parse.text('every 5 minutes')}) # every 5 minutes
+    .repeat({schedule: myJobs.later.parse.text('every 1 minutes')}) # every 5 minutes
     .save({cancelRepeats: true})
 
   # Начать обрабатывать задачи
