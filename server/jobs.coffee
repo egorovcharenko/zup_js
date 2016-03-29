@@ -136,7 +136,7 @@ Meteor.startup ->
   job = new Job myJobs, 'setOrderActionsParameters', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('every 15 seconds')})
+    .repeat({schedule: myJobs.later.parse.text('every 60 seconds')})
     .save({cancelRepeats: true})
 
   # автоматический сброс резервов
@@ -251,7 +251,6 @@ Meteor.startup ->
       else
         job.fail "Bad job type in worker"
         cb()
-
   myJobs.find({ type: { $in: ['cleanup', 'autofail']}, status: 'ready' })
     .observe
       added: () -> q.trigger()

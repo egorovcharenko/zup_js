@@ -298,8 +298,8 @@ Meteor.methods
       Meteor._sleepForMs(500);
       Meteor.call 'loadEntityGenericMethod', 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
       Meteor._sleepForMs(500);
-      Meteor.call 'loadEntityGenericMethod', 'PurchaseOrder', 'PurchaseOrders'
-      Meteor._sleepForMs(500);
+      #Meteor.call 'loadEntityGenericMethod', 'PurchaseOrder', 'PurchaseOrders'
+      #Meteor._sleepForMs(500);
       Meteor.call 'loadEntityGenericMethod', 'Employee', 'Employees'
       Meteor._sleepForMs(500);
       Meteor.call 'loadEntityGenericMethod', 'ProcessingPlan', 'ProcessingPlans'
