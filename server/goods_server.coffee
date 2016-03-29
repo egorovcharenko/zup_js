@@ -6,6 +6,9 @@ Meteor.methods
       tools = moyskladPackage.tools
       client.setAuth 'admin@allshellac', 'qweasd'
 
+      # установить последнее время проверки
+      Goods.update {uuid: dataObject.goodUuid}, {$set: {lastTimeChecked: new Date()}}
+
       good = Goods.findOne {uuid: dataObject.goodUuid}
       # сверить разницу - добавлять или отнимать?
       difference = dataObject.newQty - good.stockQty

@@ -19,12 +19,22 @@ Template.moderation.events
     Meteor.call "setOrderReserve", Router.current().data().order.uuid, false
 
 Template.moderation.helpers
+  nextArrivalDate: ()->
+    good = Goods.findOne {uuid: @goodUuid}
+    if good?
+      if good.outOfStockInSupplier?
+        if good.outOfStockInSupplier
+          return "Отсутствует у поставщика"
+      return moment(good.nextDate).format("DD.MM.YYYY")
+    else
+      return "-"
   formatNumber: (num)->
     num.toFixed(2)
   orderPosHelper: ->
     # название товара/услуги
     good = Goods.findOne {uuid: @goodUuid}
     if good?
+      good.realAvailableQtyPlusReserve = good.realAvailableQty + @reserve
       return good
     else
       return Services.findOne {uuid: @goodUuid}
@@ -49,7 +59,7 @@ Template.moderation.helpers
     good = Goods.findOne {uuid: @goodUuid}
     if good?
       if good.realAvailableQty?
-        good.realAvailableQty >= @quantity
+        good.realAvailableQty + @reserve >= @quantity
       else
         true
     else

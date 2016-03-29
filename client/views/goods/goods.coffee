@@ -37,6 +37,13 @@ Template.goods.helpers
           key:'quantityQty'
           label:"Доступно"
         }, {
+          fieldId: "lastTimeChecked"
+          key:'lastTimeChecked'
+          label:"Последний раз проверяли"
+          fn: (value, object)->
+            if value?
+              return moment(value).format("DD.MM.YYYY")
+        }, {
           fieldId: "setNewQty"
           key:'stockQty'
           label:"Установить новое кол-во"

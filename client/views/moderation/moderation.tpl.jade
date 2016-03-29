@@ -40,12 +40,12 @@
               tr
                 th Артикул
                 th Название
-                //th Остаток
-                //th Резерв
+                th Остаток
+                th Резерв
                 //th Доступно
                 th Доступно
                 th Отс. по инф. склада?
-                th Отс. у поставщика?
+                //th Отс. у поставщика?
                 //th Плановая дата поступления если закупим
                 //th Ожидаемая дата поступления
                 th Дата поступления
@@ -64,16 +64,16 @@
                 tr(class="{{#if inStock}}positive{{else}}negative{{/if}}")
                   td #{orderPosHelper.code}
                   td #{orderPosHelper.name}
-                  //td #{orderPosHelper.stockQty}
-                  //td {{orderPosHelper.reserveQty}}
+                  td #{orderPosHelper.stockQty}
+                  td {{orderPosHelper.reserveQty}}
                   //td #{orderPosHelper.quantityQty} 
-                  td #{orderPosHelper.realAvailableQty} 
+                  td #{orderPosHelper.realAvailableQtyPlusReserve} 
                   td
                     {{#if orderPosHelper.outOfStock}}Отсутствует{{/if}}
-                  td {{booleanYesNo orderPosHelper.outOfStockInSupplier}}
+                  //td {{booleanYesNo orderPosHelper.outOfStockInSupplier}}
                   //td {{prettifyDate orderPosHelper.nextPlannedRecieveDate}}
                   //td {{prettifyDate orderPosHelper.nextFactRecieveDate}}
-                  td {{prettifyDate orderPosHelper.nextDate}}
+                  td {{nextArrivalDate}}
                   //td #{orderPosHelper.weight}
                   //td #{orderPosHelper.description}
                   //td {{booleanYesNo orderPosHelper.archived}}
