@@ -10,7 +10,7 @@ Meteor.methods
       client = moyskladPackage.createClient()
       client.setAuth 'admin@allshellac', 'qweasd'
       maxCountToLoad = 50000
-      pageSize = 1
+      pageSize = 100
       query = moyskladPackage.createQuery(updated: $gte: moment(fromLastUpdate).format("YYYYMMDDHHmmss"))
       total = client.total(entityName, query)
       if total > 0
