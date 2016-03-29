@@ -140,7 +140,6 @@ Template.packOrder.events
         console.log "result:", result
         FlashMessages.sendSuccess result
 
-
 Template.packOrder.onRendered = ->
   $('.ui.sticky').sticky content: '#positions-list'
   return

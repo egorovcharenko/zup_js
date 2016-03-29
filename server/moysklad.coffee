@@ -149,10 +149,9 @@ Meteor.methods
     Meteor.call 'loadEntityFromMS', entityMSName, collectionName, getLastTimeRun(entityMSName), (error, result) ->
       if not error?
         Meteor.call 'updateTimestampFlag', entityMSName, currentTime
-        #console.log "Все ок"
       else
-        console.log "ошибка:", error
-        Meteor.call "logSystemEvent", "loadEntityGeneric", "2. error", "Ошибка: #{error}"
+        console.log "ошибка:", error.reason
+        #Meteor.call "logSystemEvent", "loadEntityGeneric", "2. error", "Ошибка: #{error.reason}"
 
   loadStockFromMS: () ->
     moyskladPackage = Meteor.npmRequire('moysklad-client')
@@ -311,6 +310,10 @@ Meteor.methods
       Meteor._sleepForMs(500);
       Meteor.call 'loadEntityGenericMethod', 'Supply', 'Supplies'
       Meteor._sleepForMs(500);
+      Meteor.call 'loadEntityGenericMethod', 'Loss', 'Losses'
+      Meteor._sleepForMs(500);
+      # Meteor.call 'loadEntityGenericMethod', 'Enter', 'Enters'
+      # Meteor._sleepForMs(500);
     catch error
       console.log "error in loadNotPrimaryEntities:", error
 

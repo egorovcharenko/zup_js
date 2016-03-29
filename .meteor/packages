@@ -30,7 +30,6 @@ vsivsi:job-collection
 reactive-var
 numeral:numeral
 jabbslad:basic-auth
-standard-minifiers
 meteor-base
 mobile-experience
 mongo
@@ -57,3 +56,5 @@ aslagle:reactive-table
 anti:i18n
 http
 mrt:later
+standard-minifier-css
+standard-minifier-js

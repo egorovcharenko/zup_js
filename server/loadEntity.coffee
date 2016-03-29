@@ -10,7 +10,7 @@ Meteor.methods
       client = moyskladPackage.createClient()
       client.setAuth 'admin@allshellac', 'qweasd'
       maxCountToLoad = 50000
-      pageSize = 100
+      pageSize = 1
       query = moyskladPackage.createQuery(updated: $gte: moment(fromLastUpdate).format("YYYYMMDDHHmmss"))
       total = client.total(entityName, query)
       if total > 0
@@ -115,13 +115,14 @@ Meteor.methods
             unless countAlready < maxCountToLoad and entitiesFromMs.length > 0
               break
         catch error
-          done null, toReturn
           console.log "error:", error
+          done error, null
       done null, toReturn
-      return
     )
-    #console.log 'loadEntityFromMS ended'
-    return response.result
+    if response.error?
+      throw new Meteor.Error "MS-query-problem", "Ошибка при загрузке данных: #{response.error}"
+    else
+      return response.result
   toggleChecked: (entity) ->
     Orders.update entity._id, $set: checked: !entity.checked
     return

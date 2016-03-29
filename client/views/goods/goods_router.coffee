@@ -1,6 +1,6 @@
 Router.map ->
   @route 'goods',
-    path: '/goods'
+    path: '/goods/:goodSelected?'
     loadingTemplate: 'loading'
     waitOn: ->
       [

@@ -37,18 +37,26 @@ Template.goods.helpers
           key:'quantityQty'
           label:"Доступно"
         }, {
-          fieldId: "includeInNextBuyingQty"
-          key:'includeInNextBuyingQty'
-          label:"Сколько будет включено в следующую закупку"
-        }, {
-          fieldId: "buttons"
-          key:'uuid'
-          label:"Открыть"
+          fieldId: "setNewQty"
+          key:'stockQty'
+          label:"Установить новое кол-во"
           fn: (value, object)->
-            return new Spacebars.SafeString("<div class='ui teal button open-good' data-good-uuid='#{object.uuid}'>Действия с товаром</a>")
+            if not value?
+              value = 0
+            return new Spacebars.SafeString("<input good-uuid='#{object.uuid}' name='new_qty' type='text' value='#{value}'/><div class='ui teal button set-new-qty' data-good-uuid='#{object.uuid}'>Установить новое кол-во</div>")
+        }, {
+          fieldId: "setNewStorage"
+          key:'description'
+          label:"Место хранения"
+          fn: (value, object)->
+            if not value?
+              value = ""
+            return new Spacebars.SafeString("<input good-uuid='#{object.uuid}' name='new_storage' type='text' value='#{value}' placeholder='Ж1-23-4'/><div class='ui teal button set-new-storage' data-good-uuid='#{object.uuid}'>Установить новое место хранения</div>")
         }]
       class: "ui celled table"
     }
+  isAnyGoodSelected: ->
+    Router.current().params.goodSelected?
 
 Template.goods.rendered = ->
   @$('.ui.modal').modal()
@@ -57,13 +65,21 @@ Template.goods.rendered = ->
 Template.goods.events
   'click .open-good': (event, template) ->
     goodUuid = event.target.dataset.goodUuid
+    console.log "goodUuid: #{goodUuid}"
+    Router.go 'goods',
+      goodSelected: goodUuid
     $('.ui.modal').modal('show')
-  'click #set-new-qty': (event, template) ->
+
+  'click .set-new-qty': (event, template) ->
     dataObject = {}
-    newQty = $('[name=new_qty]').val()
-    dataObject.newQty = newQty
-    Meteor.call "setNewGoodQty", dataObject, (error, result) ->
-      if error
-        console.log "error", error
-      if result
-        ;
+    dataObject.goodUuid = event.target.dataset.goodUuid
+    dataObject.newQty = $("input[good-uuid='#{dataObject.goodUuid}'][name='new_qty']").val()
+    console.log "dataObject:", dataObject
+    Meteor.call "setNewGoodQty", dataObject
+
+  'click .set-new-storage': (event, template) ->
+    dataObject = {}
+    dataObject.goodUuid = event.target.dataset.goodUuid
+    dataObject.description = $("input[good-uuid='#{dataObject.goodUuid}'][name='new_storage']").val()
+    console.log "dataObject:", dataObject
+    Meteor.call "setNewGoodStorage", dataObject

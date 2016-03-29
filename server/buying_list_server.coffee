@@ -25,11 +25,11 @@ Meteor.methods
                 Goods.update {uuid: good.uuid}, {$set: {includeInNextBuyingQty: qtyToOrder}, $push: {ordersForBuy: {name: order.name, state: state.name, qty: pos.quantity}}}
       # закупка про запас
       # пройтись по всем отгрузкам за x недель
-      weekToAnalyze = 1
+      weekToAnalyze = 12
       minNumberOfOtgruzhenoQty = 3
       minNumberOfOrders = 2
-      maxPriceToIncNumber = 150
-      incNumberMinQty = 5
+      maxPriceToIncNumber = 100
+      incNumberMinQty = 4
       maxQtyToConsider = 5 # не считаем, если в одном заказе больше данного количества товара
       date = new Date (moment().subtract(weekToAnalyze, 'weeks').toISOString())
       console.log "date:#{date}"
@@ -70,14 +70,14 @@ Meteor.methods
         #console.log "Обрабатываем поставщика #{supplier.name}.."
         # найти заказ на закупку в статусе. если нет - создать его
         #console.log "stateUuid:#{activeStateUuid}, supplier.uuid:#{supplier.uuid}"
-        activePurchaseOrder = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
-        if activePurchaseOrder?
+        activePurchaseOrder1 = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
+        if activePurchaseOrder1?
           console.log "найден старый заказ на закупку"
           # удалить старый заказ
-          #delResult = HTTP.del('https://online.moysklad.ru/exchange/rest/ms/xml/purchaseOrder/' + activePurchaseOrder.uuid, {auth:"admin@allshellac:qweasd"} )
+          #delResult = HTTP.del('https://online.moysklad.ru/exchange/rest/ms/xml/purchaseOrder/' + activePurchaseOrder1.uuid, {auth:"admin@allshellac:qweasd"} )
           #console.log "delete result:", delResult
         else
-          activePurchaseOrder = {
+          activePurchaseOrder1 = {
             "TYPE_NAME" : "moysklad.purchaseOrder",
             "reservedSum" : 0,
             "stateUuid" : activeStateUuid,
@@ -94,8 +94,8 @@ Meteor.methods
             "shared" : false,
             "purchaseOrderPosition": []
           }
-        activePurchaseOrder.created = new Date()
-        activePurchaseOrder.purchaseOrderPosition = []
+        activePurchaseOrder1.created = new Date()
+        activePurchaseOrder1.purchaseOrderPosition = []
         d = new Date()
         # закупка про запас
         podZapasMetadata = _.find(supplier.attribute, (attr) -> attr.metadataUuid == "2f32d58a-f3f9-11e5-7a69-97150029d009")
@@ -139,15 +139,15 @@ Meteor.methods
                     "sumInCurrency" : good.buyPrice
                     }
                 }
-                activePurchaseOrder.purchaseOrderPosition.push purchaseOrderPosition
+                activePurchaseOrder1.purchaseOrderPosition.push purchaseOrderPosition
                 # debug
                 Goods.update {uuid: good.uuid}, {$set: {includeInNextBuyingStockQty: totalQtyNeeded}}
-            #console.log "Товаров к закупке у поставщика:", activePurchaseOrder.purchaseOrderPosition.length
+            #console.log "Товаров к закупке у поставщика:", activePurchaseOrder1.purchaseOrderPosition.length
             # сохранить заказ
-            if activePurchaseOrder.purchaseOrderPosition.length > 0
+            if activePurchaseOrder1.purchaseOrderPosition.length > 0
               response = Async.runSync (done) ->
                 try
-                  entityFromMS = client.save(activePurchaseOrder)
+                  entityFromMS = client.save(activePurchaseOrder1)
                   #console.log "Создание/обновление заказа на закупку завершено"
                   done(null, null);
                 catch e
@@ -155,7 +155,34 @@ Meteor.methods
                   done(null, null);
             else
               console.log "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
+
         # закупка под заказ
+        activePurchaseOrder2 = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
+        if activePurchaseOrder2?
+          console.log "найден старый заказ на закупку"
+          # удалить старый заказ
+          #delResult = HTTP.del('https://online.moysklad.ru/exchange/rest/ms/xml/purchaseOrder/' + activePurchaseOrder2.uuid, {auth:"admin@allshellac:qweasd"} )
+          #console.log "delete result:", delResult
+        else
+          activePurchaseOrder2 = {
+            "TYPE_NAME" : "moysklad.purchaseOrder",
+            "reservedSum" : 0,
+            "stateUuid" : activeStateUuid,
+            "sourceAgentUuid" : supplier.uuid,
+            "applicable" : true,
+            "targetAccountUuid" : "8de83912-65fe-11e4-90a2-8ecb00148412",
+            "payerVat" : true,
+            "rate" : 1,
+            "vatIncluded" : true,
+            "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
+            "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
+            "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
+            "ownerUid" : "admin@allshellac",
+            "shared" : false,
+            "purchaseOrderPosition": []
+          }
+        activePurchaseOrder2.created = new Date()
+        activePurchaseOrder2.purchaseOrderPosition = []
         podZakazStringMeta = _.find(supplier.attribute, (attr) -> attr.metadataUuid == "c5723a4e-f3f7-11e5-7a69-970d0029005c")
         if podZakazStringMeta?
           podZakazString = podZakazStringMeta.valueString
@@ -183,13 +210,13 @@ Meteor.methods
                   "sumInCurrency" : good.buyPrice
                   }
               }
-              activePurchaseOrder.purchaseOrderPosition.push purchaseOrderPosition
-            #console.log "Товаров к закупке у поставщика:", activePurchaseOrder.purchaseOrderPosition.length
+              activePurchaseOrder2.purchaseOrderPosition.push purchaseOrderPosition
+            #console.log "Товаров к закупке у поставщика:", activePurchaseOrder2.purchaseOrderPosition.length
             # сохранить заказ
-            if activePurchaseOrder.purchaseOrderPosition.length > 0
+            if activePurchaseOrder2.purchaseOrderPosition.length > 0
               response = Async.runSync (done) ->
                 try
-                  entityFromMS = client.save(activePurchaseOrder)
+                  entityFromMS = client.save(activePurchaseOrder2)
                   #console.log "Создание/обновление заказа на закупку завершено"
                   done(null, null);
                 catch e
