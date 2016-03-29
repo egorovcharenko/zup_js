@@ -41,9 +41,13 @@
                 td #{place}
                 td #{sku}
                 td #{goodName}
-                td #{stockQty}
+                td
                   if absent
                     i.big.warning.sign.icon
+                  input(good-uuid='#{goodUuid}' name='new_qty' type='text' value='#{stockQty}')
+                  {{lastTimeChecked}}
+                  .ui.teal.button.set-new-qty(data-good-uuid='#{goodUuid}')
+                    | Установить кол-во
                 td.collapsing
                   h2.ui.header #{packedQty} / #{qty}
                     if isQtyMoreThan1

@@ -1,6 +1,12 @@
 Template.packOrder.helpers
   absent: ->
     @qty > @stockQty
+  lastTimeChecked: ->
+    good = Goods.findOne {uuid: @goodUuid}
+    if good.lastTimeChecked?
+      return moment(good.lastTimeChecked).format("DD.MM.YYYY")
+    else
+      return '-'
   isQtyMoreThan1: ->
     @qty > 1
   isAnyPosSelected: ->
@@ -31,6 +37,12 @@ Template.packOrder.helpers
     return Session.get(data.sessionVar)
 
 Template.packOrder.events
+  'click .set-new-qty': (event, template) ->
+    dataObject = {}
+    dataObject.goodUuid = event.target.dataset.goodUuid
+    dataObject.newQty = $("input[good-uuid='#{dataObject.goodUuid}'][name='new_qty']").val()
+    console.log "dataObject:", dataObject
+    Meteor.call "setNewGoodQty", dataObject
   'click #goBack': (event, template) ->
     Router.go 'ordersList', orderState: 'На сборку'
     return
