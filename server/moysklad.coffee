@@ -122,7 +122,6 @@ Meteor.methods
         newStateName = (_.find stateWorkflow.state, (state) -> state.uuid is newStateUuid).name
         entityFromMS.stateUuid = newStateUuid
         result = client.save(entityFromMS)
-    done null, oldStateName + "->" + newStateName
 
   loadEntityGenericMethod: (entityMSName, collectionName) ->
     currentTime = Date.now()
@@ -172,7 +171,6 @@ Meteor.methods
         catch error
           console.log "error:", error
       Meteor.call "logSystemEvent", "loadStock", "5. notice", "Остатки загружены успешно, количество: #{stock.length}, обновлено: #{countUpdated}"
-      done null, "Остатки загружены успешно, количество: #{stock.length}, обновлено: #{countUpdated}"
   sendStockToMagento: (job) ->
     # moysklad
     #moyskladPackage = Meteor.npmRequire('moysklad-client')
