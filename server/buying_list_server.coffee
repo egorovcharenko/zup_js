@@ -145,14 +145,11 @@ Meteor.methods
             #console.log "Товаров к закупке у поставщика:", activePurchaseOrder1.purchaseOrderPosition.length
             # сохранить заказ
             if activePurchaseOrder1.purchaseOrderPosition.length > 0
-              response = Async.runSync (done) ->
-                try
-                  entityFromMS = client.save(activePurchaseOrder1)
-                  #console.log "Создание/обновление заказа на закупку завершено"
-                  done(null, null);
-                catch e
-                  console.log "ошибка внутри runSync:", e
-                  done(null, null);
+              try
+                entityFromMS = client.save(activePurchaseOrder1)
+                #console.log "Создание/обновление заказа на закупку завершено"
+              catch e
+                console.log "ошибка внутри runSync:", e
             else
               console.log "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
 
@@ -214,14 +211,11 @@ Meteor.methods
             #console.log "Товаров к закупке у поставщика:", activePurchaseOrder2.purchaseOrderPosition.length
             # сохранить заказ
             if activePurchaseOrder2.purchaseOrderPosition.length > 0
-              response = Async.runSync (done) ->
-                try
-                  entityFromMS = client.save(activePurchaseOrder2)
-                  #console.log "Создание/обновление заказа на закупку завершено"
-                  done(null, null);
-                catch e
-                  console.log "ошибка внутри runSync:", e
-                  done(null, null);
+              try
+                entityFromMS = client.save(activePurchaseOrder2)
+                #console.log "Создание/обновление заказа на закупку завершено"
+              catch e
+                console.log "ошибка внутри runSync:", e
             else
               console.log "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
     catch error

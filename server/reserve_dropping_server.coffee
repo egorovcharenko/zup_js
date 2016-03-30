@@ -38,33 +38,28 @@ Meteor.methods
       console.log "error:", error
 
   setOrderReserve: (entityUuid, setReserve) ->
-    #moyskladPackage = Meteor.npmRequire('moysklad-client')
-    response = Async.runSync((done) ->
-      client = moyskladPackage.createClient()
-      tools = moyskladPackage.tools
-      client.setAuth 'admin@allshellac', 'qweasd'
-      order = client.load('customerOrder', entityUuid)
-      #order = Orders.findOne({uuid: entityUuid})
-      changed = false
-      _.each order.customerOrderPosition, (position) ->
-        if setReserve
-          good = Goods.findOne({uuid: position.goodUuid})
-          if good?
-            resQty = Math.max(Math.min(position.quantity, good.realAvailableQty), 0)
-            console.log "#{position.quantity}, #{good.realAvailableQty}, #{resQty}"
-          else
-            resQty = position.quantity
-          if position.reserve != resQty
-            position.reserve = resQty
-            changed = true
+    client = moyskladPackage.createClient()
+    tools = moyskladPackage.tools
+    client.setAuth 'admin@allshellac', 'qweasd'
+    order = client.load('customerOrder', entityUuid)
+    #order = Orders.findOne({uuid: entityUuid})
+    changed = false
+    _.each order.customerOrderPosition, (position) ->
+      if setReserve
+        good = Goods.findOne({uuid: position.goodUuid})
+        if good?
+          resQty = Math.max(Math.min(position.quantity, good.realAvailableQty), 0)
+          console.log "#{position.quantity}, #{good.realAvailableQty}, #{resQty}"
         else
-          if position.reserve != 0
-            position.reserve = 0
-            changed = true
-        #console.log "position.reserve:", position.reserve
-      if changed
-        newEntity = client.save(order)
-        console.log "new reserve sent to MS for order #{order.name}"
-      done null, "Резерв изменен"
-    )
-    response.result
+          resQty = position.quantity
+        if position.reserve != resQty
+          position.reserve = resQty
+          changed = true
+      else
+        if position.reserve != 0
+          position.reserve = 0
+          changed = true
+      #console.log "position.reserve:", position.reserve
+    if changed
+      newEntity = client.save(order)
+      console.log "new reserve sent to MS for order #{order.name}"

@@ -39,110 +39,90 @@ Meteor.methods
     return res
 
   addNalogenPaymentMethod: (orderName) ->
-    #moyskladPackage = Meteor.npmRequire('moysklad-client')
-    response = Async.runSync((done) ->
-      client = moyskladPackage.createClient()
-      tools = moyskladPackage.tools
-      client.setAuth 'admin@allshellac', 'qweasd'
-      entityFromMS = Orders.findOne(name:orderName)
+    client = moyskladPackage.createClient()
+    tools = moyskladPackage.tools
+    client.setAuth 'admin@allshellac', 'qweasd'
+    entityFromMS = Orders.findOne(name:orderName)
 
-      nalogPlatUuid = '82c43187-4743-11e5-90a2-8ecb001a04c5'
-      nalogPlatPercent = 0.04;
-      nalogPlatPrice = (Math.ceil (entityFromMS.sum.sum * nalogPlatPercent / 100)) * 100
+    nalogPlatUuid = '82c43187-4743-11e5-90a2-8ecb001a04c5'
+    nalogPlatPercent = 0.04;
+    nalogPlatPrice = (Math.ceil (entityFromMS.sum.sum * nalogPlatPercent / 100)) * 100
 
-      entityFromMS.customerOrderPosition.push {
-        "TYPE_NAME" : "moysklad.customerOrderPosition",
-        "discount" : 0,
-        "quantity" : 1,
-        "consignmentUuid" : "82c439da-4743-11e5-90a2-8ecb001a04c9",
-        "goodUuid" : nalogPlatUuid,
-        "vat" : 0,
-        "accountUuid" : entityFromMS.accountUuid,
-        "accountId" : entityFromMS.accountId,
-        #"uuid" : "8c13b12e-ee93-11e5-7a69-9715002c22db",
-        "groupUuid" : entityFromMS.groupUuid,
-        "ownerUid" : "admin@allshellac",
-        "shared" : false,
-        "basePrice" : {
-                "TYPE_NAME" : "moysklad.moneyAmount",
-                "sum" : nalogPlatPrice,
-                "sumInCurrency" : nalogPlatPrice
-        },
-        "price" : {
-                "TYPE_NAME" : "moysklad.moneyAmount",
-                "sum" : nalogPlatPrice,
-                "sumInCurrency" : nalogPlatPrice
-        },
-        "reserve" : 0
-      }
-      newEntity = client.save(entityFromMS)
-      done null, "Добавлено"
-    )
-    response.result
+    entityFromMS.customerOrderPosition.push {
+      "TYPE_NAME" : "moysklad.customerOrderPosition",
+      "discount" : 0,
+      "quantity" : 1,
+      "consignmentUuid" : "82c439da-4743-11e5-90a2-8ecb001a04c9",
+      "goodUuid" : nalogPlatUuid,
+      "vat" : 0,
+      "accountUuid" : entityFromMS.accountUuid,
+      "accountId" : entityFromMS.accountId,
+      #"uuid" : "8c13b12e-ee93-11e5-7a69-9715002c22db",
+      "groupUuid" : entityFromMS.groupUuid,
+      "ownerUid" : "admin@allshellac",
+      "shared" : false,
+      "basePrice" : {
+              "TYPE_NAME" : "moysklad.moneyAmount",
+              "sum" : nalogPlatPrice,
+              "sumInCurrency" : nalogPlatPrice
+      },
+      "price" : {
+              "TYPE_NAME" : "moysklad.moneyAmount",
+              "sum" : nalogPlatPrice,
+              "sumInCurrency" : nalogPlatPrice
+      },
+      "reserve" : 0
+    }
+    newEntity = client.save(entityFromMS)
 
   updateEntityMS: (entityType, entityUuid, data, attributes) ->
     #console.log 'updateEntityMS started, parameters:' + arguments
     #moyskladPackage = Meteor.npmRequire('moysklad-client')
-    response = Async.runSync((done) ->
-      client = moyskladPackage.createClient()
-      tools = moyskladPackage.tools
-      client.setAuth 'admin@allshellac', 'qweasd'
-      entityFromMS = client.load(entityType, entityUuid)
-      if data?
-        for prop of data
-          if data.hasOwnProperty(prop)
-            entityFromMS[prop] = data[prop]
-      # update attribs
-      _.each attributes, (attrib) ->
-        metadataUuid = findMetadataUuidByName('CustomerOrder', attrib.name)
-        if not metadataUuid?
-          throw new Meteor.Error "Не нашли нужный атрибут", "attrib-not-found"
-        console.log "metadataUuid: #{metadataUuid}"
-        test = tools.getAttr(entityFromMS, metadataUuid)
-        switch attrib.type
-          when 'string'
-            oldValue = test.valueString
-            test.valueString = attrib.value
-          when 'employee'
-            oldValue = test.employeeValueUuid
-            test.employeeValueUuid = attrib.value
-          when 'picklist'
-            oldValue = test.metadataUuid
-            test.entityValueUuid = attrib.value
-        #console.log "test:", test
-        #logChangesInDescription entityFromMS, attrib.name, oldValue, attrib.value
-        return
-      #console.log "entity:", entityFromMS
-      newEntity = client.save(entityFromMS)
-      done null, "Заменено"
-    )
-    #console.log 'updateEntityMS ended'
-    response.result
+    client = moyskladPackage.createClient()
+    tools = moyskladPackage.tools
+    client.setAuth 'admin@allshellac', 'qweasd'
+    entityFromMS = client.load(entityType, entityUuid)
+    if data?
+      for prop of data
+        if data.hasOwnProperty(prop)
+          entityFromMS[prop] = data[prop]
+    # update attribs
+    _.each attributes, (attrib) ->
+      metadataUuid = findMetadataUuidByName('CustomerOrder', attrib.name)
+      if not metadataUuid?
+        throw new Meteor.Error "Не нашли нужный атрибут", "attrib-not-found"
+      console.log "metadataUuid: #{metadataUuid}"
+      test = tools.getAttr(entityFromMS, metadataUuid)
+      switch attrib.type
+        when 'string'
+          oldValue = test.valueString
+          test.valueString = attrib.value
+        when 'employee'
+          oldValue = test.employeeValueUuid
+          test.employeeValueUuid = attrib.value
+        when 'picklist'
+          oldValue = test.metadataUuid
+          test.entityValueUuid = attrib.value
+      #console.log "test:", test
+      #logChangesInDescription entityFromMS, attrib.name, oldValue, attrib.value
+      return
+    #console.log "entity:", entityFromMS
+    newEntity = client.save(entityFromMS)
 
   setEntityStateByUuid: (entityType, entityUuid, newStateUuid) ->
-    #moyskladPackage = Meteor.npmRequire('moysklad-client')
-    response = Async.runSync((done) ->
-      try
-        client = moyskladPackage.createClient()
-        client.setAuth 'admin@allshellac', 'qweasd'
-        if entityType is "customerOrder"
-          # добавить действие по переводу в др. статус
-          Orders.update {uuid: entityUuid}, {$push: {actions: {type:"stateChange", date: new Date()}}}
-          entityFromMS = client.load(entityType, entityUuid)
-          stateWorkflow = Workflows.findOne name:"CustomerOrder"
-          if stateWorkflow
-            oldStateName = (_.find stateWorkflow.state, (state) -> state.uuid is entityFromMS.stateUuid).name
-            newStateName = (_.find stateWorkflow.state, (state) -> state.uuid is newStateUuid).name
-            entityFromMS.stateUuid = newStateUuid
-            result = client.save(entityFromMS)
-        done null, oldStateName + "->" + newStateName
-      catch error
-        done error, null
-    )
-    if response.error?
-      throw error
-    else
-      response.result
+    client = moyskladPackage.createClient()
+    client.setAuth 'admin@allshellac', 'qweasd'
+    if entityType is "customerOrder"
+      # добавить действие по переводу в др. статус
+      Orders.update {uuid: entityUuid}, {$push: {actions: {type:"stateChange", date: new Date()}}}
+      entityFromMS = client.load(entityType, entityUuid)
+      stateWorkflow = Workflows.findOne name:"CustomerOrder"
+      if stateWorkflow
+        oldStateName = (_.find stateWorkflow.state, (state) -> state.uuid is entityFromMS.stateUuid).name
+        newStateName = (_.find stateWorkflow.state, (state) -> state.uuid is newStateUuid).name
+        entityFromMS.stateUuid = newStateUuid
+        result = client.save(entityFromMS)
+    done null, oldStateName + "->" + newStateName
 
   loadEntityGenericMethod: (entityMSName, collectionName) ->
     currentTime = Date.now()
@@ -155,59 +135,44 @@ Meteor.methods
         #Meteor.call "logSystemEvent", "loadEntityGeneric", "2. error", "Ошибка: #{error.reason}"
 
   loadStockFromMS: () ->
-    #moyskladPackage = Meteor.npmRequire('moysklad-client')
-    response = Async.runSync((done) ->
-      try
-        #Meteor.call "logSystemEvent", "loadStock", "5. notice", "Начинаем получение с сервера всех остатков"
+    client = moyskladPackage.createClient()
+    client.setAuth 'admin@allshellac', 'qweasd'
+    options = {
+      #stockMode: ALL_STOCK,
+      storeId: '8de95654-65fe-11e4-90a2-8ecb00148413',
+      showConsignments: false
+    }
 
-        client = moyskladPackage.createClient()
-        client.setAuth 'admin@allshellac', 'qweasd'
-        options = {
-          #stockMode: ALL_STOCK,
-          storeId: '8de95654-65fe-11e4-90a2-8ecb00148413',
-          showConsignments: false
-        }
-
-        stock = client.stock(options);
-        countUpdated = 0
-        if stock?
-          Meteor.call "logSystemEvent", "loadStock", "5. notice", "Получено с сервера #{stock.length} остатков"
-          _.each stock, (oneStock) ->
-            try
-              if oneStock.goodRef?
-                good = Goods.findOne uuid:oneStock.goodRef.uuid
-                if good?
-                  # устанавливаем реальное наличие наличия
-                  if (good.name.lastIndexOf("Доставка", 0) == 0) or (good.name.lastIndexOf("Наложенный платеж", 0) == 0) or (good.name.lastIndexOf("Набор для шеллака", 0) == 0) or (good.name.lastIndexOf("Набор шеллака", 0) == 0) or (good.name.lastIndexOf("Гель-лак AllShellac Premiere", 0) == 0) or (good.name.lastIndexOf("Гель-лак Bluesky Shellac, цвет NS", 0) == 0)
-                    if good.outOfStockInSupplier?
-                      if good.outOfStockInSupplier
-                        realAvailableQty = oneStock.quantity
-                      else
-                        realAvailableQty = 100
-                    else
-                      realAvailableQty = 100
-                  else
+    stock = client.stock(options);
+    countUpdated = 0
+    if stock?
+      Meteor.call "logSystemEvent", "loadStock", "5. notice", "Получено с сервера #{stock.length} остатков"
+      _.each stock, (oneStock) ->
+        try
+          if oneStock.goodRef?
+            good = Goods.findOne uuid:oneStock.goodRef.uuid
+            if good?
+              # устанавливаем реальное наличие наличия
+              if (good.name.lastIndexOf("Доставка", 0) == 0) or (good.name.lastIndexOf("Наложенный платеж", 0) == 0) or (good.name.lastIndexOf("Набор для шеллака", 0) == 0) or (good.name.lastIndexOf("Набор шеллака", 0) == 0) or (good.name.lastIndexOf("Гель-лак AllShellac Premiere", 0) == 0) or (good.name.lastIndexOf("Гель-лак Bluesky Shellac, цвет NS", 0) == 0)
+                if good.outOfStockInSupplier?
+                  if good.outOfStockInSupplier
                     realAvailableQty = oneStock.quantity
-                  if good.stockQty is oneStock.stock and good.reserveQty is oneStock.reserve and good.quantityQty is oneStock.quantity and good.reserveForSelectedAgentQty is oneStock.reserveForSelectedAgent and good.realAvailableQty is realAvailableQty then needsUpdate = true else needsUpdate = false
-                  Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, reserveQty: oneStock.reserve, quantityQty: oneStock.quantity, reserveForSelectedAgentQty: oneStock.reserveForSelectedAgent, realAvailableQty: realAvailableQty, dirty: needsUpdate}})
+                  else
+                    realAvailableQty = 100
                 else
-                  ;#Meteor.call "logSystemEvent", "loadStock", "5. notice", "При загрузке остатков не нашли товар: #{oneStock.goodRef.name}"
+                  realAvailableQty = 100
               else
-                ;#Meteor.call "logSystemEvent", "loadStock", "5. notice", "В остатках нет информации о товаре"
-            catch error
-              console.log "error:", error
-          Meteor.call "logSystemEvent", "loadStock", "5. notice", "Остатки загружены успешно, количество: #{stock.length}, обновлено: #{countUpdated}"
-          done null, "Остатки загружены успешно, количество: #{stock.length}, обновлено: #{countUpdated}"
-        else
-          done "Не получены остатки с сервера", null
-      catch error
-        done error, null
-    )
-    if response.error?
-      Meteor.call "logSystemEvent", "loadStock", "2. error", "Ошибка: #{error}"
-      throw error
-    else
-      response.result
+                realAvailableQty = oneStock.quantity
+              if good.stockQty is oneStock.stock and good.reserveQty is oneStock.reserve and good.quantityQty is oneStock.quantity and good.reserveForSelectedAgentQty is oneStock.reserveForSelectedAgent and good.realAvailableQty is realAvailableQty then needsUpdate = true else needsUpdate = false
+              Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, reserveQty: oneStock.reserve, quantityQty: oneStock.quantity, reserveForSelectedAgentQty: oneStock.reserveForSelectedAgent, realAvailableQty: realAvailableQty, dirty: needsUpdate}})
+            else
+              ;#Meteor.call "logSystemEvent", "loadStock", "5. notice", "При загрузке остатков не нашли товар: #{oneStock.goodRef.name}"
+          else
+            ;#Meteor.call "logSystemEvent", "loadStock", "5. notice", "В остатках нет информации о товаре"
+        catch error
+          console.log "error:", error
+      Meteor.call "logSystemEvent", "loadStock", "5. notice", "Остатки загружены успешно, количество: #{stock.length}, обновлено: #{countUpdated}"
+      done null, "Остатки загружены успешно, количество: #{stock.length}, обновлено: #{countUpdated}"
   sendStockToMagento: (job) ->
     # moysklad
     #moyskladPackage = Meteor.npmRequire('moysklad-client')
@@ -396,24 +361,17 @@ Meteor.methods
               }
             }
 
-            response = Async.runSync((done) ->
-              try
-                # отправить входящий платеж в МС
-                entityFromMS = client.save("paymentIn", newPaymentIn)
+            # отправить входящий платеж в МС
+            entityFromMS = client.save("paymentIn", newPaymentIn)
 
-                # изменить статус заказа и его описание в МC
-                order.stateUuid = newStateUuid
-                if order.description?
-                  order.description += desc
-                else
-                  order.description = desc
-                resp = client.save("customerOrder", order)
-                console.log "Создание платежа и обновление заказа завершено"
-                done(null, null);
-              catch e
-                console.log "ошибка внутри runSync:", e
-                done(null, null);
-            )
+            # изменить статус заказа и его описание в МC
+            order.stateUuid = newStateUuid
+            if order.description?
+              order.description += desc
+            else
+              order.description = desc
+            resp = client.save("customerOrder", order)
+            console.log "Создание платежа и обновление заказа завершено"
       catch error
         console.log "Ошибка:", error
     console.log "closeOrdersInMS завершена"

@@ -56,13 +56,10 @@ Meteor.methods
           ]
         }
         # записать и сохранить
-        response = Async.runSync (done) ->
-          try
-            entityFromMS = client.save(loss)
-            done(null, "Отгрузка сохранена");
-          catch e
-            console.log "ошибка внутри runSync:", e
-            done(e, null);
+        try
+          entityFromMS = client.save(loss)
+        catch e
+          console.log "ошибка внутри client.save:", e
       else if difference > 0
         console.log "diff > 0, creating enter"
         # получаем пример оприходования
@@ -84,13 +81,10 @@ Meteor.methods
       good = client.load('Good', dataObject.goodUuid)
       good.description = dataObject.description
       # записать и сохранить
-      response = Async.runSync (done) ->
-        try
-          entityFromMS = client.save(good)
-          done(null, "Отгрузка сохранена");
-        catch e
-          console.log "ошибка внутри runSync:", e
-          done(e, null);
+      try
+        entityFromMS = client.save(good)
+      catch e
+        console.log "ошибка внутри client.save:", e
     catch error
       console.log "error:", error
   addNewEnter: (goodsToEnter) ->

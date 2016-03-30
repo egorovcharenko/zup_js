@@ -121,10 +121,8 @@ Meteor.methods
                   "shared" : true
                 }
               # если да - создать новую тех. операцию
-              response = Async.runSync (done) ->
-                result = client.save(processing)
-                console.log "     client.save(processing): #{result}"
-                done null, "Тех операция создана"
+              result = client.save(processing)
+              console.log "     client.save(processing): #{result}"
               solved = true
             if not solved
               # ошибка - не хватает товара в наличии
@@ -214,8 +212,5 @@ Meteor.methods
                 },
                 "shipmentIn" : []
               }
-    response = Async.runSync (done) ->
-      result = client.save(demand)
-      done null, result
-    console.log "demand saved, response: #{response}"
+    result = client.save(demand)
     return "Успешно отгрузили заказ"
