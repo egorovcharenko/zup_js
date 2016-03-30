@@ -39,6 +39,7 @@ ecmascript@0.4.1
 ecmascript-runtime@0.2.8
 ejson@1.0.9
 email@1.0.10
+es5-shim@4.5.8
 fastclick@1.0.9
 geojson-utils@1.0.6
 hot-code-push@1.0.2
@@ -65,11 +66,9 @@ logging@1.0.10
 mdg:validation-error@0.5.1
 meteor@1.1.12
 meteor-base@1.0.2
-meteorhacks:async@1.0.0
 meteorhacks:fast-render@2.13.0
 meteorhacks:inject-data@2.0.0
 meteorhacks:meteorx@1.4.1
-meteorhacks:npm@1.5.0
 meteorhacks:picker@1.0.3
 meteorhacks:subs-manager@1.6.4
 minifier-css@1.1.9
@@ -90,7 +89,6 @@ mrt:flash-messages@1.0.1
 mrt:later@1.6.1
 natestrauser:animate-css@3.5.1
 npm-bcrypt@0.7.8_2
-npm-container@1.2.0
 npm-mongo@1.4.41
 numeral:numeral@1.5.3_1
 observe-sequence@1.0.9

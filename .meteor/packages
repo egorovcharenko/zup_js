@@ -16,7 +16,6 @@ natestrauser:animate-css
 dburles:collection-helpers
 meteorhacks:fast-render
 
-meteorhacks:npm
 
 
 momentjs:moment
@@ -44,7 +43,6 @@ spacebars
 check
 
 
-npm-container
 jaywon:meteor-node-uuid
 streemo:reactive-date
 accounts-ui
@@ -58,3 +56,6 @@ http
 mrt:later
 standard-minifier-css
 standard-minifier-js
+
+es5-shim                # ECMAScript 5 compatibility for older browsers.
+ecmascript              # Enable ECMAScript2015+ syntax in app code

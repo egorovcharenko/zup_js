@@ -38,7 +38,7 @@ Meteor.methods
       console.log "error:", error
 
   setOrderReserve: (entityUuid, setReserve) ->
-    moyskladPackage = Meteor.npmRequire('moysklad-client')
+    #moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
       client = moyskladPackage.createClient()
       tools = moyskladPackage.tools

@@ -1,7 +1,7 @@
 Meteor.methods
   otgruzitZakaz: (orderUuid) ->
     console.log "otgruzitZakaz stated"
-    moyskladPackage = Meteor.npmRequire('moysklad-client')
+    #moyskladPackage = Meteor.npmRequire('moysklad-client')
     client = moyskladPackage.createClient()
     tools = moyskladPackage.tools
     client.setAuth 'admin@allshellac', 'qweasd'
@@ -128,7 +128,10 @@ Meteor.methods
               solved = true
             if not solved
               # ошибка - не хватает товара в наличии
-              throw new Meteor.Error "stock-insufficient", "При отгрузке произошла ошибка - не достаточно товара #{good.name}, нужно #{pos.quantity}, а в наличии только #{good.stockQty}"
+              #throw new Meteor.Error "stock-insufficient", "При отгрузке произошла ошибка - не достаточно товара #{good.name}, нужно #{pos.quantity}, а в наличии только #{good.stockQty}"
+              # оприходовать нужное количество товара
+              Meteor.call "addNewEnter", [{uuid:good.uuid, qty: pos.quantity - good.stockQty, buyPrice: good.buyPrice}]
+
           demand.shipmentOut.push {
             "TYPE_NAME" : "moysklad.shipmentOut",
             "discount" : pos.discount,

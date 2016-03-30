@@ -56,7 +56,7 @@ Meteor.methods
                 Goods.update {uuid: material.goodUuid}, {$inc: {perWeekQtyNeeded: qtyOfMaterialNeeded}}
             else
               Goods.update {uuid: good.uuid}, {$inc: {perWeekQtyNeeded: perWeekQtyNeeded}}
-      moyskladPackage = Meteor.npmRequire('moysklad-client')
+      #moyskladPackage = Meteor.npmRequire('moysklad-client')
       client = moyskladPackage.createClient()
       tools = moyskladPackage.tools
       client.setAuth 'admin@allshellac', 'qweasd'

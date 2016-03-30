@@ -29,7 +29,8 @@ logChangesInDescription = (entityFromMS, field, oldv, newv) ->
 
 Meteor.methods
   getMSAttributeValue: (object, attribs) ->
-    moyskladPackage = Meteor.npmRequire('moysklad-client')
+    #import moysklad-client from 'moysklad-client';
+    #moyskladPackage = require('moysklad-client')
     tools = moyskladPackage.tools
     res = {}
     for attr in attribs
@@ -38,7 +39,7 @@ Meteor.methods
     return res
 
   addNalogenPaymentMethod: (orderName) ->
-    moyskladPackage = Meteor.npmRequire('moysklad-client')
+    #moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
       client = moyskladPackage.createClient()
       tools = moyskladPackage.tools
@@ -81,7 +82,7 @@ Meteor.methods
 
   updateEntityMS: (entityType, entityUuid, data, attributes) ->
     #console.log 'updateEntityMS started, parameters:' + arguments
-    moyskladPackage = Meteor.npmRequire('moysklad-client')
+    #moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
       client = moyskladPackage.createClient()
       tools = moyskladPackage.tools
@@ -119,7 +120,7 @@ Meteor.methods
     response.result
 
   setEntityStateByUuid: (entityType, entityUuid, newStateUuid) ->
-    moyskladPackage = Meteor.npmRequire('moysklad-client')
+    #moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
       try
         client = moyskladPackage.createClient()
@@ -154,7 +155,7 @@ Meteor.methods
         #Meteor.call "logSystemEvent", "loadEntityGeneric", "2. error", "Ошибка: #{error.reason}"
 
   loadStockFromMS: () ->
-    moyskladPackage = Meteor.npmRequire('moysklad-client')
+    #moyskladPackage = Meteor.npmRequire('moysklad-client')
     response = Async.runSync((done) ->
       try
         #Meteor.call "logSystemEvent", "loadStock", "5. notice", "Начинаем получение с сервера всех остатков"
@@ -287,42 +288,42 @@ Meteor.methods
   loadNotPrimaryEntities: () ->
     try
       Meteor.call 'loadEntityGenericMethod', 'customEntityMetadata', 'CustomEntityMetadata'
-      Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'customEntity', 'CustomEntity'
-      Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'service', 'Services'
-      Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'good', 'Goods'
-      Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'workflow', 'Workflows'
-      Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
-      Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'PurchaseOrder', 'PurchaseOrders'
-      Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'Employee', 'Employees'
-      Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'ProcessingPlan', 'ProcessingPlans'
-      Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'Processing', 'Processings'
-      Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'Demand', 'Demands'
-      Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'Supply', 'Supplies'
-      Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'Loss', 'Losses'
-      Meteor._sleepForMs(500);
-      # Meteor.call 'loadEntityGenericMethod', 'Enter', 'Enters'
-      # Meteor._sleepForMs(500);
+      Meteor._sleepForMs(300);
+      #Meteor.call 'loadEntityGenericMethod', 'Enter', 'Enters'
+      #Meteor._sleepForMs(500);
     catch error
       console.log "error in loadNotPrimaryEntities:", error
 
   loadAllEntities: () ->
     #console.log "loadAllEntities started"
     Meteor.call 'loadEntityGenericMethod', 'company', 'Companies'
-    Meteor._sleepForMs(500);
+    Meteor._sleepForMs(300);
     Meteor.call 'loadEntityGenericMethod', 'customerOrder', 'Orders'
-    Meteor._sleepForMs(500);
+    Meteor._sleepForMs(300);
     #console.log "loadAllEntities ended"
   closeOrdersInMS: () ->
     console.log "closeOrdersInMS начата"
@@ -333,7 +334,7 @@ Meteor.methods
     # подготовка переменных
     stateWorkflow = Workflows.findOne name:"CustomerOrder"
     newStateUuid = (_.find stateWorkflow.state, (state) -> state.name is "Выполнен").uuid
-    moyskladPackage = Meteor.npmRequire('moysklad-client')
+    #moyskladPackage = Meteor.npmRequire('moysklad-client')
     client = moyskladPackage.createClient()
     tools = moyskladPackage.tools
     client.setAuth 'admin@allshellac', 'qweasd'

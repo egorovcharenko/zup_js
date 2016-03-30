@@ -1,0 +1,11 @@
+{
+	"name": "zupjs",
+	"scripts": {
+		"start": "meteor run"
+	},
+	"dependencies": {
+		"meteor-node-stubs": "~0.2.0",
+		"moysklad-client": "^0.2.8"
+	},
+	"private": true
+}
