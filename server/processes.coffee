@@ -90,7 +90,7 @@ Meteor.methods
                     "userName": dataObject.userName
                   }
                   logEntry = extend logEntry, action.params
-                  console.log "Пишем в лог: ", logEntry
+                  #console.log "Пишем в лог: ", logEntry
                   Log.insert logEntry
 
                 when "setAction"
@@ -106,12 +106,9 @@ Meteor.methods
                   orderName = action.params.orderName
                   orderStatusUuid = action.params.newOrderStatusUuid
                   console.log "нужно у заказа #{orderName} заменить статус на #{orderStatusUuid}"
-
                   orderUuid = Orders.findOne(name: orderName).uuid
                   console.log "orderUuid: #{orderUuid}"
-
                   job = new Job myJobs, 'setEntityStateByUuid', {entityType: 'customerOrder', entityUuid: orderUuid, newStateUuid: orderStatusUuid}
-
                   job.priority('high')
                     .retry({ retries: 5, wait: 1*1000})
                     .save()
@@ -170,6 +167,7 @@ Meteor.methods
                     # если все есть в наличии, то выставляем статус "На сборку"
                     result = Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid, "ba02cb40-691b-11e4-90a2-8ecb0052ff42", (error, result) ->
                   console.log "result:", result
+                  
                 when "setNextStep"
                   # найти следующий шаг
                   console.log "Переходим к действию #{action.params.nextStepId}"

@@ -61,7 +61,7 @@
                   "name": "log",
                   "params": {
                     "type": "Звонок",
-                    "text": "Не дозвонились",
+                    "text": "Не дозвонились до клиента по модерации",
                     "orderName": "%orderName%"
                   }
                 }, {
@@ -83,7 +83,7 @@
                   "name": "log",
                   "params": {
                     "type": "Звонок",
-                    "text": "Дозвонились",
+                    "text": "Дозвонились до клиента по модерации",
                     "orderName": "%orderName%"
                   }
                 }, {
@@ -113,7 +113,7 @@
                   "name": "log",
                   "params": {
                     "type": "Заказ",
-                    "text": "Резервирование всех товаров",
+                    "text": "Заказ подтвержден, резервируем товары",
                     "orderName": "%orderName%"
                   }
                 }, {
@@ -148,6 +148,13 @@
                   "params": {
                     "nextStepId": "5"
                   }
+                }, {
+                  "name": "log",
+                  "params": {
+                    "type": "Заказ",
+                    "text": "Добавлен наложенный платеж к заказу",
+                    "orderName": "%orderName%"
+                  }
                 }
               ]
             }, {
@@ -157,6 +164,13 @@
                   "name": "setNextStep",
                   "params": {
                     "nextStepId": "5"
+                  }
+                },{
+                  "name": "log",
+                  "params": {
+                    "type": "Заказ",
+                    "text": "Пропустили добавление наложенного платежа",
+                    "orderName": "%orderName%"
                   }
                 }
               ]
@@ -182,6 +196,13 @@
                   "params": {
                     "nextStepId": "6"
                   }
+                }, {
+                  "name": "log",
+                  "params": {
+                    "type": "Заказ",
+                    "text": "Поставили заказ в ожидание предоплаты",
+                    "orderName": "%orderName%"
+                  }
                 }
               ]
             }, {
@@ -191,6 +212,13 @@
                   "name": "setNextStep",
                   "params": {
                     "nextStepId": "6"
+                  }
+                },{
+                  "name": "log",
+                  "params": {
+                    "type": "Заказ",
+                    "text": "Пропустили ожидание предоплаты",
+                    "orderName": "%orderName%"
                   }
                 }
               ]
@@ -211,6 +239,13 @@
                     "fieldValue": "07242d1a-691b-11e4-90a2-8ecb0052fa9f",
                     "fieldType": "picklist"
                   }
+                },{
+                  "name": "log",
+                  "params": {
+                    "type": "Заказ",
+                    "text": "Выбрали курьеров Достависта",
+                    "orderName": "%orderName%"
+                  }
                 }, {
                   "name": "setNextStep",
                   "params": {
@@ -228,6 +263,13 @@
                     "fieldValue": "eee3b452-691a-11e4-90a2-8ecb0052f8d1",
                     "fieldType": "picklist"
                   }
+                },{
+                  "name": "log",
+                  "params": {
+                    "type": "Заказ",
+                    "text": "Выбрали курьеров Апликс",
+                    "orderName": "%orderName%"
+                  }
                 }, {
                   "name": "setNextStep",
                   "params": {
@@ -244,6 +286,13 @@
                     "fieldName": "Курьеры",
                     "fieldValue": "c596ace1-7991-11e4-90a2-8eca00151dc4",
                     "fieldType": "picklist"
+                  }
+                },{
+                  "name": "log",
+                  "params": {
+                    "type": "Заказ",
+                    "text": "Выбрали курьеров Самовывоз",
+                    "orderName": "%orderName%"
                   }
                 }, {
                   "name": "setNextStep",
@@ -275,6 +324,13 @@
                 {
                   "name": "setOrderNeededState",
                   "params": {
+                    "orderName": "%orderName%"
+                  }
+                }, {
+                  "name": "log",
+                  "params": {
+                    "type": "Заказ",
+                    "text": "Проставили автоматом статус заказа",
                     "orderName": "%orderName%"
                   }
                 }, {
