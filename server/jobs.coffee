@@ -157,7 +157,7 @@ Meteor.startup ->
   job = new Job myJobs, 'calculateBuyingQty', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('at 4:00 am')})
+    .repeat({schedule: myJobs.later.parse.text('at 9:00 pm')})
     .save({cancelRepeats: true})
 
   # загрузка данных из МС

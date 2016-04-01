@@ -22,7 +22,7 @@
                 },{
                   "name": "log",
                   "params": {
-                    "type": "Заказ",
+                    "type": "Модерация",
                     "text": "Заказ %orderName% взят в работу пользователем %userName%",
                     "orderName": "%orderName%"
                   }
@@ -60,7 +60,7 @@
                 },{
                   "name": "log",
                   "params": {
-                    "type": "Звонок",
+                    "type": "Модерация",
                     "text": "Не дозвонились до клиента по модерации",
                     "orderName": "%orderName%"
                   }
@@ -82,8 +82,8 @@
                 {
                   "name": "log",
                   "params": {
-                    "type": "Звонок",
-                    "text": "Дозвонились до клиента по модерации",
+                    "type": "Модерация",
+                    "text": "Дозвонились до клиента",
                     "orderName": "%orderName%"
                   }
                 }, {
@@ -112,7 +112,7 @@
                 {
                   "name": "log",
                   "params": {
-                    "type": "Заказ",
+                    "type": "Модерация",
                     "text": "Заказ подтвержден, резервируем товары",
                     "orderName": "%orderName%"
                   }
@@ -151,7 +151,7 @@
                 }, {
                   "name": "log",
                   "params": {
-                    "type": "Заказ",
+                    "type": "Модерация",
                     "text": "Добавлен наложенный платеж к заказу",
                     "orderName": "%orderName%"
                   }
@@ -168,7 +168,7 @@
                 },{
                   "name": "log",
                   "params": {
-                    "type": "Заказ",
+                    "type": "Модерация",
                     "text": "Пропустили добавление наложенного платежа",
                     "orderName": "%orderName%"
                   }
@@ -199,7 +199,7 @@
                 }, {
                   "name": "log",
                   "params": {
-                    "type": "Заказ",
+                    "type": "Модерация",
                     "text": "Поставили заказ в ожидание предоплаты",
                     "orderName": "%orderName%"
                   }
@@ -216,7 +216,7 @@
                 },{
                   "name": "log",
                   "params": {
-                    "type": "Заказ",
+                    "type": "Модерация",
                     "text": "Пропустили ожидание предоплаты",
                     "orderName": "%orderName%"
                   }
@@ -242,7 +242,7 @@
                 },{
                   "name": "log",
                   "params": {
-                    "type": "Заказ",
+                    "type": "Модерация",
                     "text": "Выбрали курьеров Достависта",
                     "orderName": "%orderName%"
                   }
@@ -266,7 +266,7 @@
                 },{
                   "name": "log",
                   "params": {
-                    "type": "Заказ",
+                    "type": "Модерация",
                     "text": "Выбрали курьеров Апликс",
                     "orderName": "%orderName%"
                   }
@@ -290,7 +290,7 @@
                 },{
                   "name": "log",
                   "params": {
-                    "type": "Заказ",
+                    "type": "Модерация",
                     "text": "Выбрали курьеров Самовывоз",
                     "orderName": "%orderName%"
                   }
@@ -329,7 +329,7 @@
                 }, {
                   "name": "log",
                   "params": {
-                    "type": "Заказ",
+                    "type": "Модерация",
                     "text": "Проставили автоматом статус заказа",
                     "orderName": "%orderName%"
                   }

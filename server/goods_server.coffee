@@ -124,5 +124,6 @@ Meteor.methods
         </enterPosition>"
     newEnter += "</enter>"
 
+    console.log newEnter
     result = HTTP.put 'https://online.moysklad.ru/exchange/rest/ms/xml/Enter', {auth:"admin@allshellac:qweasd", content: newEnter, headers: {"Content-Type": "application/xml"}}
     console.log result

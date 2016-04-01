@@ -9,7 +9,7 @@
       "ruleResetTimerAction": null,
       "processName": "Модерация",
       "gotoScreen": "order",
-      "statusChangeAffects": false
+      "statusChangeAffects": true
     }, {
       "comment": "Не дозвонились",
       "stateUuid": "7a739cd4-68d0-11e4-7a07-673d00031c1d",
@@ -19,7 +19,7 @@
       "ruleResetTimerAction": "Звонок",
       "processName": "Модерация",
       "gotoScreen": "order",
-      "statusChangeAffects": false
+      "statusChangeAffects": true
     }, {
       "comment": "В работе",
       "stateUuid": "abcf2f44-73c6-11e4-90a2-8ecb001ed0f3",
@@ -27,7 +27,7 @@
       "ruleStartMinutesOffset": 30,
       "ruleDeadlineMinutesOffset": 120,
       "ruleResetTimerAction": null,
-      "statusChangeAffects": false,
+      "statusChangeAffects": true,
       "gotoScreen": "order"
     }, {
       "comment": "Требуется связаться с клиентом",
@@ -48,7 +48,7 @@
       "ruleResetTimerAction": null,
       "processName": "Модерация",
       "gotoScreen": "order",
-      "statusChangeAffects": false
+      "statusChangeAffects": true
     }, {
       "comment": "Самовывоз (не приезжают)",
       "stateUuid": "e7d700fd-4a8e-11e5-7a40-e8970020ae51",
