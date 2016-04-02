@@ -44,7 +44,7 @@ Meteor.methods
             isInStock = 1
             stockQty = 999
 
-      #console.log "Товар: #{good.productCode}, кол-во #{good.realAvailableQty} наличие: #{inStockStatus}, отгрузка: #{shipmentStatus}"
+      console.log "Товар: #{good.productCode}, кол-во #{good.realAvailableQty} наличие: #{inStockStatus}, отгрузка: #{shipmentStatus}"
 
       # send to magento
       request = {}
