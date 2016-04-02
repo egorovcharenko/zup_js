@@ -172,15 +172,15 @@ Meteor.methods
                 _.each plan.material, (material) ->
                   materialGood = Goods.findOne {uuid: material.goodUuid}
                   if materialGood?
-                    #if (good.name.lastIndexOf("Набор для ш", 0) == 0)
-                      #;#console.log "--#{materialGood.name} - #{materialGood.realAvailableQty}"
+                    if (good.name.lastIndexOf("Набор для ш", 0) == 0)
+                      #console.log "--#{materialGood.name} - #{materialGood.realAvailableQty}"
                     # для каждого составляющего - добавить его в закупку в нужном количестве
                     minMaterialQty = Math.min(minMaterialQty, materialGood.realAvailableQty / material.quantity / plan.product[0].quantity)
-                #if (good.name.lastIndexOf("Набор для ш", 0) == 0)
-                  #console.log "#{good.code}: #{good.name}, minMaterialQty:#{minMaterialQty}"
+                if (good.name.lastIndexOf("Набор для ш", 0) == 0)
+                  console.log "#{good.code}: #{good.name}, minMaterialQty:#{minMaterialQty}"
                 realAvailableQty += minMaterialQty
 
-              if good.stockQty is oneStock.stock and good.reserveQty is oneStock.reserve and good.quantityQty is oneStock.quantity and good.reserveForSelectedAgentQty is oneStock.reserveForSelectedAgent and good.realAvailableQty is realAvailableQty then needsUpdate = false else needsUpdate = true
+              if (good.stockQty is oneStock.stock) and (good.reserveQty is oneStock.reserve) and (good.quantityQty is oneStock.quantity) and (good.realAvailableQty is realAvailableQty) then needsUpdate = false else needsUpdate = true
 
               Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, reserveQty: oneStock.reserve, quantityQty: oneStock.quantity, reserveForSelectedAgentQty: oneStock.reserveForSelectedAgent, realAvailableQty: realAvailableQty, dirty: needsUpdate}})
             else
