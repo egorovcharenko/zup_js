@@ -199,7 +199,7 @@ Meteor.startup ->
   job = new Job myJobs, 'loadNotPrimaryEntities', {}
   job.priority('normal')
     .retry({retries: 5, wait: 1*1000})
-    .repeat({schedule: myJobs.later.parse.text('every 5 minutes')}) # every 5 minutes
+    .repeat({schedule: myJobs.later.parse.text('every 1 minutes')}) # every 1 minutes
     .save({cancelRepeats: true})
 
   # Начать обрабатывать задачи

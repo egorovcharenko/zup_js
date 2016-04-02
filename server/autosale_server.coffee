@@ -54,8 +54,8 @@ Meteor.methods
         # дата следующей автораспродажи
         nextAutosaleDateAttr = tools.getAttr(good, "80eb0a92-e84a-11e5-7a69-9711000155a0")
         if nextAutosaleDateAttr.timeValue?
-          nextAutosaleDate = autosaleStageAttr.timeValue
-          console.log "nextAutosaleDate found:", moment(nextAutosaleDate).format("DD.MM")
+          nextAutosaleDate = nextAutosaleDateAttr.timeValue
+          console.log "nextAutosaleDateAttr found:", moment(nextAutosaleDate).format("DD.MM")
         else
           nextAutosaleDate = new Date()
         # дата следующей автораспродажи
@@ -63,7 +63,7 @@ Meteor.methods
         if normalPriceAttr.longValue?
           console.log "normalPriceAttr.longValue: #{normalPriceAttr.longValue}"
           if normalPriceAttr.longValue > 500
-            normalPrice = autosaleStageAttr.longValue
+            normalPrice = normalPriceAttr.longValue
           else
             normalPrice = good.salePrice
         else
