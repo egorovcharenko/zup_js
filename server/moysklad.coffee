@@ -162,13 +162,13 @@ Meteor.methods
                   realAvailableQty = 100
               else
                 realAvailableQty = oneStock.quantity
-              #if good.name is "Масло-карандаш для кутикулы"
-              #  console.log "Масло-карандаш для кутикулы, realAvailableQty:#{realAvailableQty}"
+              if good.name is "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие"
+                console.log "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие, realAvailableQty:#{realAvailableQty}"
               # если товар составной - то определить его доступное количество как минимальное из всех составных частей
               plan = ProcessingPlans.findOne({"product.goodUuid":good.uuid, "parentUuid": { $ne: "5283123e-7334-11e4-90a2-8ecb0012dbc6" }})
               if plan?
                 #console.log "--#{plan.name}"
-                minMaterialQty = 100
+                minMaterialQty = 99999
                 _.each plan.material, (material) ->
                   materialGood = Goods.findOne {uuid: material.goodUuid}
                   if materialGood?
@@ -179,6 +179,8 @@ Meteor.methods
                 if (good.name.lastIndexOf("Набор для ш", 0) == 0)
                   console.log "#{good.code}: #{good.name}, minMaterialQty:#{minMaterialQty}"
                 realAvailableQty += Math.max(minMaterialQty, 0)
+              if good.name is "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие"
+                console.log "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие, realAvailableQty:#{realAvailableQty}"
 
               if (good.stockQty is oneStock.stock) and (good.reserveQty is oneStock.reserve) and (good.quantityQty is oneStock.quantity) and (good.realAvailableQty is realAvailableQty) then needsUpdate = false else needsUpdate = true
 
