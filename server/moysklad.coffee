@@ -173,7 +173,7 @@ Meteor.methods
                   materialGood = Goods.findOne {uuid: material.goodUuid}
                   if materialGood?
                     if (good.name.lastIndexOf("Набор для ш", 0) == 0)
-                      #console.log "--#{materialGood.name} - #{materialGood.realAvailableQty}"
+                      console.log "--#{materialGood.name} - #{materialGood.realAvailableQty}"
                     # для каждого составляющего - добавить его в закупку в нужном количестве
                     minMaterialQty = Math.min(minMaterialQty, materialGood.realAvailableQty / material.quantity / plan.product[0].quantity)
                 if (good.name.lastIndexOf("Набор для ш", 0) == 0)
