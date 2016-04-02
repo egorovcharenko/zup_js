@@ -47,7 +47,9 @@ Meteor.methods
         if autosaleStageAttr.longValue?
           autosaleStage = autosaleStageAttr.longValue
         else
-          autosaleStage = 0
+          autosaleStage = 1
+        # компенсирууем
+        autosaleStage--
         # дата следующей автораспродажи
         nextAutosaleDateAttr = tools.getAttr(good, "80eb0a92-e84a-11e5-7a69-9711000155a0")
         if nextAutosaleDateAttr.timeValue?
@@ -58,7 +60,10 @@ Meteor.methods
         # дата следующей автораспродажи
         normalPriceAttr = tools.getAttr(good, "80eb07e4-e84a-11e5-7a69-97110001559f")
         if normalPriceAttr.longValue?
-          normalPrice = autosaleStageAttr.longValue
+          if normalPriceAttr.longValue < 100
+            normalPrice = autosaleStageAttr.longValue
+          else
+            normalPrice = good.salePrice
         else
           normalPrice = good.salePrice
         # если это товар исключение или дата следующей автораспродажи не наступила - пропускаем
@@ -98,7 +103,7 @@ Meteor.methods
         # изменяем цену
         if prevAutosaleStage != autosaleStage
           buyPrice = good.buyPrice
-          if buyPrice < 1
+          if buyPrice < 100
             buyPrice = good.salePrice * 0.7
           buyPrice = buyPrice * 1.10 # прибавляем минимум 10% к цене закупки
           price = Math.ceil(buyPrice + (normalPrice - buyPrice) * ((numberOfAutosaleStages - autosaleStage) / numberOfAutosaleStages))
@@ -108,7 +113,8 @@ Meteor.methods
           # устанавливаем дату следующей автораспродажи
           autosaleStageNew = autosaleStage
           # устанавливаем все параметры в МС
-          autosaleStageAttr.longValue = autosaleStage
+          # компенсирууем
+          autosaleStageAttr.longValue = autosaleStage + 1
           nextAutosaleDateAttr.timeValue = moment().add(durationOfAutosaleStageWeeks, 'weeks').toDate()
           normalPriceAttr.longValue = normalPrice
           msclient.save(good)
