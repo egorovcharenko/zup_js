@@ -178,7 +178,7 @@ Meteor.methods
                     minMaterialQty = Math.min(minMaterialQty, materialGood.realAvailableQty / material.quantity / plan.product[0].quantity)
                 if (good.name.lastIndexOf("Набор для ш", 0) == 0)
                   console.log "#{good.code}: #{good.name}, minMaterialQty:#{minMaterialQty}"
-                realAvailableQty += minMaterialQty
+                realAvailableQty += Math.max(minMaterialQty, 0)
 
               if (good.stockQty is oneStock.stock) and (good.reserveQty is oneStock.reserve) and (good.quantityQty is oneStock.quantity) and (good.realAvailableQty is realAvailableQty) then needsUpdate = false else needsUpdate = true
 
