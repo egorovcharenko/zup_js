@@ -68,7 +68,8 @@ Meteor.methods
         #Enters.insert temp.content
 
         Meteor.call "addNewEnter", [{uuid:good.uuid, qty: difference, buyPrice: good.buyPrice}]
-
+      # запомнить на клиенте сразу на всякий случай
+      Goods.update {uuid: dataObject.goodUuid}, {$set: {stockQty: dataObject.newQty, realAvailableQty: dataObject.newQty - good.reserveQty}}
     catch error
       console.log "error:", error
   setNewGoodStorage: (dataObject) ->

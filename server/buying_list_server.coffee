@@ -1,18 +1,48 @@
+# константы
+weekToAnalyze = 12
+minNumberOfOtgruzhenoQty = 3
+minNumberOfOrders = 2
+maxPriceToIncNumber = 100
+incNumberMinQty = 4
+maxQtyToConsider = 5 # не считаем, если в одном заказе больше данного количества товара
+
 Meteor.methods
+  calculateDemandPerWeek: () ->
+    console.log "starting calculateDemandPerWeek"
+    Goods.update {}, {$set: {isComplexGood: false}, $unset: {perWeekQtyNeeded: ""}}, multi: true
+    # по каждому товару пройтись
+    _.each Goods.find({}).fetch(), (good) ->
+      # если количество заказов больше 2х и кол-во отгрузок шт больше 3х, то вычисляем кол-во про запас
+      # прогноз на следующий месяц минус доступное кол-во
+      if not (good.name.lastIndexOf("Доставка", 0) == 0)
+        perWeekQtyNeeded = good.boughtOnLastPeriodsQty / weekToAnalyze
+        if perWeekQtyNeeded > 0
+          # проверяем на сборность - может это набор?
+          plan = ProcessingPlans.findOne({"product.goodUuid":good.uuid, "parentUuid": { $ne: "5283123e-7334-11e4-90a2-8ecb0012dbc6" }})
+          # количество обновить в любом случае
+          Goods.update {uuid: good.uuid}, {$inc: {perWeekQtyNeeded: perWeekQtyNeeded}}
+          if plan?
+            Goods.update {uuid: good.uuid}, {$set: {isComplexGood: true}}
+            _.each plan.material, (material) ->
+              # для каждого составляющего - добавить его в закупку в нужном количестве
+              qtyOfMaterialNeeded = (material.quantity / plan.product[0].quantity) * perWeekQtyNeeded
+              Goods.update {uuid: material.goodUuid}, {$inc: {perWeekQtyNeeded: qtyOfMaterialNeeded}}
+    console.log "ending calculateDemandPerWeek"
+
   calculateBuyingQty: (dataObject) ->
     console.log "Начинаем подсчитывать товары в закупку"
+
+    # подсчитать сколько в неделю уходит
+    Meteor.call "calculateDemandPerWeek"
+
     try
       # сбросить количества на закупку
-      Goods.update {}, {$unset: {perWeekQtyNeeded: "", boughtOnLastPeriodsQty:"", boughtOnLastPeriodsOrders:"", includeInNextStockBuyingQty: "", includeInNextBuyingQty: "", ordersForBuy: ""}}, multi: true
+      Goods.update {}, {$unset: {boughtOnLastPeriodsQty:"", boughtOnLastPeriodsOrders:"", includeInNextStockBuyingQty: "", includeInNextBuyingQty: "", ordersForBuy: ""}}, multi: true
       # подсчитать кол-ва на закупку заново
       _.each OrderStatuses.find({buyGoodsInThisState: true}).fetch(), (state) ->
-        #console.log "start processing state: ", state.name
         orders = Orders.find({stateUuid: state.uuid}).fetch()
-        #console.log "found orders:", orders.length
         _.each orders, (order) ->
-          #console.log "start processing order: ", order.name
           _.each order.customerOrderPosition, (pos) ->
-            #console.log "start processing pos: ", pos.goodUuid
             good = Goods.findOne {uuid: pos.goodUuid}
             if good?
               if not (good.name is "Наложенный платеж")
@@ -25,12 +55,6 @@ Meteor.methods
                 Goods.update {uuid: good.uuid}, {$set: {includeInNextBuyingQty: qtyToOrder}, $push: {ordersForBuy: {name: order.name, state: state.name, qty: pos.quantity}}}
       # закупка про запас
       # пройтись по всем отгрузкам за x недель
-      weekToAnalyze = 12
-      minNumberOfOtgruzhenoQty = 3
-      minNumberOfOrders = 2
-      maxPriceToIncNumber = 100
-      incNumberMinQty = 4
-      maxQtyToConsider = 5 # не считаем, если в одном заказе больше данного количества товара
       date = new Date (moment().subtract(weekToAnalyze, 'weeks').toISOString())
       console.log "date:#{date}"
       _.each Demands.find({created: {$gte: date}, applicable: true}).fetch(), (demand) ->
@@ -39,24 +63,7 @@ Meteor.methods
           Goods.update {uuid: shipmentOut.goodUuid}, {$inc: {boughtOnLastPeriodsQty: Math.min(shipmentOut.quantity, maxQtyToConsider), boughtOnLastPeriodsOrders: 1}}
       goodsNum = Goods.find({boughtOnLastPeriodsQty: {$gte: minNumberOfOtgruzhenoQty}, boughtOnLastPeriodsOrders: {$gte: minNumberOfOrders}}).count()
       console.log "goods ready for stock buying: #{goodsNum}"
-      # по каждому товару пройтись
-      _.each Goods.find({boughtOnLastPeriodsQty: {$gte: minNumberOfOtgruzhenoQty}, boughtOnLastPeriodsOrders: {$gte: minNumberOfOrders}}).fetch(), (good) ->
-        # если количество заказов больше 2х и кол-во отгрузок шт больше 3х, то вычисляем кол-во про запас
-        # прогноз на следующий месяц минус доступное кол-во
-        if not (good.name.lastIndexOf("Доставка", 0) == 0)
-          perWeekQtyNeeded = good.boughtOnLastPeriodsQty / weekToAnalyze
-          if perWeekQtyNeeded > 0
-            # проверяем на сборность - может это набор?
-            plan = ProcessingPlans.findOne({"product.goodUuid":good.uuid, "parentUuid": { $ne: "5283123e-7334-11e4-90a2-8ecb0012dbc6" }})
-            if plan?
-              _.each plan.material, (material) ->
-                # для каждого составляющего - добавить его в закупку в нужном количестве
-                qtyOfMaterialNeeded = (material.quantity / plan.product[0].quantity) * perWeekQtyNeeded
-                #materialGood = Goods.findOne {uuid: material.goodUuid}
-                Goods.update {uuid: material.goodUuid}, {$inc: {perWeekQtyNeeded: qtyOfMaterialNeeded}}
-            else
-              Goods.update {uuid: good.uuid}, {$inc: {perWeekQtyNeeded: perWeekQtyNeeded}}
-      #moyskladPackage = Meteor.npmRequire('moysklad-client')
+
       client = moyskladPackage.createClient()
       tools = moyskladPackage.tools
       client.setAuth 'admin@allshellac', 'qweasd'
@@ -67,15 +74,12 @@ Meteor.methods
 
       # пройтись по списку поставщиков
       _.each Companies.find({ tags: $in: [ 'поставщики' ] }).fetch(), (supplier) ->
-        #console.log "Обрабатываем поставщика #{supplier.name}.."
         # найти заказ на закупку в статусе. если нет - создать его
-        #console.log "stateUuid:#{activeStateUuid}, supplier.uuid:#{supplier.uuid}"
         activePurchaseOrder1 = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
         if activePurchaseOrder1?
           console.log "найден старый заказ на закупку"
           # удалить старый заказ
           #delResult = HTTP.del('https://online.moysklad.ru/exchange/rest/ms/xml/purchaseOrder/' + activePurchaseOrder1.uuid, {auth:"admin@allshellac:qweasd"} )
-          #console.log "delete result:", delResult
         else
           activePurchaseOrder1 = {
             "TYPE_NAME" : "moysklad.purchaseOrder",
@@ -112,7 +116,7 @@ Meteor.methods
               console.log "У поставщика #{supplier.name} не заполнен период, на сколько закупать"
               return # пропускаем поставщика
             # пройтись по списку товаров этого поставщика в списке на закупку
-            _.each Goods.find({perWeekQtyNeeded: {$gt: 0}, supplierUuid: supplier.uuid}).fetch(), (good) ->
+            _.each Goods.find({isComplexGood:false, perWeekQtyNeeded: {$gt: 0}, supplierUuid: supplier.uuid, boughtOnLastPeriodsQty: {$gte: minNumberOfOtgruzhenoQty}, boughtOnLastPeriodsOrders: {$gte: minNumberOfOrders}}).fetch(), (good) ->
               totalQtyNeeded = (good.perWeekQtyNeeded * weekToBuyInAdvance) - good.realAvailableQty
               if totalQtyNeeded > 0
                 console.log "good:#{good.name}, perWeekQtyNeeded:#{good.perWeekQtyNeeded}, good.realAvailableQty: #{good.realAvailableQty}, totalQtyNeeded:#{totalQtyNeeded}"

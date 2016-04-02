@@ -24,6 +24,8 @@ Template.loadData.helpers
     else
       false
 Template.loadData.events
+  'click #setAutosalePrices': (event, template) ->
+    Meteor.call "setAutosalePrices"
   'click #calculate_kpis': (event, template) ->
     Meteor.call "calculateKpis"
   'click #drop_reserve': (event, template) ->

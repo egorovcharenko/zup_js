@@ -145,14 +145,14 @@ Meteor.methods
     stock = client.stock(options);
     countUpdated = 0
     if stock?
-      Meteor.call "logSystemEvent", "loadStock", "5. notice", "Получено с сервера #{stock.length} остатков"
+      #Meteor.call "logSystemEvent", "loadStock", "5. notice", "Получено с сервера #{stock.length} остатков"
       _.each stock, (oneStock) ->
         try
           if oneStock.goodRef?
             good = Goods.findOne uuid:oneStock.goodRef.uuid
             if good?
               # устанавливаем реальное наличие наличия
-              if (good.name.lastIndexOf("Доставка", 0) == 0) or (good.name.lastIndexOf("Наложенный платеж", 0) == 0) or (good.name.lastIndexOf("Набор для шеллака", 0) == 0) or (good.name.lastIndexOf("Набор шеллака", 0) == 0) or (good.name.lastIndexOf("Гель-лак AllShellac Premiere", 0) == 0) or (good.name.lastIndexOf("Гель-лак Bluesky Shellac, цвет NS", 0) == 0) or (good.name.lastIndexOf("Гель-лак Bluesky Shellac Base 10мл, базовое покрытие", 0) == 0) or (good.name.lastIndexOf("Гель-лак Bluesky Shellac Top 10мл, топовое покрытие", 0) == 0)
+              if (good.name.lastIndexOf("Доставка", 0) == 0) or (good.name.lastIndexOf("Наложенный платеж", 0) == 0)
                 if good.outOfStockInSupplier?
                   if good.outOfStockInSupplier
                     realAvailableQty = oneStock.quantity
@@ -162,6 +162,20 @@ Meteor.methods
                   realAvailableQty = 100
               else
                 realAvailableQty = oneStock.quantity
+              # если товар составной - то определить его доступное количество как минимальное из всех составных частей
+              plan = ProcessingPlans.findOne({"product.goodUuid":good.uuid, "parentUuid": { $ne: "5283123e-7334-11e4-90a2-8ecb0012dbc6" }})
+              if plan?
+                #console.log "--#{plan.name}"
+                minMaterialQty = 100
+                _.each plan.material, (material) ->
+                  materialGood = Goods.findOne {uuid: material.goodUuid}
+                  if materialGood?
+                    #console.log "--#{materialGood.name} - #{materialGood.realAvailableQty}"
+                    # для каждого составляющего - добавить его в закупку в нужном количестве
+                    minMaterialQty = Math.min(minMaterialQty, materialGood.realAvailableQty / material.quantity / plan.product[0].quantity)
+                #console.log "#{good.code}: #{good.name}, minMaterialQty:#{minMaterialQty}"
+                realAvailableQty = minMaterialQty
+
               if good.stockQty is oneStock.stock and good.reserveQty is oneStock.reserve and good.quantityQty is oneStock.quantity and good.reserveForSelectedAgentQty is oneStock.reserveForSelectedAgent and good.realAvailableQty is realAvailableQty then needsUpdate = true else needsUpdate = false
               Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, reserveQty: oneStock.reserve, quantityQty: oneStock.quantity, reserveForSelectedAgentQty: oneStock.reserveForSelectedAgent, realAvailableQty: realAvailableQty, dirty: needsUpdate}})
             else
@@ -170,83 +184,7 @@ Meteor.methods
             ;#Meteor.call "logSystemEvent", "loadStock", "5. notice", "В остатках нет информации о товаре"
         catch error
           console.log "error:", error
-      Meteor.call "logSystemEvent", "loadStock", "5. notice", "Остатки загружены успешно, количество: #{stock.length}, обновлено: #{countUpdated}"
-  sendStockToMagento: (job) ->
-    # moysklad
-    #moyskladPackage = Meteor.npmRequire('moysklad-client')
-    #tools = moyskladPackage.tools
-    #metadataUuid = findMetadataUuidByName('GoodFolder', "Отсутствует у поставщика")
-
-    # magento
-    liveParams = {
-      user: 'zup_user',
-      pass: 'zup_user',
-      url: 'http://allshellac.ru/index.php/api/V2_soap?wsdl=1'
-    }
-    paramsToUse = liveParams;
-    client = Soap.createClient(paramsToUse.url);
-    client.setSecurity(new Soap.BasicAuthSecurity(paramsToUse.user, paramsToUse.pass));
-    result = client.login({username: paramsToUse.user, apiKey:paramsToUse.pass});
-    session = result.loginReturn.$value;
-    if not result.loginReturn.$value?
-      throw new Error "Не получилось залогиниться в Magento"
-
-    allDirtyGoods = Goods.find({dirty: true})
-    console.log "Найдено #{allDirtyGoods.count()} остатков для отправки, начинаем отправку"
-
-    for good in allDirtyGoods.fetch()
-      if good.realAvailableQty?
-        if good.realAvailableQty > 0
-          inStockStatus = "В наличии, отправим сегодня"
-          shipmentStatus = "Товар в наличии на нашем складе, отправим сегодня или завтра утром"
-          isInStock = 1
-          stockQty = 9999 #good.stockQty
-      if (not good.realAvailableQty? or good.realAvailableQty <= 0)
-        outOfStockInSupplier = good.outOfStockInSupplier #tools.getAttrValue(good, metadataUuid)
-        if outOfStockInSupplier
-          #console.log "Флаг 'отсутствует у поставщика' у товара '#{good.name}': #{outOfStockInSupplier}"
-          inStockStatus = "Временно нет в продаже"
-          shipmentStatus = "Отправка возможна после появления в продаже. Когда товар появится - пока не известно."
-          isInStock = 0
-          stockQty = 0
-        else
-          inStockStatus = "В наличии, отправим за 4 дня"
-          shipmentStatus = "Товар в наличии, находится на складе поставщика, отправим в течение 4х рабочих дней"
-          isInStock = 1
-          stockQty = 999
-
-      console.log "Товар: #{good.productCode}, кол-во #{good.realAvailableQty} наличие: #{inStockStatus}, отгрузка: #{shipmentStatus}"
-
-      # send to magento
-      request = {}
-      request.sessionId = session
-      request.storeView = "smmarket"
-      request.identifierType = "sku"
-      request.product = good.productCode
-      request.productData = {
-        additional_attributes: {
-          single_data: {
-            associativeEntity: [
-              { key: "instock_desc", value: inStockStatus}
-              { key: "shipment_desc", value: shipmentStatus}
-            ]
-          }
-        }
-        stock_data: {
-          qty: stockQty
-          is_in_stock: isInStock
-        }
-      }
-
-      Goods.update({uuid: good.uuid}, {$set: {dirty: false}})
-
-      #console.log "Request: #{objToString request}, #{objToString request.productData}"
-      response = client.catalogProductUpdate request
-      #console.log "Response: #{objToString response}"
-      #console.log "Response: #{client.lastRequest}"
-
-    client.endSession session
-    return "Остатки отправлены в Мадженто: #{allDirtyGoods.count()} всего"
+      #Meteor.call "logSystemEvent", "loadStock", "5. notice", "Остатки загружены успешно, количество: #{stock.length}, обновлено: #{countUpdated}"
 
   loadNotPrimaryEntities: () ->
     try
