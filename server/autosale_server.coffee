@@ -45,6 +45,7 @@ Meteor.methods
         # стадия автораспродажи
         autosaleStageAttr = tools.getAttr(good, "80eb0474-e84a-11e5-7a69-97110001559e")
         if autosaleStageAttr.longValue?
+          console.log "autosaleStageAttr.longValue: #{autosaleStageAttr.longValue}"
           autosaleStage = autosaleStageAttr.longValue
         else
           autosaleStage = 1
@@ -60,7 +61,8 @@ Meteor.methods
         # дата следующей автораспродажи
         normalPriceAttr = tools.getAttr(good, "80eb07e4-e84a-11e5-7a69-97110001559f")
         if normalPriceAttr.longValue?
-          if normalPriceAttr.longValue < 100
+          console.log "normalPriceAttr.longValue: #{normalPriceAttr.longValue}"
+          if normalPriceAttr.longValue < 500
             normalPrice = autosaleStageAttr.longValue
           else
             normalPrice = good.salePrice
