@@ -111,7 +111,7 @@ Meteor.methods
           autosaleStageAttr.longValue = autosaleStage
           nextAutosaleDateAttr.timeValue = moment().add(durationOfAutosaleStageWeeks, 'weeks').toDate()
           normalPriceAttr.longValue = normalPrice
-          #msclient.save(good)
+          msclient.save(good)
           # передаем цену в Мадженто
           request = {}
           request.sessionId = session
@@ -123,7 +123,7 @@ Meteor.methods
             special_from_date: ""
             special_to_date: ""
           }
-          #response = client.catalogProductUpdate request
+          response = client.catalogProductUpdate request
           #console.log "Response: #{response}"
           #console.log "Response: #{client.lastRequest}"
           #throw new Meteor.Error "завершили обработку одного товара: #{good.name}"
