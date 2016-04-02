@@ -119,6 +119,13 @@ Meteor.methods
                 # если товар дешевле 100р, то сразу покупаем минимум 5 штук
                 if good.buyPrice < maxPriceToIncNumber * 100 # копейки
                   totalQtyNeeded = Math.max(totalQtyNeeded, incNumberMinQty)
+                if (good.name.lastIndexOf("Гель-лак Bluesky Shellac", 0) == 0)
+                  totalQtyNeeded = Math.ceil(totalQtyNeeded / 8) * 8
+                else if (good.name.lastIndexOf("Гель-лак TNL", 0) == 0)
+                  totalQtyNeeded = Math.ceil(totalQtyNeeded / 4) * 4
+                else if (good.name.lastIndexOf("Пилка", 0) == 0)
+                  totalQtyNeeded = Math.ceil(totalQtyNeeded / 10) * 10
+
                 purchaseOrderPosition = {
                   "TYPE_NAME" : "moysklad.purchaseOrderPosition",
                   "quantity" : Math.ceil(totalQtyNeeded),
@@ -139,6 +146,7 @@ Meteor.methods
                     "sumInCurrency" : good.buyPrice
                     }
                 }
+
                 activePurchaseOrder1.purchaseOrderPosition.push purchaseOrderPosition
                 # debug
                 Goods.update {uuid: good.uuid}, {$set: {includeInNextBuyingStockQty: totalQtyNeeded}}

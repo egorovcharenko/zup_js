@@ -13,6 +13,7 @@ calculateSumForLogEntry = (logEntry) ->
 
 Meteor.methods
   calculateKpis: ->
+    console.log "начинаем подсчет KPI"
     # очистить логи
     Kpis.remove {}
     # пройтись по всем записям логов
@@ -27,3 +28,4 @@ Meteor.methods
           Kpis.insert {date: date, user: logEntry.userName}
         # внести запись в таблицу KPI
         Kpis.update {date: date, user: logEntry.userName}, {$inc: {sum: sum}}
+    console.log "закончили подсчет KPI"

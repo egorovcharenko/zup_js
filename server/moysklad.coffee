@@ -152,7 +152,7 @@ Meteor.methods
             good = Goods.findOne uuid:oneStock.goodRef.uuid
             if good?
               # устанавливаем реальное наличие наличия
-              if (good.name.lastIndexOf("Доставка", 0) == 0) or (good.name.lastIndexOf("Наложенный платеж", 0) == 0) or (good.name.lastIndexOf("Набор для шеллака", 0) == 0) or (good.name.lastIndexOf("Набор шеллака", 0) == 0) or (good.name.lastIndexOf("Гель-лак AllShellac Premiere", 0) == 0) or (good.name.lastIndexOf("Гель-лак Bluesky Shellac, цвет NS", 0) == 0)
+              if (good.name.lastIndexOf("Доставка", 0) == 0) or (good.name.lastIndexOf("Наложенный платеж", 0) == 0) or (good.name.lastIndexOf("Набор для шеллака", 0) == 0) or (good.name.lastIndexOf("Набор шеллака", 0) == 0) or (good.name.lastIndexOf("Гель-лак AllShellac Premiere", 0) == 0) or (good.name.lastIndexOf("Гель-лак Bluesky Shellac, цвет NS", 0) == 0) or (good.name.lastIndexOf("Гель-лак Bluesky Shellac Base 10мл, базовое покрытие", 0) == 0) or (good.name.lastIndexOf("Гель-лак Bluesky Shellac Top 10мл, топовое покрытие", 0) == 0)
                 if good.outOfStockInSupplier?
                   if good.outOfStockInSupplier
                     realAvailableQty = oneStock.quantity

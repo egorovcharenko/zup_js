@@ -2,7 +2,7 @@ Template.goods.helpers
   settings: () ->
     {
       collection: "all_goods_special_publish"
-      rowsPerPage: 20
+      rowsPerPage: 50
       showFilter: true
       fields: [{
           fieldId: "code"

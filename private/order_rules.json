@@ -34,7 +34,7 @@
       "stateUuid": "7c29fdd4-68d0-11e4-7a07-673d00031d3a",
       "ruleAction": "Связаться с клиентом по поводу заказа",
       "ruleStartMinutesOffset": 0,
-      "ruleDeadlineMinutesOffset": 1,
+      "ruleDeadlineMinutesOffset": 15,
       "processName": "Звонок",
       "ruleResetTimerAction": "Звонок",
       "statusChangeAffects": true,

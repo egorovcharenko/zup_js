@@ -7,8 +7,36 @@ if currentUser
   span #{currentUserProfile.userName}
   h2 Изменить данные:
   br
-  input#msUuidInput(type="text",placeholder="Введите Uuid в МС")
-  input#userNameInput(type="text",placeholder="Введите имя пользователя")
+  input#msUuidInput(type="text",placeholder="Введите Uuid в МС" value="#{currentUserProfile.msUserId}")
+  input#userNameInput(type="text",placeholder="Введите имя пользователя" value="#{currentUserProfile.userName}")
+  br
+  p Пн
+  input#workStartMon(type="text",placeholder="Время начала работы (часы)" value="#{currentUserProfile.workStartMon}")
+  input#workEndMon(type="text",placeholder="Время окончания работы (часы)" value="#{currentUserProfile.workEndMon}")
+  br
+  p Вторник
+  input#workStartTue(type="text",placeholder="Время начала работы (часы)" value="#{currentUserProfile.workStartTue}")
+  input#workEndTue(type="text",placeholder="Время окончания работы (часы)" value="#{currentUserProfile.workEndTue}")
+  br
+  p Среда
+  input#workStartWed(type="text",placeholder="Время начала работы (часы)" value="#{currentUserProfile.workStartWed}")
+  input#workEndWed(type="text",placeholder="Время окончания работы (часы)" value="#{currentUserProfile.workEndWed}")
+  br
+  p Четверг
+  input#workStartThu(type="text",placeholder="Время начала работы (часы)" value="#{currentUserProfile.workStartThu}")
+  input#workEndThu(type="text",placeholder="Время окончания работы (часы)" value="#{currentUserProfile.workEndThu}")
+  br
+  p Пятница
+  input#workStartFri(type="text",placeholder="Время начала работы (часы)" value="#{currentUserProfile.workStartFri}")
+  input#workEndFri(type="text",placeholder="Время окончания работы (часы)" value="#{currentUserProfile.workEndFri}")
+  br
+  p Суббота
+  input#workStartSat(type="text",placeholder="Время начала работы (часы)" value="#{currentUserProfile.workStartSat}")
+  input#workEndSat(type="text",placeholder="Время окончания работы (часы)" value="#{currentUserProfile.workEndSat}")
+  br
+  p Воскресенье
+  input#workStartSun(type="text",placeholder="Время начала работы (часы)" value="#{currentUserProfile.workStartSun}")
+  input#workEndSun(type="text",placeholder="Время окончания работы (часы)" value="#{currentUserProfile.workEndSun}")
   #setMsUuid.ui.teal.button Установить
 else
   h2 Форма регистрации
