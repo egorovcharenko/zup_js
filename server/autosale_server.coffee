@@ -62,7 +62,7 @@ Meteor.methods
         normalPriceAttr = tools.getAttr(good, "80eb07e4-e84a-11e5-7a69-97110001559f")
         if normalPriceAttr.longValue?
           console.log "normalPriceAttr.longValue: #{normalPriceAttr.longValue}"
-          if normalPriceAttr.longValue < 500
+          if normalPriceAttr.longValue > 500
             normalPrice = autosaleStageAttr.longValue
           else
             normalPrice = good.salePrice
