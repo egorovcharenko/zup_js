@@ -89,6 +89,25 @@ Meteor.methods
                   #console.log "Updating good's '#{entity.name}' stock, uuid:#{entity.uuid},  outOfStockInSupplier:#{entity.outOfStockInSupplier}"
                 else if entityName is "workflow"
                   ;
+                else if entityName is "company"
+                  if savedEntity.dadata?
+                    entity.dadata = savedEntity.dadata
+                  try
+                    load = false
+                    if entity.requisite?
+                      if entity.requisite.actualAddress?
+                          if not (savedEntity.dadata?)
+                            load = true
+                          else if savedEntity.requisite?
+                            if not (savedEntity.requisite.actualAddress is entity.requisite.actualAddress)
+                              load = true
+                    if load
+                      request = [entity.requisite.actualAddress]
+                      # получить часовой пояс
+                      result = HTTP.post 'https://dadata.ru/api/v2/clean/address', data: request , headers: {"X-Secret": "4989bbb6a8d72f742f041c8b5716f889f83722ad", "Authorization": "Token 8dcd0d1af4c068d94bcfb8fc69df34f5e25462bd", "Content-Type": "application/json", "Accept": "application/json"}
+                      entity.dadata = result.data[0]
+                  catch error
+                    console.log "error:", error
                 collection.remove uuid: entity.uuid
               else
                 if entityName is "customerOrder"

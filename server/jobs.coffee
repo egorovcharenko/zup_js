@@ -141,77 +141,66 @@ Meteor.startup ->
     .retry({retries: myJobs.forever, wait: 1*1000}) # 1 * 1000
     .repeat({ repeats: myJobs.forever, wait: 0})
     .save({cancelRepeats: true})
-
   # перодически обновлять в заказах сколько осталось времени до следующей задачи
   job = new Job myJobs, 'setOrderActionsParameters', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
     .repeat({schedule: myJobs.later.parse.text('every 60 seconds')})
     .save({cancelRepeats: true})
-
   # автоматический сброс резервов
   job = new Job myJobs, 'periodicalDropReserve', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
     .repeat({schedule: myJobs.later.parse.text('at 9:00 pm')})
     .save({cancelRepeats: true})
-
   # расчет дат поступления товаров
   job = new Job myJobs, 'calculateNextArrivalDates', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
     .repeat({schedule: myJobs.later.parse.text('every 2 hours')})
     .save({cancelRepeats: true})
-
   # расчет списка на закупку
   job = new Job myJobs, 'calculateBuyingQty', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
     .repeat({schedule: myJobs.later.parse.text('at 9:00 pm')})
     .save({cancelRepeats: true})
-
   # загрузка данных из МС
   job = new Job myJobs, 'loadAllDataMoyskladPeriodic', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 1*1000}) # 1 * 1000
     .repeat({ repeats: myJobs.forever, wait: 0})
     .save({cancelRepeats: true})
-
   # Загрузка остатков из МС
   job = new Job myJobs, 'loadStockFromMS', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 60*1000}) # 60 * 1000
     .repeat({ repeats: myJobs.forever, wait: 30*1000})
     .save({cancelRepeats: true})
-
   sendStock = Settings.findOne {name: "sendStock"}
   sendStockFlag = false
   if sendStock?
     if sendStock.value = "1"
       # Отправка остатков в Мадженто
       sendStockFlag = true
-
   if sendStockFlag
     job = new Job myJobs, 'sendStockToMagento', {}
     job.priority('normal')
       .retry({retries: myJobs.forever, wait: 5*1000})
       .repeat({ repeats: myJobs.forever, wait: 5*1000})
       .save({cancelRepeats: true})
-
   # Сброс флагов в 3 ночи
   job = new Job myJobs, 'resetTimestamps', {}
   job.priority('normal')
     .retry({retries: 5, wait: 60*1000})
     .repeat({schedule: myJobs.later.parse.text('at 01:00 am')})
     .save({cancelRepeats: true})
-
   # Загрузка не главных сущностей раз в 5 минут
   job = new Job myJobs, 'loadNotPrimaryEntities', {}
   job.priority('normal')
     .retry({retries: 5, wait: 1*1000})
     .repeat({schedule: myJobs.later.parse.text('every 1 minutes')}) # every 1 minutes
     .save({cancelRepeats: true})
-
   # Начать обрабатывать задачи
   myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities', 'processPendingChanges'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
 

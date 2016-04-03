@@ -19,6 +19,14 @@ Template.moderation.events
     Meteor.call "setOrderReserve", Router.current().data().order.uuid, false
 
 Template.moderation.helpers
+  customerCurrentTime: ()->
+    reactiveDate = new ReactiveVar(new Date())
+    #console.log "this:", this
+    if this.company.dadata?
+      if this.company.dadata.timezone?
+        console.log "#{this.company.dadata.timezone.substring(3)}"
+        return moment(reactiveDate.get()).utcOffset(parseInt(this.company.dadata.timezone.substring(3))).format('HH:mm')
+    return moment(reactiveDate.get()).format('HH:mm')
   nextArrivalDate: ()->
     good = Goods.findOne {uuid: @goodUuid}
     if good?

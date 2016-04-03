@@ -28,10 +28,9 @@
           //h3 Нет в наличии: #{order.outOfStock}
           h3 Способ доставки: #{order.deliveryWay}
           h3 #{company.name}
-          h3 #{company.contact.phones}
+          h3 #{company.contact.phones} , местное время #{customerCurrentTime}
           h3 #{company.requisite.actualAddress}
-          p Общая сумма заказа:
-          h3 {{sumHelper order.sum.sum}}
+          h3 Общая сумма заказа: {{sumHelper order.sum.sum}}
     .row 
       .sixteen.wide.column
         .ui.segment
