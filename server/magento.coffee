@@ -18,61 +18,59 @@ Meteor.methods
     console.log "Найдено #{allDirtyGoods.count()} остатков для отправки, начинаем отправку"
 
     for good in allDirtyGoods.fetch()
-      if good.realAvailableQty?
-        if good.realAvailableQty > 0
-          inStockStatus = "В наличии, отправим сегодня"
-          shipmentStatus = "Товар в наличии на нашем складе, отправим сегодня или завтра утром"
-          isInStock = 1
-          stockQty = 9999 #good.stockQty
-      if (not good.realAvailableQty? or good.realAvailableQty <= 0)
-        outOfStockInSupplier = good.outOfStockInSupplier #tools.getAttrValue(good, metadataUuid)
-        if outOfStockInSupplier
-          #console.log "Флаг 'отсутствует у поставщика' у товара '#{good.name}': #{outOfStockInSupplier}"
-          inStockStatus = "Временно нет в продаже"
-          shipmentStatus = "Отправка возможна после появления в продаже. Когда товар появится - пока не известно."
-          isInStock = 0
-          stockQty = 0
-        else
-          if good.nextDate?
-            inStockStatus = "В наличии, отправим #{moment(good.nextDate).format("DD.MM")}"
-            shipmentStatus = "Товар в наличии, находится на складе поставщика, отправим #{moment(good.nextDate).format("DD.MM")}"
+      try
+        if good.realAvailableQty?
+          if good.realAvailableQty > 0
+            inStockStatus = "В наличии, отправим сегодня"
+            shipmentStatus = "Товар в наличии на нашем складе, отправим сегодня или завтра утром"
             isInStock = 1
-            stockQty = 999
+            stockQty = 9999 #good.stockQty
+        if (not good.realAvailableQty? or good.realAvailableQty <= 0)
+          outOfStockInSupplier = good.outOfStockInSupplier #tools.getAttrValue(good, metadataUuid)
+          if outOfStockInSupplier
+            #console.log "Флаг 'отсутствует у поставщика' у товара '#{good.name}': #{outOfStockInSupplier}"
+            inStockStatus = "Временно нет в продаже"
+            shipmentStatus = "Отправка возможна после появления в продаже. Когда товар появится - пока не известно."
+            isInStock = 0
+            stockQty = 0
           else
-            inStockStatus = "Доступно под заказ"
-            shipmentStatus = "Товар под заказ, уточняйте время поступления у менеджера"
-            isInStock = 1
-            stockQty = 999
+            if good.nextDate?
+              inStockStatus = "В наличии, отправим #{moment(good.nextDate).format("DD.MM")}"
+              shipmentStatus = "Товар в наличии, находится на складе поставщика, отправим #{moment(good.nextDate).format("DD.MM")}"
+              isInStock = 1
+              stockQty = 999
+            else
+              inStockStatus = "Доступно под заказ"
+              shipmentStatus = "Товар под заказ, уточняйте время поступления у менеджера"
+              isInStock = 1
+              stockQty = 999
 
-      console.log "Товар: #{good.productCode}, кол-во #{good.realAvailableQty} наличие: #{inStockStatus}, отгрузка: #{shipmentStatus}"
+        console.log "Товар: #{good.productCode}, кол-во #{good.realAvailableQty} наличие: #{inStockStatus}, отгрузка: #{shipmentStatus}"
 
-      # send to magento
-      request = {}
-      request.sessionId = session
-      request.storeView = "smmarket"
-      request.identifierType = "sku"
-      request.product = good.productCode
-      request.productData = {
-        additional_attributes: {
-          single_data: {
-            associativeEntity: [
-              { key: "instock_desc", value: inStockStatus}
-              { key: "shipment_desc", value: shipmentStatus}
-            ]
+        # send to magento
+        request = {}
+        request.sessionId = session
+        request.storeView = "smmarket"
+        request.identifierType = "sku"
+        request.product = good.productCode
+        request.productData = {
+          additional_attributes: {
+            single_data: {
+              associativeEntity: [
+                { key: "instock_desc", value: inStockStatus}
+                { key: "shipment_desc", value: shipmentStatus}
+              ]
+            }
+          }
+          stock_data: {
+            qty: stockQty
+            is_in_stock: isInStock
           }
         }
-        stock_data: {
-          qty: stockQty
-          is_in_stock: isInStock
-        }
-      }
-
-      Goods.update({uuid: good.uuid}, {$set: {dirty: false}})
-
-      #console.log "Request: #{objToString request}, #{objToString request.productData}"
-      response = client.catalogProductUpdate request
-      #console.log "Response: #{objToString response}"
-      #console.log "Response: #{client.lastRequest}"
+        response = client.catalogProductUpdate request
+        Goods.update({uuid: good.uuid}, {$set: {dirty: false}})
+      catch error
+        console.log "error:", error
 
     client.endSession session
     return "Остатки отправлены в Мадженто: #{allDirtyGoods.count()} всего"

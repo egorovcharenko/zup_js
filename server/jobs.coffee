@@ -4,6 +4,10 @@ myJobs.allow admin: (userId, method, params) ->
 
 processMSJobsWorker = (job, cb) ->
   switch job.type
+    when "resetStockSendToMagento"
+      Goods.update {}, {$set: {dirty: true}}, {multi: true}
+      job.done()
+      return cb()
     when "processPendingChanges"
       Meteor.call 'processPendingChanges', (error, result) ->
         if not error?
@@ -125,6 +129,12 @@ processStockJobsWorker = (job, cb) ->
 Meteor.startup ->
   myJobs.startJobServer()
 
+  # обновлять данные по заказам
+  job = new Job myJobs, 'resetStockSendToMagento', {}
+  job.priority('normal')
+    .retry({retries: myJobs.forever, wait: 1*1000}) # 1 * 1000
+    .repeat({schedule: myJobs.later.parse.text('at 1:00 am on Mondays')})
+    .save({cancelRepeats: true})
   # обновлять данные по заказам
   job = new Job myJobs, 'processPendingChanges', {}
   job.priority('normal')
