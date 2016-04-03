@@ -115,12 +115,6 @@ Meteor.methods
             Goods.update {uuid:good.uuid}, {$set: {forAutoSale: true}}
             # устанавливаем дату следующей автораспродажи
             autosaleStageNew = autosaleStage
-            # устанавливаем все параметры в МС
-            # компенсирууем
-            autosaleStageAttr.longValue = autosaleStage + 1
-            nextAutosaleDateAttr.timeValue = moment().add(durationOfAutosaleStageWeeks, 'weeks').toDate()
-            normalPriceAttr.longValue = normalPrice
-            msclient.save(good)
             # передаем цену в Мадженто
             request = {}
             request.sessionId = session
@@ -133,6 +127,13 @@ Meteor.methods
               special_to_date: ""
             }
             response = client.catalogProductUpdate request
+            # устанавливаем все параметры в МС
+            # компенсирууем
+            autosaleStageAttr.longValue = autosaleStage + 1
+            nextAutosaleDateAttr.timeValue = moment().add(durationOfAutosaleStageWeeks, 'weeks').toDate()
+            normalPriceAttr.longValue = normalPrice
+            msclient.save(good)
+
             #console.log "Response: #{response}"
             #console.log "Response: #{client.lastRequest}"
             #throw new Meteor.Error "завершили обработку одного товара: #{good.name}"
