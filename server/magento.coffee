@@ -67,8 +67,8 @@ Meteor.methods
             is_in_stock: isInStock
           }
         }
-        response = client.catalogProductUpdate request
         Goods.update({uuid: good.uuid}, {$set: {dirty: false}})
+        response = client.catalogProductUpdate request
       catch error
         console.log "Ошибка при отправке остатка:", error.message
 
