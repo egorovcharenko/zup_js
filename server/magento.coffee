@@ -45,7 +45,7 @@ Meteor.methods
               isInStock = 1
               stockQty = 999
 
-        console.log "Товар: #{good.productCode}, кол-во #{good.realAvailableQty} наличие: #{inStockStatus}, отгрузка: #{shipmentStatus}"
+        console.log "Отправляем остаток: #{good.productCode}, кол-во #{good.realAvailableQty} наличие: #{inStockStatus}, отгрузка: #{shipmentStatus}"
 
         # send to magento
         request = {}
@@ -70,7 +70,7 @@ Meteor.methods
         response = client.catalogProductUpdate request
         Goods.update({uuid: good.uuid}, {$set: {dirty: false}})
       catch error
-        console.log "error:", error
+        console.log "Ошибка при отправке остатка:", error.message
 
     client.endSession session
     return "Остатки отправлены в Мадженто: #{allDirtyGoods.count()} всего"
