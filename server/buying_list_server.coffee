@@ -31,10 +31,9 @@ Meteor.methods
 
   calculateBuyingQty: (dataObject) ->
     console.log "Начинаем подсчитывать товары в закупку"
-
+    Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Начинаем подсчитывать товары в закупку"
     # подсчитать сколько в неделю уходит
     Meteor.call "calculateDemandPerWeek"
-
     try
       # сбросить количества на закупку
       Goods.update {}, {$unset: {boughtOnLastPeriodsQty:"", boughtOnLastPeriodsOrders:"", includeInNextStockBuyingQty: "", includeInNextBuyingQty: "", ordersForBuy: ""}}, multi: true

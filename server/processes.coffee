@@ -150,10 +150,14 @@ Meteor.methods
                       ;
 
                 when "setOrderNeededState"
+                  client = moyskladPackage.createClient()
+                  client.setAuth 'admin@allshellac', 'qweasd'
+
                   # проходимся по всем товарам
                   orderName = action.params.orderName
                   console.log "нужно в заказе #{orderName} проставить нужный статус в зависимости от наличия";
-                  order = Orders.findOne(name: orderName)
+                  # загружаем так чтобы точно уж получить нормальные последние данные
+                  order = client.load('customerOrder', Orders.findOne(name: orderName).uuid)#Orders.findOne(name: orderName)
                   needToBuy = false
                   _.each order.customerOrderPosition, (pos) ->
                     good = Goods.findOne {uuid: pos.goodUuid}
@@ -162,12 +166,19 @@ Meteor.methods
                         needToBuy = true
                   if needToBuy
                     # если чего-то нет, то выставляем "Требуется закупка"
-                    result = Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid, "7f224366-68d0-11e4-7a07-673d0003202a", (error, result) ->
+                    result = Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid, "7f224366-68d0-11e4-7a07-673d0003202a"
                   else
-                    # если все есть в наличии, то выставляем статус "На сборку"
-                    result = Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid, "ba02cb40-691b-11e4-90a2-8ecb0052ff42", (error, result) ->
+                    # если это самовывоз или достависта - выставляем "Пока не собирать"
+                    attrib = _.find(order.attribute, (attr) -> attr.metadataUuid is "50836a82-6912-11e4-90a2-8ecb00526879")
+                    newState = "ba02cb40-691b-11e4-90a2-8ecb0052ff42" # на сборку
+                    if attrib?
+                      console.log "attrib:", attrib
+                      if (attrib.entityValueUuid is "07242d1a-691b-11e4-90a2-8ecb0052fa9f") or (attrib.entityValueUuid is "c596ace1-7991-11e4-90a2-8eca00151dc4")
+                        newState = "265f289e-ca46-11e5-7a69-971100039a24" # пока не собирать
+                    console.log "Устанавливаем статус:#{newState}"
+                    result = Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid, newState
                   console.log "result:", result
-                  
+
                 when "setNextStep"
                   # найти следующий шаг
                   console.log "Переходим к действию #{action.params.nextStepId}"

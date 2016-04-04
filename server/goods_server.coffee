@@ -79,7 +79,7 @@ Meteor.methods
       tools = moyskladPackage.tools
       client.setAuth 'admin@allshellac', 'qweasd'
 
-      good = client.load('Good', dataObject.goodUuid)
+      good = Goods.findOne {uuid: dataObject.goodUuid} #client.load('Good', dataObject.goodUuid)
       good.description = dataObject.description
       # записать и сохранить
       try

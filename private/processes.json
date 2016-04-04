@@ -27,13 +27,6 @@
                     "orderName": "%orderName%"
                   }
                 }, {
-                  "name": "setOrderField",
-                  "params": {
-                    "fieldName": "Сотрудник",
-                    "fieldValue": "%msUserId%",
-                    "fieldType": "employee"
-                  }
-                }, {
                   "name": "setNextStep",
                   "params": {
                     "nextStepId": "1"
@@ -85,6 +78,13 @@
                     "type": "Модерация",
                     "text": "Дозвонились до клиента",
                     "orderName": "%orderName%"
+                  }
+                }, {
+                  "name": "setOrderField",
+                  "params": {
+                    "fieldName": "Сотрудник",
+                    "fieldValue": "%msUserId%",
+                    "fieldType": "employee"
                   }
                 }, {
                   "name": "setAction",
@@ -316,7 +316,7 @@
         }, {
           "id": "7",
           "name": "Проставить некоторые поля",
-          "description": "Статус в зависимости от наличия",
+          "description": "Статус в зависимости от наличия и от курьеров (Самовывоз и Достависта - 'Не собирать')",
           "options": [
             {
               "name": "Проставить автоматом",

@@ -37,7 +37,7 @@ Meteor.methods
     client = moyskladPackage.createClient()
     tools = moyskladPackage.tools
     client.setAuth 'admin@allshellac', 'qweasd'
-    order = client.load('customerOrder', entityUuid)
+    order = Orders.findOne {uuid: entityUuid} #client.load('customerOrder', entityUuid)
     #order = Orders.findOne({uuid: entityUuid})
     changed = false
     _.each order.customerOrderPosition, (position) ->
