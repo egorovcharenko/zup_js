@@ -22,15 +22,16 @@
                 ret.lastActionTime = moment(lastActionTime).format ("DD.MM,  HH:mm")
                 ret.lastAction = "Изменение статуса"
     userProfile = Meteor.user().profile
-    moment.locale('en',
+
+    moment.updateLocale('en',
       workinghours:
-        1: [userProfile.workStartMon, userProfile.workEndMon],
-        2: [userProfile.workStartTue, userProfile.workEndTue],
-        3: [userProfile.workStartWed, userProfile.workEndWed],
-        4: [userProfile.workStartThu, userProfile.workEndThu],
-        5: [userProfile.workStartFri, userProfile.workEndFri],
-        6: [userProfile.workStartSat, userProfile.workEndSat],
-        0: [userProfile.workStartSun, userProfile.workEndSun],
+        1: [userProfile.workStartMon.toString(), userProfile.workEndMon.toString()],
+        2: [userProfile.workStartTue.toString(), userProfile.workEndTue.toString()],
+        3: [userProfile.workStartWed.toString(), userProfile.workEndWed.toString()],
+        4: [userProfile.workStartThu.toString(), userProfile.workEndThu.toString()],
+        5: [userProfile.workStartFri.toString(), userProfile.workEndFri.toString()],
+        6: [userProfile.workStartSat.toString(), userProfile.workEndSat.toString()],
+        0: [userProfile.workStartSun.toString(), userProfile.workEndSun.toString()],
     )
     # высчитываем дату начала окончания работы
     ret.nextActionStart = moment(lastActionTime).addWorkingTime(rule.ruleStartMinutesOffset, 'minutes')

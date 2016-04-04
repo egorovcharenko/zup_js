@@ -5,11 +5,12 @@
       "stateUuid": "3f201baf-8d32-11e4-7a07-673d00307946",
       "ruleAction": "Промодерировать заказ",
       "ruleStartMinutesOffset": 0,
-      "ruleDeadlineMinutesOffset": 15,
+      "ruleDeadlineMinutesOffset": 30,
       "ruleResetTimerAction": null,
       "processName": "Модерация",
       "gotoScreen": "order",
-      "statusChangeAffects": true
+      "statusChangeAffects": true,
+      "punishAll": true
     }, {
       "comment": "Не дозвонились",
       "stateUuid": "7a739cd4-68d0-11e4-7a07-673d00031c1d",
@@ -19,7 +20,8 @@
       "ruleResetTimerAction": "Звонок",
       "processName": "Модерация",
       "gotoScreen": "order",
-      "statusChangeAffects": true
+      "statusChangeAffects": true,
+      "punishAll": true
     }, {
       "comment": "В работе",
       "stateUuid": "abcf2f44-73c6-11e4-90a2-8ecb001ed0f3",
@@ -28,7 +30,8 @@
       "ruleDeadlineMinutesOffset": 120,
       "ruleResetTimerAction": null,
       "statusChangeAffects": true,
-      "gotoScreen": "order"
+      "gotoScreen": "order",
+      "punishAll": false
     }, {
       "comment": "Требуется связаться с клиентом",
       "stateUuid": "7c29fdd4-68d0-11e4-7a07-673d00031d3a",
@@ -38,7 +41,8 @@
       "processName": "Звонок",
       "ruleResetTimerAction": "Звонок",
       "statusChangeAffects": true,
-      "gotoScreen": "order"
+      "gotoScreen": "order",
+      "punishAll": false
     }, {
       "comment": "Модерация (заказ оплачен)",
       "stateUuid": "33cd998e-3090-11e5-7a07-673d0019b9ed",
@@ -48,7 +52,8 @@
       "ruleResetTimerAction": null,
       "processName": "Модерация",
       "gotoScreen": "order",
-      "statusChangeAffects": true
+      "statusChangeAffects": true,
+      "punishAll": true
     }, {
       "comment": "Самовывоз (не приезжают)",
       "stateUuid": "e7d700fd-4a8e-11e5-7a40-e8970020ae51",
@@ -58,7 +63,8 @@
       "ruleResetTimerAction": "Звонок",
       "processName": "Звонок",
       "statusChangeAffects": true,
-      "gotoScreen": "order"
+      "gotoScreen": "order",
+      "punishAll": false
     }, {
       "comment": "Ожидание оплаты",
       "stateUuid": "731abfcd-aa2d-11e4-7a07-673d001484ff",
@@ -68,7 +74,8 @@
       "ruleResetTimerAction": "Звонок",
       "processName": "Звонок",
       "statusChangeAffects": true,
-      "gotoScreen": "order"
+      "gotoScreen": "order",
+      "punishAll": false
     }, {
       "comment": "Заказ выполняется",
       "stateUuid": "b189a90a-304f-11e5-7a07-673d00256353",
@@ -78,7 +85,8 @@
       "ruleResetTimerAction": "Звонок",
       "processName": "Звонок",
       "statusChangeAffects": true,
-      "gotoScreen": "order"
+      "gotoScreen": "order",
+      "punishAll": true
     }, {
       "comment": "Заказ в пункте выдачи - требуется связь",
       "stateUuid": "5753d0b0-a6fb-11e4-90a2-8ecb0011be7f",
@@ -88,7 +96,8 @@
       "ruleResetTimerAction": "Звонок",
       "processName": "Звонок",
       "statusChangeAffects": true,
-      "gotoScreen": "order"
+      "gotoScreen": "order",
+      "punishAll": false
     }
   ]
 }

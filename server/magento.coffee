@@ -30,7 +30,7 @@ Meteor.methods
           if outOfStockInSupplier
             #console.log "Флаг 'отсутствует у поставщика' у товара '#{good.name}': #{outOfStockInSupplier}"
             inStockStatus = "Временно нет в продаже"
-            shipmentStatus = "Отправка возможна после появления в продаже. Когда товар появится - пока не известно."
+            shipmentStatus = "Товар отсутствует у поставщика. Отправка возможна после появления в продаже."
             isInStock = 0
             stockQty = 0
           else

@@ -22,18 +22,14 @@ Meteor.methods
               # сколько времени прошло с последнего статуса?
               _.each StatusHistory.find({orderName: order.name, newStateUuid: state.uuid}).fetch(), (historyRecord) ->
                 # прошло больше времени чем нужно?
-                testResult = (moment().add(daysToDropReserve, 'days')).isAfter(moment().add(historyRecord.date))
+                testResult = (moment().add(daysToDropReserve, 'days')).isAfter(historyRecord.date)
                 if testResult
                   # снять резерв
                   needToDropReserve = true
               if needToDropReserve
                 dataObject = {}
                 dataObject.orderName = order.name
-                Meteor.call "setOrderReserve", order.uuid, false, (error, result) ->
-                  if error
-                    console.log "error:", error
-                  if result
-                    ;
+                Meteor.call "setOrderReserve", order.uuid, false
     catch error
       console.log "error:", error
 

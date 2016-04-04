@@ -31,6 +31,8 @@
           h3 #{company.contact.phones} , местное время #{customerCurrentTime}
           h3 #{company.requisite.actualAddress}
           h3 Общая сумма заказа: {{sumHelper order.sum.sum}}
+          h3 Примечание:
+          p {{order.description}}
     .row 
       .sixteen.wide.column
         .ui.segment
@@ -83,4 +85,4 @@
                   td {{rowSum}}
                   td {{reserve}} шт
                   td.collapsing
-                    #deletePosition.ui.teal.button Удалить из заказа
+                    //#deletePosition.ui.teal.button Удалить из заказа

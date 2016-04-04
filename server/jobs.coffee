@@ -133,7 +133,7 @@ Meteor.startup ->
   job = new Job myJobs, 'resetStockSendToMagento', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 1*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('at 1:00 am on Mondays')})
+    .repeat({schedule: myJobs.later.parse.text('every 12 hours')})
     .save({cancelRepeats: true})
   # обновлять данные по заказам
   job = new Job myJobs, 'processPendingChanges', {}
@@ -151,7 +151,7 @@ Meteor.startup ->
   job = new Job myJobs, 'periodicalDropReserve', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('at 9:00 pm')})
+    .repeat({schedule: myJobs.later.parse.text('every 12 hours')})
     .save({cancelRepeats: true})
   # расчет дат поступления товаров
   job = new Job myJobs, 'calculateNextArrivalDates', {}
@@ -193,7 +193,7 @@ Meteor.startup ->
   job = new Job myJobs, 'resetTimestamps', {}
   job.priority('normal')
     .retry({retries: 5, wait: 60*1000})
-    .repeat({schedule: myJobs.later.parse.text('at 01:00 am')})
+    .repeat({schedule: myJobs.later.parse.text('every 24 hours')})
     .save({cancelRepeats: true})
   # Загрузка не главных сущностей раз в 5 минут
   job = new Job myJobs, 'loadNotPrimaryEntities', {}
