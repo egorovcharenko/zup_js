@@ -172,45 +172,8 @@ Meteor.methods
             else
               throw new Meteor.Error "stock-insufficient", "Нужно завести и оприходовать доставку с названием #{deliveryName}"
             if deliveryGood.stockQty < 1
-              throw new Meteor.Error "stock-insufficient", "Не достаточное количество доставки с именем: #{deliveryName}"
               # создать приемку для нужной доставки
-              supply = {
-                "TYPE_NAME" : "moysklad.supply",
-                "incomingNumber" : "",
-                "overheadDistribution" : "BY_PRICE",
-                "targetAgentUuid" : "8de836c7-65fe-11e4-90a2-8ecb00148411",
-                "sourceAgentUuid" : "86b78895-b208-11e4-7a40-e897000b2f2f",
-                "targetStoreUuid" : "8de95654-65fe-11e4-90a2-8ecb00148413",
-                "applicable" : true,
-                "moment" : ISODate("2015-04-08T09:16:00Z"),
-                "targetAccountUuid" : "8de83912-65fe-11e4-90a2-8ecb00148412",
-                "sourceAccountUuid" : "86b78b40-b208-11e4-7a40-e897000b2f30",
-                "payerVat" : true,
-                "rate" : 1,
-                "vatIncluded" : true,
-                "created" : ISODate("2015-04-08T09:16:53.485Z"),
-                "createdBy" : "kirill@allshellac",
-                "name" : "00298",
-                "updated" : ISODate("2015-04-08T09:16:53.474Z"),
-                "updatedBy" : "kirill@allshellac",
-                "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-                "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-                "uuid" : "00518cf5-ddd0-11e4-90a2-8ecb00054086",
-                "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
-                "ownerUid" : "kirill@allshellac",
-                "shared" : false,
-                "externalcode" : "eswXkAh4hob6uiUuS3kru2",
-                "sum" : {
-                  "TYPE_NAME" : "moysklad.moneyAmount",
-                  "sum" : 680000,
-                  "sumInCurrency" : 680000
-                },
-                "overhead" : {
-                  "TYPE_NAME" : "moysklad.moneyAmount",
-                  "sum" : 0,
-                  "sumInCurrency" : 0
-                },
-                "shipmentIn" : []
-              }
+              Meteor.call "addNewEnter", [{uuid:deliveryGood.uuid, qty: 1, buyPrice: deliveryPriceRounded}]
+              #throw new Meteor.Error "stock-insufficient", "Не достаточное количество доставки с именем: #{deliveryName}"
     result = client.save(demand)
     return "Успешно отгрузили заказ"
