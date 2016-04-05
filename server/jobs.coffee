@@ -133,7 +133,7 @@ Meteor.startup ->
   job = new Job myJobs, 'resetStockSendToMagento', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 1*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('at 1:00 am')})
+    .repeat({schedule: myJobs.later.parse.text('at 10:00 am')})
     .save({cancelRepeats: true})
   # обновлять данные по заказам
   job = new Job myJobs, 'processPendingChanges', {}
@@ -163,7 +163,7 @@ Meteor.startup ->
   job = new Job myJobs, 'calculateBuyingQty', {}
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('at 9:00 pm')})
+    .repeat({schedule: myJobs.later.parse.text('at 6:00 pm')})
     .save({cancelRepeats: true})
   # загрузка данных из МС
   job = new Job myJobs, 'loadAllDataMoyskladPeriodic', {}
