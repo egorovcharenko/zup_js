@@ -37,8 +37,7 @@ Meteor.methods
     client = moyskladPackage.createClient()
     tools = moyskladPackage.tools
     client.setAuth 'admin@allshellac', 'qweasd'
-    order = Orders.findOne {uuid: entityUuid} #client.load('customerOrder', entityUuid)
-    #order = Orders.findOne({uuid: entityUuid})
+    order = client.load('customerOrder', entityUuid)
     changed = false
     _.each order.customerOrderPosition, (position) ->
       if setReserve

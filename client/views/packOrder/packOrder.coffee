@@ -62,6 +62,9 @@ Template.packOrder.events
       console.log "orderFinished"
       orderUuid = Orders.findOne(name: Router.current().params.orderName).uuid
       pendingChanges = []
+      if Meteor.user().profile.msUserId is ""
+        FlashMessages.sendError 'Не установлен UUID у данного аккаунта, продолжать завершение заказа невозможно'
+        return
       attr = [ {
         name: 'Кто собрал'
         value: Meteor.user().profile.msUserId

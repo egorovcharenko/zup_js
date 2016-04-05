@@ -31,5 +31,5 @@ Meteor.methods
         processingResult += "Заказ обработан, собирайте следующий"
         Orders.update {uuid: order.uuid}, {$unset: {pendingChanges: ""}, $set: {processingResult: processingResult}}
       catch error
-        console.log "ОШибка:", error
+        console.log "Ошибка при обработке изменений:", error
     return
