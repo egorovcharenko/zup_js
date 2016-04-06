@@ -2,7 +2,7 @@ Template.buyinglist.helpers
   settings: () ->
     {
       collection: "goods_special_publish"
-      rowsPerPage: 5000
+      rowsPerPage: 50
       showFilter: true
       fields: [{
           fieldId: "name"

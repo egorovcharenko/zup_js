@@ -35,6 +35,7 @@ Meteor.methods
     # подсчитать сколько в неделю уходит
     Meteor.call "calculateDemandPerWeek"
     try
+      Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "сбросить количества на закупку"
       # сбросить количества на закупку
       Goods.update {}, {$unset: {boughtOnLastPeriodsQty:"", boughtOnLastPeriodsOrders:"", includeInNextStockBuyingQty: "", includeInNextBuyingQty: "", ordersForBuy: ""}}, multi: true
       # подсчитать кол-ва на закупку заново
@@ -45,13 +46,12 @@ Meteor.methods
             good = Goods.findOne {uuid: pos.goodUuid}
             if good?
               if not (good.name is "Наложенный платеж")
-                if good.includeInNextBuyingQty?
-                  oldInclQty = good.includeInNextBuyingQty
-                else
-                  if good.realAvailableQty?
-                    oldInclQty = -good.realAvailableQty
-                qtyToOrder = pos.quantity + oldInclQty
-                Goods.update {uuid: good.uuid}, {$set: {includeInNextBuyingQty: qtyToOrder}, $push: {ordersForBuy: {name: order.name, state: state.name, qty: pos.quantity}}}
+                qtyToOrder = 0
+                if good.realAvailableQty?
+                  if good.realAvailableQty < 0
+                    qtyToOrder = -good.realAvailableQty
+                if qtyToOrder > 0
+                  Goods.update {uuid: good.uuid}, {$set: {includeInNextBuyingQty: qtyToOrder}, $push: {ordersForBuy: {name: order.name, state: state.name, qty: pos.quantity}}}
       # закупка про запас
       # пройтись по всем отгрузкам за x недель
       date = new Date (moment().subtract(weekToAnalyze, 'weeks').toISOString())
@@ -73,6 +73,7 @@ Meteor.methods
 
       # пройтись по списку поставщиков
       _.each Companies.find({ tags: $in: [ 'поставщики' ] }).fetch(), (supplier) ->
+        Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Обрабатываем поставщика #{supplier.name}, #{supplier.uuid}"
         # найти заказ на закупку в статусе. если нет - создать его
         activePurchaseOrder1 = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
         if activePurchaseOrder1?
@@ -95,7 +96,8 @@ Meteor.methods
             "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
             "ownerUid" : "admin@allshellac",
             "shared" : false,
-            "purchaseOrderPosition": []
+            "purchaseOrderPosition": [],
+            "description": "Автозакупка про запас"
           }
         activePurchaseOrder1.created = new Date()
         activePurchaseOrder1.purchaseOrderPosition = []
@@ -107,7 +109,7 @@ Meteor.methods
           #console.log "podZapasString:#{podZapasString}, d:#{d}"
           #console.log "test: #{later.schedule(later.parse.text(podZapasString)).next(5)}"
           if later.schedule(later.parse.text(podZapasString)).isValid(d) or dataObject.forceBuying?
-            console.log "today is the day!"
+            Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Сегодня день закупки про запас: forceBuying:#{dataObject.forceBuying}, сегодня:#{later.schedule(later.parse.text(podZapasString)).isValid(d)}, #{later.schedule(later.parse.text(podZapasString)).next(2)}"
             weekToBuyInAdvanceMetadata = _.find(supplier.attribute, (attr) -> attr.metadataUuid == "c5723e59-f3f7-11e5-7a69-970d0029005d")
             if weekToBuyInAdvanceMetadata?
               weekToBuyInAdvance = weekToBuyInAdvanceMetadata.longValue
@@ -119,7 +121,7 @@ Meteor.methods
               totalQtyNeeded = (good.perWeekQtyNeeded * weekToBuyInAdvance) - good.realAvailableQty
               if totalQtyNeeded > 0
                 console.log "good:#{good.name}, perWeekQtyNeeded:#{good.perWeekQtyNeeded}, good.realAvailableQty: #{good.realAvailableQty}, totalQtyNeeded:#{totalQtyNeeded}"
-                # если товар дешевле 100р, то сразу покупаем минимум 5 штук
+                # если товар дешевле 100р, то сразу покупаем минимум 5? штук
                 if good.buyPrice < maxPriceToIncNumber * 100 # копейки
                   totalQtyNeeded = Math.max(totalQtyNeeded, incNumberMinQty)
                 if (good.name.lastIndexOf("Гель-лак Bluesky Shellac", 0) == 0)
@@ -158,11 +160,12 @@ Meteor.methods
             if activePurchaseOrder1.purchaseOrderPosition.length > 0
               try
                 entityFromMS = client.save(activePurchaseOrder1)
-                #console.log "Создание/обновление заказа на закупку завершено"
+                Meteor.call "logSystemEvent", "calculateBuyingQty", "Создание/обновление заказа на закупку завершено"
               catch e
                 console.log "ошибка внутри runSync:", e
             else
               console.log "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
+              Meteor.call "logSystemEvent", "calculateBuyingQty", "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
 
         # закупка под заказ
         activePurchaseOrder2 = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
@@ -187,7 +190,8 @@ Meteor.methods
             "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
             "ownerUid" : "admin@allshellac",
             "shared" : false,
-            "purchaseOrderPosition": []
+            "purchaseOrderPosition": [],
+            "description": "Автозакупка под заказ"
           }
         activePurchaseOrder2.created = new Date()
         activePurchaseOrder2.purchaseOrderPosition = []
@@ -195,7 +199,7 @@ Meteor.methods
         if podZakazStringMeta?
           podZakazString = podZakazStringMeta.valueString
           if later.schedule(later.parse.text(podZakazString)).isValid(d) or dataObject.forceBuying?
-            console.log "today is the day 2!"
+            Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Сегодня день закупки под заказ: forceBuying:#{dataObject.forceBuying}, сегодня:#{later.schedule(later.parse.text(podZakazString)).isValid(d)}, #{later.schedule(later.parse.text(podZakazString)).next(2)}"
             # пройтись по списку товаров этого поставщика в списке на закупку
             _.each Goods.find({includeInNextBuyingQty: {$gt: 0}, supplierUuid: supplier.uuid}).fetch(), (good) ->
               purchaseOrderPosition = {
@@ -224,7 +228,7 @@ Meteor.methods
             if activePurchaseOrder2.purchaseOrderPosition.length > 0
               try
                 entityFromMS = client.save(activePurchaseOrder2)
-                #console.log "Создание/обновление заказа на закупку завершено"
+                Meteor.call "logSystemEvent", "calculateBuyingQty", "Создание/обновление заказа на закупку завершено 2"
               catch e
                 console.log "ошибка внутри runSync:", e
             else
