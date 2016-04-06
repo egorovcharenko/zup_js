@@ -4,6 +4,24 @@ myJobs.allow admin: (userId, method, params) ->
 
 processMSJobsWorker = (job, cb) ->
   switch job.type
+    when "autoStatusChange"
+      Meteor.call 'autoStatusChange', (error, result) ->
+        if not error?
+          job.log "успешно, результат: #{result}"
+          job.done()
+        else
+          job.log "ошибка: #{error}"
+          job.fail()
+      return cb()
+    when "setAutosalePrices"
+      Meteor.call 'setAutosalePrices', (error, result) ->
+        if not error?
+          job.log "успешно, результат: #{result}"
+          job.done()
+        else
+          job.log "ошибка: #{error}"
+          job.fail()
+      return cb()
     when "resetStockSendToMagento"
       Goods.update {}, {$set: {dirty: true}}, {multi: true}
       job.done()
@@ -128,7 +146,18 @@ processStockJobsWorker = (job, cb) ->
 
 Meteor.startup ->
   myJobs.startJobServer()
-
+  # автовыставление статусов
+  job = new Job myJobs, 'autoStatusChange', {}
+  job.priority('normal')
+    .retry({retries: myJobs.forever, wait: 1*1000}) # 1 * 1000
+    .repeat({schedule: myJobs.later.parse.text('every 10 minutes')})
+    .save({cancelRepeats: true})
+  # автораспродажа
+  job = new Job myJobs, 'setAutosalePrices', {}
+  job.priority('normal')
+    .retry({retries: myJobs.forever, wait: 1*1000}) # 1 * 1000
+    .repeat({schedule: myJobs.later.parse.text('at 04:00 am')})
+    .save({cancelRepeats: true})
   # обновлять данные по заказам
   job = new Job myJobs, 'resetStockSendToMagento', {}
   job.priority('normal')
@@ -202,7 +231,7 @@ Meteor.startup ->
     .repeat({schedule: myJobs.later.parse.text('every 1 minutes')}) # every 1 minutes
     .save({cancelRepeats: true})
   # Начать обрабатывать задачи
-  myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities', 'processPendingChanges'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
+  myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities', 'processPendingChanges','setAutosalePrices','autoStatusChange'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
 
   if sendStockFlag
     myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker

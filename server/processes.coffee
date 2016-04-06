@@ -152,7 +152,6 @@ Meteor.methods
                 when "setOrderNeededState"
                   client = moyskladPackage.createClient()
                   client.setAuth 'admin@allshellac', 'qweasd'
-
                   # проходимся по всем товарам
                   orderName = action.params.orderName
                   console.log "нужно в заказе #{orderName} проставить нужный статус в зависимости от наличия";
