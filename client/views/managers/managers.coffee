@@ -24,25 +24,35 @@
     userProfile = Meteor.user().profile
 
     moment.updateLocale('en',
-      workinghours:
-        1: [userProfile.workStartMon.toString(), userProfile.workEndMon.toString()],
-        2: [userProfile.workStartTue.toString(), userProfile.workEndTue.toString()],
-        3: [userProfile.workStartWed.toString(), userProfile.workEndWed.toString()],
-        4: [userProfile.workStartThu.toString(), userProfile.workEndThu.toString()],
-        5: [userProfile.workStartFri.toString(), userProfile.workEndFri.toString()],
-        6: [userProfile.workStartSat.toString(), userProfile.workEndSat.toString()],
-        0: [userProfile.workStartSun.toString(), userProfile.workEndSun.toString()],
-    )
+    workinghours:
+      1: ["10", "18"],
+      2: ["10", "18"],
+      3: ["10", "18"],
+      4: ["10", "18"],
+      5: ["10", "18"],
+      6: null,
+      0: null,
+      )
+    # if not userProfile.workStartMon.toString()?
+    # else
+    #   moment.updateLocale('en',
+    #     workinghours:
+    #       1: [userProfile.workStartMon.toString(), userProfile.workEndMon.toString()],
+    #       2: [userProfile.workStartTue.toString(), userProfile.workEndTue.toString()],
+    #       3: [userProfile.workStartWed.toString(), userProfile.workEndWed.toString()],
+    #       4: [userProfile.workStartThu.toString(), userProfile.workEndThu.toString()],
+    #       5: [userProfile.workStartFri.toString(), userProfile.workEndFri.toString()],
+    #       6: [userProfile.workStartSat.toString(), userProfile.workEndSat.toString()],
+    #       0: [userProfile.workStartSun.toString(), userProfile.workEndSun.toString()],
+    #   )
     # высчитываем дату начала окончания работы
-    ret.nextActionStart = moment(lastActionTime).addWorkingTime(rule.ruleStartMinutesOffset, 'minutes')
-    ret.nextActionEnd = moment(lastActionTime).addWorkingTime(rule.ruleDeadlineMinutesOffset, 'minutes')
+    ret.nextActionStartMoment = moment(lastActionTime).addWorkingTime(rule.ruleStartMinutesOffset, 'minutes')
+    ret.nextActionEndMoment = moment(lastActionTime).addWorkingTime(rule.ruleDeadlineMinutesOffset, 'minutes')
 
-    if moment().isAfter(ret.nextActionEnd)
-      ret.timeLeft = Math.floor(moment.duration(moment(ret.nextActionEnd).diff(moment())).asMinutes())
-    else
-      ret.timeLeft = Math.floor(moment.duration(moment(ret.nextActionEnd).diff(moment())).asMinutes())
-    ret.nextActionStart = ret.nextActionStart.format ("DD.MM,  HH:mm")
-    ret.nextActionEnd = ret.nextActionEnd.format ("DD.MM,  HH:mm")
+    ret.nextActionStart = ret.nextActionStartMoment.format ("DD.MM,  HH:mm")
+    ret.nextActionEnd = ret.nextActionEndMoment.format ("DD.MM,  HH:mm")
+
+    ret.timeLeft = Math.floor(ret.nextActionEndMoment.workingDiff(moment(), 'minutes'))
   ret
 
 @orderHelper = (order) ->
@@ -135,7 +145,7 @@ Template.managers.helpers
               fn: (value, object, key)->
                 return value
                 res = orderActionHelper object
-                return res.timeLeft
+                return res.timeLeft + "-" + value.toString()
           }, {
             fieldId: "prevAction"
             key:'uuid'

@@ -27,14 +27,25 @@ Meteor.methods
                       lastActionTime = action.date
                       ret.lastActionTime = moment(lastActionTime).format ("DD.MM,  HH:mm")
                       ret.lastAction = "Изменение статуса"
-          ret.nextActionStart = moment(lastActionTime).add(rule.ruleStartMinutesOffset, 'minutes')
-          ret.nextActionEnd = moment(lastActionTime).add(rule.ruleDeadlineMinutesOffset, 'minutes')
-          if moment().isAfter(ret.nextActionEnd)
-            ret.timeLeft = Math.floor(moment.duration(moment(ret.nextActionEnd).diff(moment())).asMinutes())
-          else
-            ret.timeLeft = Math.floor(moment.duration(moment(ret.nextActionEnd).diff(moment())).asMinutes())
-          ret.nextActionStart = ret.nextActionStart.format ("DD.MM,  HH:mm")
-          ret.nextActionEnd = ret.nextActionEnd.format ("DD.MM,  HH:mm")
+
+          moment.updateLocale('en',
+            workinghours:
+              1: ["10", "18"],
+              2: ["10", "18"],
+              3: ["10", "18"],
+              4: ["10", "18"],
+              5: ["10", "18"],
+              6: null,
+              0: null,
+          )
+
+          ret.nextActionStartMoment = moment(lastActionTime).addWorkingTime(rule.ruleStartMinutesOffset, 'minutes')
+          ret.nextActionEndMoment = moment(lastActionTime).addWorkingTime(rule.ruleDeadlineMinutesOffset, 'minutes')
+
+          ret.nextActionStart = ret.nextActionStartMoment.format ("DD.MM,  HH:mm")
+          ret.nextActionEnd = ret.nextActionEndMoment.format ("DD.MM,  HH:mm")
+
+          ret.timeLeft = Math.floor(ret.nextActionEndMoment.workingDiff(moment(), 'minutes'))
           # обновить заказ
           Orders.update {uuid: order.uuid}, {$set:{timeLeft: ret.timeLeft}}
           updated++
