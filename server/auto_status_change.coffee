@@ -19,7 +19,7 @@ Meteor.methods
           good = Goods.findOne {uuid: pos.goodUuid}
           if good?
             if good.realAvailableQty?
-              if (good.realAvailableQty + pos.reserve) <= pos.quantity
+              if ((good.realAvailableQty + pos.reserve) < pos.quantity)
                 allAvailable = false
                 console.log "Товар #{good.name} - не в наличии. доступно #{(good.realAvailableQty + pos.reserve)}, а нужно #{pos.quantity}"
         if allAvailable
