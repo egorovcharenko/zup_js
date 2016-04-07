@@ -160,12 +160,12 @@ Meteor.methods
             if activePurchaseOrder1.purchaseOrderPosition.length > 0
               try
                 entityFromMS = client.save(activePurchaseOrder1)
-                Meteor.call "logSystemEvent", "calculateBuyingQty", "Создание/обновление заказа на закупку завершено"
+                Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Создание/обновление заказа на закупку завершено"
               catch e
                 console.log "ошибка внутри runSync:", e
             else
               console.log "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
-              Meteor.call "logSystemEvent", "calculateBuyingQty", "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
+              Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
 
         # закупка под заказ
         activePurchaseOrder2 = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
@@ -228,7 +228,7 @@ Meteor.methods
             if activePurchaseOrder2.purchaseOrderPosition.length > 0
               try
                 entityFromMS = client.save(activePurchaseOrder2)
-                Meteor.call "logSystemEvent", "calculateBuyingQty", "Создание/обновление заказа на закупку завершено 2"
+                Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Создание/обновление заказа на закупку завершено 2"
               catch e
                 console.log "ошибка внутри runSync:", e
             else
