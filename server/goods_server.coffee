@@ -103,12 +103,10 @@ Meteor.methods
         <accountId>6e02ccbd-65fe-11e4-7a07-673d00001215</accountId>
         <groupUuid>09951fc6-d269-11e4-90a2-8ecb000588c0</groupUuid>
         <ownerUid>admin@allshellac</ownerUid>
-        <shared>false</shared>
-        <overhead sum='0.0' sumInCurrency='0.0'/>"
+        <shared>false</shared>"
     _.each goodsToEnter, (good) ->
       newEnter +=
         "<enterPosition
-          overhead='0.0'
           discount='0.0'
           quantity='#{good.qty}'
           goodUuid='#{good.uuid}'
