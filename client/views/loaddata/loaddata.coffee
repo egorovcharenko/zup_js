@@ -24,6 +24,8 @@ Template.loadData.helpers
     else
       false
 Template.loadData.events
+  'click #checkOrdersAccounts': (event, template) ->
+    Meteor.call "checkOrdersAccounts"
   'click #autoStatusChange': (event, template) ->
     Meteor.call "autoStatusChange"
   'click #setAutosalePrices': (event, template) ->
@@ -52,12 +54,7 @@ Template.loadData.events
     loadEntityGeneric 'customEntity', 'CustomEntity'
     loadEntityGeneric 'embeddedEntityMetadata', 'EmbeddedEntityMetadata'
   'click #load_aplix_tracks': (event, template) ->
-    console.log "loadTracksFromAplix started"
-    Meteor.call 'loadTracksFromAplix', @getLastTimeRun 'aplix_tracks', (error, result) ->
-      if not error?
-        Meteor.call 'updateTimestampFlag', 'aplix_tracks', moment()
-      if result
-        console.log "result:", result
+    Meteor.call 'loadTracksFromAplix'
   'click #load_pics': (event, template) ->
     Meteor.call 'loadMagentoPics'
   'click #load_everything': (event, template) ->

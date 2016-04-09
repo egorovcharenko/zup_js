@@ -146,24 +146,50 @@ processStockJobsWorker = (job, cb) ->
 
 Meteor.startup ->
   myJobs.startJobServer()
-  # автовыставление статусов
-  job = new Job myJobs, 'autoStatusChange', {}
-  job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 1*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('every 10 minutes')})
-    .save({cancelRepeats: true})
-  # автораспродажа
-  job = new Job myJobs, 'setAutosalePrices', {}
-  job.priority('normal')
-    .retry({retries: 5, wait: 60*60*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('at 04:00 am')})
-    .save({cancelRepeats: true})
-  # обновлять данные по заказам
-  job = new Job myJobs, 'resetStockSendToMagento', {}
-  job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 1*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('at 10:00 am')})
-    .save({cancelRepeats: true})
+  # боевой сервер или нет?
+  sendStock = Settings.findOne {name: "sendStock"}
+  sendStockFlag = false
+  if sendStock?
+    if sendStock.value = "1"
+      # Отправка остатков в Мадженто
+      sendStockFlag = true
+  if sendStockFlag
+    # автовыставление статусов
+    job = new Job myJobs, 'autoStatusChange', {}
+    job.priority('normal')
+      .retry({retries: myJobs.forever, wait: 1*1000}) # 1 * 1000
+      .repeat({schedule: myJobs.later.parse.text('every 10 minutes')})
+      .save({cancelRepeats: true})
+    # автораспродажа
+    job = new Job myJobs, 'setAutosalePrices', {}
+    job.priority('normal')
+      .retry({retries: 5, wait: 60*60*1000}) # 1 * 1000
+      .repeat({schedule: myJobs.later.parse.text('at 04:00 am')})
+      .save({cancelRepeats: true})
+    # обновлять данные по заказам
+    job = new Job myJobs, 'resetStockSendToMagento', {}
+    job.priority('normal')
+      .retry({retries: myJobs.forever, wait: 1*1000}) # 1 * 1000
+      .repeat({schedule: myJobs.later.parse.text('at 10:00 am')})
+      .save({cancelRepeats: true})
+    # автоматический сброс резервов
+    job = new Job myJobs, 'periodicalDropReserve', {}
+    job.priority('normal')
+      .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
+      .repeat({schedule: myJobs.later.parse.text('every 12 hours')})
+      .save({cancelRepeats: true})
+    # отправка в мадженто
+    job = new Job myJobs, 'sendStockToMagento', {}
+    job.priority('normal')
+      .retry({retries: myJobs.forever, wait: 5*1000})
+      .repeat({ repeats: myJobs.forever, wait: 5*1000})
+      .save({cancelRepeats: true})
+    # Сброс флагов в 3 ночи
+    job = new Job myJobs, 'resetTimestamps', {}
+    job.priority('normal')
+      .retry({retries: 5, wait: 60*1000})
+      .repeat({schedule: myJobs.later.parse.text('every 24 hours')})
+      .save({cancelRepeats: true})
   # обновлять данные по заказам
   job = new Job myJobs, 'processPendingChanges', {}
   job.priority('normal')
@@ -175,12 +201,6 @@ Meteor.startup ->
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
     .repeat({schedule: myJobs.later.parse.text('every 60 seconds')})
-    .save({cancelRepeats: true})
-  # автоматический сброс резервов
-  job = new Job myJobs, 'periodicalDropReserve', {}
-  job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 15*1000}) # 1 * 1000
-    .repeat({schedule: myJobs.later.parse.text('every 12 hours')})
     .save({cancelRepeats: true})
   # расчет дат поступления товаров
   job = new Job myJobs, 'calculateNextArrivalDates', {}
@@ -205,24 +225,6 @@ Meteor.startup ->
   job.priority('normal')
     .retry({retries: myJobs.forever, wait: 60*1000}) # 60 * 1000
     .repeat({ repeats: myJobs.forever, wait: 30*1000})
-    .save({cancelRepeats: true})
-  sendStock = Settings.findOne {name: "sendStock"}
-  sendStockFlag = false
-  if sendStock?
-    if sendStock.value = "1"
-      # Отправка остатков в Мадженто
-      sendStockFlag = true
-  if sendStockFlag
-    job = new Job myJobs, 'sendStockToMagento', {}
-    job.priority('normal')
-      .retry({retries: myJobs.forever, wait: 5*1000})
-      .repeat({ repeats: myJobs.forever, wait: 5*1000})
-      .save({cancelRepeats: true})
-  # Сброс флагов в 3 ночи
-  job = new Job myJobs, 'resetTimestamps', {}
-  job.priority('normal')
-    .retry({retries: 5, wait: 60*1000})
-    .repeat({schedule: myJobs.later.parse.text('every 24 hours')})
     .save({cancelRepeats: true})
   # Загрузка не главных сущностей раз в 5 минут
   job = new Job myJobs, 'loadNotPrimaryEntities', {}

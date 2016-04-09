@@ -21,6 +21,8 @@ Meteor.methods
               savedEntity = collection.findOne(uuid: entity.uuid)
               if savedEntity?
                 if entityName is "customerOrder"
+                  if savedEntity.atDeliveryPlace?
+                    entity.atDeliveryPlace = savedEntity.atDeliveryPlace
                   if savedEntity.processingResult?
                     entity.processingResult = savedEntity.processingResult
                   if savedEntity.pendingChanges?
