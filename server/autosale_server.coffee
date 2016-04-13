@@ -110,7 +110,11 @@ Meteor.methods
               buyPrice = good.salePrice * 0.7
             buyPrice = buyPrice * 1.10 # прибавляем минимум 10% к цене закупки
             price = Math.ceil(buyPrice + (normalPrice - buyPrice) * ((numberOfAutosaleStages - autosaleStage) / numberOfAutosaleStages))
-            priceForMagento = Math.ceil(price / 100)
+            if autosaleStage == 0
+              priceForMagento = ""
+            else
+              priceForMagento = Math.ceil(price / 100)
+            
             console.log "#{good.name}, stock:#{good.realAvailableQty}, perWeekQtyNeeded:#{perWeekQtyNeeded}, weeksStockWillLast:#{weeksStockWillLast}, prevAutosaleStage:#{prevAutosaleStage}, autosaleStage:#{autosaleStage}, #{buyPrice} - #{priceForMagento} - #{normalPrice}"
             Goods.update {uuid:good.uuid}, {$set: {forAutoSale: true}}
             # устанавливаем дату следующей автораспродажи

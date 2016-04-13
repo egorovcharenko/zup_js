@@ -46,11 +46,10 @@ Meteor.methods
             good = Goods.findOne {uuid: pos.goodUuid}
             if good?
               if not (good.name is "Наложенный платеж")
-                qtyToOrder = 0
-                if good.realAvailableQty?
-                  if good.realAvailableQty < 0
-                    qtyToOrder = -good.realAvailableQty
-                if qtyToOrder > 0
+                if good.includeInNextBuyingQty?
+                  qtyToOrder = good.includeInNextBuyingQty + pos.quantity
+                else
+                  qtyToOrder = -good.stockQty + pos.quantity
                   Goods.update {uuid: good.uuid}, {$set: {includeInNextBuyingQty: qtyToOrder}, $push: {ordersForBuy: {name: order.name, state: state.name, qty: pos.quantity}}}
       # закупка про запас
       # пройтись по всем отгрузкам за x недель

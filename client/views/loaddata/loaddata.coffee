@@ -24,6 +24,8 @@ Template.loadData.helpers
     else
       false
 Template.loadData.events
+  'click #calcNalogi': (event, template) ->
+    Meteor.call "calcNalogi"
   'click #checkOrdersAccounts': (event, template) ->
     Meteor.call "checkOrdersAccounts"
   'click #autoStatusChange': (event, template) ->
