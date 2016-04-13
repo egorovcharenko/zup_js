@@ -130,7 +130,7 @@ Meteor.methods
       if not error?
         Meteor.call 'updateTimestampFlag', entityMSName, currentTime
       else
-        console.log "ошибка:", error.reason
+        console.log "ошибка в loadEntityGenericMethod:", error
         #Meteor.call "logSystemEvent", "loadEntityGeneric", "2. error", "Ошибка: #{error.reason}"
 
   loadStockFromMS: () ->

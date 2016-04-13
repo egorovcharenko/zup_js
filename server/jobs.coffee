@@ -10,7 +10,7 @@ processMSJobsWorker = (job, cb) ->
           job.log "успешно, результат: #{result}"
           job.done()
         else
-          job.log "ошибка: #{error}"
+          job.log "ошибка в autoStatusChange: #{error}"
           job.fail()
       return cb()
     when "setAutosalePrices"
@@ -19,7 +19,7 @@ processMSJobsWorker = (job, cb) ->
           job.log "успешно, результат: #{result}"
           job.done()
         else
-          job.log "ошибка: #{error}"
+          job.log "ошибка в setAutosalePrices: #{error}"
           job.fail()
       return cb()
     when "resetStockSendToMagento"
@@ -32,7 +32,7 @@ processMSJobsWorker = (job, cb) ->
           job.log "успешно, результат: #{result}"
           job.done()
         else
-          job.log "ошибка: #{error}"
+          job.log "ошибка в processPendingChanges: #{error}"
           job.fail()
       return cb()
     when "setOrderActionsParameters"
