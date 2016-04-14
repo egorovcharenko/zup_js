@@ -100,6 +100,7 @@ Meteor.methods
                     load = false
                     if entity.requisite?
                       if entity.requisite.actualAddress?
+                        if not entity.requisite.actualAddress is ""
                           if not (savedEntity.dadata?)
                             load = true
                           else if savedEntity.requisite?
