@@ -156,7 +156,7 @@ Meteor.methods
                   orderName = action.params.orderName
                   console.log "нужно в заказе #{orderName} проставить нужный статус в зависимости от наличия";
                   # загружаем так чтобы точно уж получить нормальные последние данные
-                  order = client.load('customerOrder', Orders.findOne(name: orderName).uuid)#Orders.findOne(name: orderName)
+                  order = Orders.findOne(name: orderName)#client.load(Orders.findOne(name: orderName).uuid)#
                   needToBuy = false
                   _.each order.customerOrderPosition, (pos) ->
                     good = Goods.findOne {uuid: pos.goodUuid}
