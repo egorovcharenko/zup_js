@@ -105,20 +105,19 @@ Meteor.methods
     }
     _.each goodsToEnter, (good) ->
       newEnter.enterPosition.push {
+        "TYPE_NAME" : "moysklad.enterPosition"
         "discount": 0
         "quantity": good.qty
         "goodUuid": good.uuid
         "vat": 0
-        #"accountUuid": "6e02ccbd-65fe-11e4-7a07-673d00001215</accountUuid>
-        #<accountId>6e02ccbd-65fe-11e4-7a07-673d00001215</accountId>
         "groupUuid": "09951fc6-d269-11e4-90a2-8ecb000588c0"
-        #<ownerUid>admin@allshellac</ownerUid>
-        #<shared>false</shared>
         "basePrice": {
+          "TYPE_NAME" : "moysklad.moneyAmount"
           "sum": good.buyPrice
           "sumInCurrency": good.buyPrice
         }
         "price": {
+          "TYPE_NAME" : "moysklad.moneyAmount"
           "sum": good.buyPrice
           "sumInCurrency": good.buyPrice
         }
@@ -126,4 +125,4 @@ Meteor.methods
     try
       entityFromMS = client.save(newEnter)
     catch e
-      console.log "ошибка при сохранении оприходования:", e
+      console.log "Ошибка при сохранении оприходования:", e

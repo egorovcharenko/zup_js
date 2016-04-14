@@ -1,11 +1,11 @@
 Meteor.methods
   otgruzitZakaz: (orderUuid) ->
-    console.log "otgruzitZakaz stated"
     #moyskladPackage = Meteor.npmRequire('moysklad-client')
     client = moyskladPackage.createClient()
     tools = moyskladPackage.tools
     client.setAuth 'admin@allshellac', 'qweasd'
     order = Orders.findOne {uuid:orderUuid}
+    console.log "Начали отгружать заказ #{order.name}"
 
     # проверить чтобы отгрузок не было уже
     existingDemand = Demands.findOne {customerOrderUuid: orderUuid, applicable: true}
@@ -37,13 +37,13 @@ Meteor.methods
     # проверяем, есть ли уже отгрузка. Если есть - не делаем, ошибку возвращаем
     # Проверяем все ли товары в наличии (без учета резерва)
     _.each order.customerOrderPosition, (pos) ->
-      console.log " pos:", pos.uuid
+      #console.log " pos:", pos.uuid
       good = Goods.findOne {uuid: pos.goodUuid}
       if good?
         if good.name is "Наложенный платеж"
           ;#skip
         else
-          console.log "  good found: #{good.name}, good.stockQty: #{good.stockQty}, pos.quantity:#{pos.quantity}"
+          #console.log "  good found: #{good.name}, good.stockQty: #{good.stockQty}, pos.quantity:#{pos.quantity}"
           if pos.quantity > good.stockQty
             # Для тех которые не в наличии - найти техкарту
             solved = false
@@ -51,7 +51,7 @@ Meteor.methods
             _.each (ProcessingPlans.find({"product.goodUuid":good.uuid, "parentUuid": { $ne: "5283123e-7334-11e4-90a2-8ecb0012dbc6" }})).fetch(), (plan) ->
               qtyNeeded = pos.quantity - good.stockQty
               qtyMultiplier = Math.ceil(qtyNeeded / plan.product[0].quantity)
-              console.log "   plan found: #{plan.name}, qtyNeeded:#{qtyNeeded}, qtyMultiplier:#{qtyMultiplier}"
+              #console.log "   plan found: #{plan.name}, qtyNeeded:#{qtyNeeded}, qtyMultiplier:#{qtyMultiplier}"
               processing = {
                 "TYPE_NAME" : "moysklad.processing",
                 "planUuid" : plan.uuid,
@@ -75,11 +75,11 @@ Meteor.methods
               }
               # все ли товары из тех-карты в наличии в нужном кол-ве?
               _.each plan.material, (material) ->
-                console.log "    material: #{material.goodUuid}"
+                #console.log "    material: #{material.goodUuid}"
                 materialGood = Goods.findOne {uuid: material.goodUuid}
                 if materialGood?
                   qtyOfMaterialNeeded = qtyNeeded * material.quantity
-                  console.log "    materialGood: #{materialGood.name}, qtyOfMaterialNeeded:#{qtyOfMaterialNeeded}"
+                  #console.log "    materialGood: #{materialGood.name}, qtyOfMaterialNeeded:#{qtyOfMaterialNeeded}"
                   if materialGood.stockQtiy < qtyNeeded
                     throw new Meteor.Error "stock-insufficient", "При отгрузке через техкарту произошла ошибка - не достаточно товара #{materialGood.name}, нужно #{qtyOfMaterialNeeded}, а в наличии только #{materialGood.stockQty}"
                   else
@@ -122,7 +122,7 @@ Meteor.methods
                 }
               # если да - создать новую тех. операцию
               result = client.save(processing)
-              console.log "     client.save(processing): #{result}"
+              #console.log "     client.save(processing): #{result}"
               solved = true
             if not solved
               # ошибка - не хватает товара в наличии
@@ -146,13 +146,13 @@ Meteor.methods
           }
       else
         service = Services.findOne {uuid: pos.goodUuid}
-        console.log "   service:#{service.name}"
+        #console.log "   service:#{service.name}"
         if service?
           if service.name is "Доставка заказа"
             deliveryPriceActual = pos.price.sum + 50*100 + order.sum.sum * 0.02 # инкассация - 2%
             deliveryPriceRounded = ((Math.ceil(deliveryPriceActual / (50*100)) * 50*100)/100).toFixed(0)
             deliveryName = "Доставка #{deliveryPriceRounded}"
-            console.log "deliveryName:#{deliveryName}"
+            #console.log "deliveryName:#{deliveryName}"
             deliveryGood = Goods.findOne({name: deliveryName})
             if deliveryGood?
               demand.shipmentOut.push {
@@ -176,4 +176,5 @@ Meteor.methods
               Meteor.call "addNewEnter", [{uuid:deliveryGood.uuid, qty: 1, buyPrice: deliveryPriceRounded * 100}]
               #throw new Meteor.Error "stock-insufficient", "Не достаточное количество доставки с именем: #{deliveryName}"
     result = client.save(demand)
+    console.log "Успешно отгрузили заказ"
     return "Успешно отгрузили заказ"
