@@ -167,7 +167,7 @@ Meteor.methods
               # если товар составной - то определить его доступное количество как минимальное из всех составных частей
               plan = ProcessingPlans.findOne({"product.goodUuid":good.uuid, "parentUuid": { $ne: "5283123e-7334-11e4-90a2-8ecb0012dbc6" }})
               if plan?
-                #console.log "--#{plan.name}"
+                console.log "--#{plan.name}"
                 minMaterialQty = 99999
                 _.each plan.material, (material) ->
                   materialGood = Goods.findOne {uuid: material.goodUuid}
@@ -176,8 +176,8 @@ Meteor.methods
                       #console.log "--#{materialGood.name} - #{materialGood.realAvailableQty}"
                     # для каждого составляющего - добавить его в закупку в нужном количестве
                     minMaterialQty = Math.min(minMaterialQty, materialGood.realAvailableQty / material.quantity / plan.product[0].quantity)
-                #if (good.name.lastIndexOf("Набор для ш", 0) == 0)
-                  #console.log "#{good.code}: #{good.name}, minMaterialQty:#{minMaterialQty}"
+                if (good.name.lastIndexOf("Набор для ш", 0) == 0)
+                  console.log "#{good.code}: #{good.name}, minMaterialQty:#{minMaterialQty}"
                 realAvailableQty += Math.max(minMaterialQty, 0)
               #if good.name is "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие"
               #  console.log "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие, realAvailableQty:#{realAvailableQty}"
