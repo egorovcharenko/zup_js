@@ -26,18 +26,18 @@ Meteor.methods
           # товар, не услуга
           # посчитать, остались ли товары на складе и их стоимость
           alreadyTaken = 0
-          if demand.sourceAgentUuid is "ddbb489e-65c9-11e5-90a2-8ecb004e1c38"
-            _.find Stock.find({goodUuid: shipmentOut.goodUuid, date: {$lte: demand.created}}).fetch(), (stock) ->
-              needMore = shipmentOut.quantity - alreadyTaken
-              canTake = Math.min(needMore, stock.quantityLeft)
-              alreadyTaken += canTake
-              Stock.update({uid: stock.uid}, {$inc: {quantityLeft: -canTake}})
-              # добавить их в налоговую таблицу
-              NalogiRashodi.insert {sourceAgentUuid: demand.sourceAgentUuid, quantity: canTake, date: demand.moment, goodUuid: shipmentOut.goodUuid, demandNumber: demand.name, shipmentInName: stock.shipmentInName, priceEachBought: stock.price, dateBought: stock.date, priceEachSold: shipmentOut.price.sum}
-              if alreadyTaken == shipmentOut.quantity
-                return true
-              else
-                return false
+          #if demand.sourceAgentUuid is "ddbb489e-65c9-11e5-90a2-8ecb004e1c38"
+          _.find Stock.find({goodUuid: shipmentOut.goodUuid, date: {$lte: demand.created}}).fetch(), (stock) ->
+            needMore = shipmentOut.quantity - alreadyTaken
+            canTake = Math.min(needMore, stock.quantityLeft)
+            alreadyTaken += canTake
+            Stock.update({uid: stock.uid}, {$inc: {quantityLeft: -canTake}})
+            # добавить их в налоговую таблицу
+            NalogiRashodi.insert {sourceAgentUuid: demand.sourceAgentUuid, quantity: canTake, date: demand.moment, goodUuid: shipmentOut.goodUuid, demandNumber: demand.name, shipmentInName: stock.shipmentInName, priceEachBought: stock.price, dateBought: stock.date, priceEachSold: shipmentOut.price.sum}
+            if alreadyTaken == shipmentOut.quantity
+              return true
+            else
+              return false
           if alreadyTaken == shipmentOut.quantity
             ;#console.log "- Для товара #{good.name} нашли все в закупках Кирилла, приемка (одна из): " + NalogiRashodi.findOne({goodUuid: good.uuid, demandNumber: demand.name}).shipmentInName
           else
