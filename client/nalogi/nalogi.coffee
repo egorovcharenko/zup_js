@@ -22,14 +22,14 @@ Template.nalogi.helpers
           label:"sumSoldFromKTBuyPrice"
           fn: (value)->
             if value?
-              return (value/100).toFixed(2)
+              return (value/100).toFixed(0)
         },{
           fieldId: "sumSoldNotFromKTSalePrice"
           key:'sumSoldNotFromKTSalePrice'
           label:"sumSoldNotFromKTSalePrice"
           fn: (value)->
             if value?
-              return (value/100).toFixed(2)
+              return (value/100).toFixed(0)
         }]
       class: "ui celled table"
     }
