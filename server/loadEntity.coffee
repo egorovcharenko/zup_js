@@ -11,8 +11,8 @@ Meteor.methods
     pageSize = 100
     query = moyskladPackage.createQuery(updated: $gte: moment(fromLastUpdate).format("YYYYMMDDHHmmss"))
     total = client.total(entityName, query)
-    console.log "Найдено #{total} сущностей типа #{entityName} на загрузку, начинаем загружать..."
     if total > 0
+      console.log "Найдено #{total} сущностей типа #{entityName} на загрузку, начинаем загружать..."
       try
         loop
           query.count(pageSize).start countAlready
