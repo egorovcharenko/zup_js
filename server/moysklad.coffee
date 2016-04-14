@@ -224,8 +224,8 @@ Meteor.methods
       Meteor._sleepForMs(300);
       Meteor.call 'loadEntityGenericMethod', 'Loss', 'Losses'
       Meteor._sleepForMs(300);
-      #Meteor.call 'loadEntityGenericMethod', 'Enter', 'Enters'
-      #Meteor._sleepForMs(500);
+      Meteor.call 'loadEntityGenericMethod', 'Enter', 'Enters'
+      Meteor._sleepForMs(300);
     catch error
       console.log "error in loadNotPrimaryEntities:", error
 

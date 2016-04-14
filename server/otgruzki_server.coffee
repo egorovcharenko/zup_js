@@ -173,7 +173,7 @@ Meteor.methods
               throw new Meteor.Error "stock-insufficient", "Нужно завести и оприходовать доставку с названием #{deliveryName}"
             if deliveryGood.stockQty < 1
               # создать приемку для нужной доставки
-              Meteor.call "addNewEnter", [{uuid:deliveryGood.uuid, qty: 1, buyPrice: deliveryPriceRounded}]
+              Meteor.call "addNewEnter", [{uuid:deliveryGood.uuid, qty: 1, buyPrice: deliveryPriceRounded * 100}]
               #throw new Meteor.Error "stock-insufficient", "Не достаточное количество доставки с именем: #{deliveryName}"
     result = client.save(demand)
     return "Успешно отгрузили заказ"

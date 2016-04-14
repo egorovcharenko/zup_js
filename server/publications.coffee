@@ -10,6 +10,8 @@ ReactiveTable.publish("goods_special_publish", Goods, {$or: [{includeInNextBuyin
 
 ReactiveTable.publish("system_log_special_publish", SystemLog);
 
+ReactiveTable.publish("nalogi_special_publish", NalogiSums);
+
 ReactiveTable.publish("orders_special_publish", Orders, $or:
   [
     {stateUuid: '3f201baf-8d32-11e4-7a07-673d00307946'},

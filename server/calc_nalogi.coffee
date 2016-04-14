@@ -13,7 +13,7 @@ Meteor.methods
 
     console.log "Подсчитали остатки, переходим к отгрузкам"
 
-    # пройтись по всем отгрузкам, отгруженным Апликсом (от Кирилла)
+    # пройтись по всем отгрузкам
     _.each Demands.find({applicable: true, moment: {$gte: new Date('2015-09-01')}}).fetch(), (demand) ->
       console.log "Начинаем обрабатывать отгрузку #{demand.name} от #{moment(demand.moment).format('YYYY-MM-DD')}"
       # пройтись по каждому товару из заказа
@@ -33,22 +33,24 @@ Meteor.methods
               alreadyTaken += canTake
               Stock.update({uid: stock.uid}, {$inc: {quantityLeft: -canTake}})
               # добавить их в налоговую таблицу
-              NalogiRashodi.insert {sourceAgentUuid: demand.sourceAgentUuid, quantity: canTake, date: demand.moment, goodUuid: shipmentOut.goodUuid, demandNumber: demand.name, shipmentInName: stock.shipmentInName, priceBought: stock.price, dateBought: stock.date, priceSold: shipmentOut.price.sum}
+              NalogiRashodi.insert {sourceAgentUuid: demand.sourceAgentUuid, quantity: canTake, date: demand.moment, goodUuid: shipmentOut.goodUuid, demandNumber: demand.name, shipmentInName: stock.shipmentInName, priceEachBought: stock.price, dateBought: stock.date, priceEachSold: shipmentOut.price.sum}
               if alreadyTaken == shipmentOut.quantity
                 return true
               else
                 return false
           if alreadyTaken == shipmentOut.quantity
-            console.log "- Для товара #{good.name} нашли все в закупках Кирилла, приемка (одна из): " + NalogiRashodi.findOne({goodUuid: good.uuid, demandNumber: demand.name}).shipmentInName
+            ;#console.log "- Для товара #{good.name} нашли все в закупках Кирилла, приемка (одна из): " + NalogiRashodi.findOne({goodUuid: good.uuid, demandNumber: demand.name}).shipmentInName
           else
-            console.log "- Для товара #{good.name} НЕ нашли все в закупках Кирилла, не хватило: #{shipmentOut.quantity - alreadyTaken}"
-            NalogiRashodi.insert {sourceAgentUuid: demand.sourceAgentUuid, quantity: alreadyTaken - shipmentOut.quantity, date: demand.moment, goodUuid: shipmentOut.goodUuid, demandNumber: demand.name, shipmentInName: "", priceBought: "", dateBought: "", priceSold: shipmentOut.price.sum}
+            #console.log "- Для товара #{good.name} НЕ нашли все в закупках Кирилла, не хватило: #{shipmentOut.quantity - alreadyTaken}"
+            NalogiRashodi.insert {sourceAgentUuid: demand.sourceAgentUuid, quantityNotFound: shipmentOut.quantity - alreadyTaken, date: demand.moment, goodUuid: shipmentOut.goodUuid, demandNumber: demand.name, shipmentInName: "", priceEachBought: "", dateBought: "", priceEachSold: shipmentOut.price.sum}
     console.log "Подсчитали отгрузки, переходим к статистике"
     # подготовить суммы по месяцам
     _.each NalogiRashodi.find({}).fetch(), (nalog) ->
       if nalog.quantity?
-        if nalog.quantity > 0
-          NalogiSums.upsert {date: moment(nalog.date).format("YYYY-MM"), accountUuid: nalog.sourceAgentUuid}, {$inc: {sum: nalog.priceBought * nalog.quantity}}
+        if nalog.quantity?
+          # нашли в стоке ИП Трембачева
+          NalogiSums.upsert {date: moment(nalog.date).format("YYYY-MM"), accountUuid: nalog.sourceAgentUuid}, {$inc: {sumSoldFromKTBuyPrice: nalog.priceEachBought * nalog.quantity}}
         else
-          NalogiSums.upsert {date: moment(nalog.date).format("YYYY-MM"), accountUuid: nalog.sourceAgentUuid}, {$inc: {quantityNotFound: (nalog.priceBought * nalog.quantity), priceSoldSum: nalog.priceSold}}
+          # не нашли в его стоке
+          NalogiSums.upsert {date: moment(nalog.date).format("YYYY-MM"), accountUuid: nalog.sourceAgentUuid}, {$inc: {sumSoldNotFromKTSalePrice: (nalog.priceEachSold * nalog.quantityNotFound)}}
     console.log "Закончили подсчитывать налоги"

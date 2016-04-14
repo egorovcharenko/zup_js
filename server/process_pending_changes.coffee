@@ -32,4 +32,6 @@ Meteor.methods
         Orders.update {uuid: order.uuid}, {$unset: {pendingChanges: ""}, $set: {processingResult: processingResult}}
       catch error
         console.log "Ошибка при обработке изменений:", error
+        processingResult += "Ошибка при обработке заказа, попробуйте заново (?): #{error.toString()}"
+        Orders.update {uuid: order.uuid}, {$unset: {pendingChanges: ""}, $set: {processingResult: processingResult}}
     return

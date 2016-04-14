@@ -89,40 +89,41 @@ Meteor.methods
     catch error
       console.log "error:", error
   addNewEnter: (goodsToEnter) ->
-    newEnter =
-    "<?xml version='1.0' encoding='UTF-8'?><enter
-      overheadDistribution='BY_PRICE'
-      sourceAgentUuid='8de836c7-65fe-11e4-90a2-8ecb00148411'
-      targetStoreUuid='8de95654-65fe-11e4-90a2-8ecb00148413'
-      applicable='true'
-      payerVat='true'
-      rate='1.0'
-      moment='#{moment().subtract(1,'days').toISOString()}'
-      vatIncluded='true'>
-        <accountUuid>6e02ccbd-65fe-11e4-7a07-673d00001215</accountUuid>
-        <accountId>6e02ccbd-65fe-11e4-7a07-673d00001215</accountId>
-        <groupUuid>09951fc6-d269-11e4-90a2-8ecb000588c0</groupUuid>
-        <ownerUid>admin@allshellac</ownerUid>
-        <shared>false</shared>"
+    client = moyskladPackage.createClient()
+    tools = moyskladPackage.tools
+    client.setAuth 'admin@allshellac', 'qweasd'
+    newEnter = {
+      "TYPE_NAME" : "moysklad.enter"
+      "overheadDistribution": 'BY_PRICE'
+      "sourceAgentUuid": '8de836c7-65fe-11e4-90a2-8ecb00148411'
+      "targetStoreUuid": '8de95654-65fe-11e4-90a2-8ecb00148413'
+      "applicable": 'true'
+      "payerVat": 'true'
+      "rate": '1.0'
+      "moment": moment().subtract(1,'days').toISOString()
+      "vatIncluded": 'true'
+    }
     _.each goodsToEnter, (good) ->
-      newEnter +=
-        "<enterPosition
-          discount='0.0'
-          quantity='#{good.qty}'
-          goodUuid='#{good.uuid}'
-          vat='0'>
-            <accountUuid>6e02ccbd-65fe-11e4-7a07-673d00001215</accountUuid>
-            <accountId>6e02ccbd-65fe-11e4-7a07-673d00001215</accountId>
-            <groupUuid>09951fc6-d269-11e4-90a2-8ecb000588c0</groupUuid>
-            <ownerUid>admin@allshellac</ownerUid>
-            <shared>false</shared>
-            <basePrice sum='#{good.buyPrice}' sumInCurrency='#{good.buyPrice}'/>
-            <price sum='#{good.buyPrice}' sumInCurrency='#{good.buyPrice}'/>
-            <things/>
-            <tags/>
-        </enterPosition>"
-    newEnter += "</enter>"
-
-    #console.log newEnter
-    result = HTTP.put 'https://online.moysklad.ru/exchange/rest/ms/xml/Enter', {auth:"admin@allshellac:qweasd", content: newEnter, headers: {"Content-Type": "application/xml"}}
-    #console.log result
+      newEnter.enterPosition.push {
+        "discount": 0
+        "quantity": good.qty
+        "goodUuid": good.uuid
+        "vat": 0
+        #"accountUuid": "6e02ccbd-65fe-11e4-7a07-673d00001215</accountUuid>
+        #<accountId>6e02ccbd-65fe-11e4-7a07-673d00001215</accountId>
+        "groupUuid": "09951fc6-d269-11e4-90a2-8ecb000588c0"
+        #<ownerUid>admin@allshellac</ownerUid>
+        #<shared>false</shared>
+        "basePrice": {
+          "sum": good.buyPrice
+          "sumInCurrency": good.buyPrice
+        }
+        "price": {
+          "sum": good.buyPrice
+          "sumInCurrency": good.buyPrice
+        }
+      }
+    try
+      entityFromMS = client.save(newEnter)
+    catch e
+      console.log "ошибка при сохранении оприходования:", e
