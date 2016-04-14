@@ -157,7 +157,7 @@ Meteor.methods
                   console.log "нужно в заказе #{orderName} проставить нужный статус в зависимости от наличия";
                   # загружаем так чтобы точно уж получить нормальные последние данные
                   order = Orders.findOne(name: orderName)#client.load(Orders.findOne(name: orderName).uuid)#
-                  Meteor.call "logSystemEvent", "setOrderNeededState", "5. notice", "Хотели бы вызывать с параметром: #{Orders.findOne(name: orderName).uuid}"
+                  Meteor.call "logSystemEvent", "setOrderNeededState", "5. notice", "options: #{client.options}"
                   console.log "Нашли заказ: #{order}"
                   needToBuy = false
                   _.each order.customerOrderPosition, (pos) ->
