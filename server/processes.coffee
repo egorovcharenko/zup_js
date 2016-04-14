@@ -157,6 +157,7 @@ Meteor.methods
                   console.log "нужно в заказе #{orderName} проставить нужный статус в зависимости от наличия";
                   # загружаем так чтобы точно уж получить нормальные последние данные
                   order = Orders.findOne(name: orderName)#client.load(Orders.findOne(name: orderName).uuid)#
+                  console.log "Нашли заказ: #{order}"
                   needToBuy = false
                   _.each order.customerOrderPosition, (pos) ->
                     good = Goods.findOne {uuid: pos.goodUuid}
@@ -165,6 +166,7 @@ Meteor.methods
                         needToBuy = true
                   if needToBuy
                     # если чего-то нет, то выставляем "Требуется закупка"
+                    console.log "Выставляем статус Требуется закупка"
                     result = Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid, "7f224366-68d0-11e4-7a07-673d0003202a"
                   else
                     # если это самовывоз или достависта - выставляем "Пока не собирать"
