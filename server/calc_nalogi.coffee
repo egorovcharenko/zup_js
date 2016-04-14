@@ -15,7 +15,7 @@ Meteor.methods
 
     # пройтись по всем отгрузкам
     _.each Demands.find({applicable: true, moment: {$gte: new Date('2015-09-01')}}).fetch(), (demand) ->
-      console.log "Начинаем обрабатывать отгрузку #{demand.name} от #{moment(demand.moment).format('YYYY-MM-DD')}"
+      #console.log "Начинаем обрабатывать отгрузку #{demand.name} от #{moment(demand.moment).format('YYYY-MM-DD')}"
       # пройтись по каждому товару из заказа
       _.each demand.shipmentOut, (shipmentOut) ->
         good = Goods.findOne {uuid: shipmentOut.goodUuid}
@@ -47,10 +47,9 @@ Meteor.methods
     # подготовить суммы по месяцам
     _.each NalogiRashodi.find({}).fetch(), (nalog) ->
       if nalog.quantity?
-        if nalog.quantity?
-          # нашли в стоке ИП Трембачева
-          NalogiSums.upsert {date: moment(nalog.date).format("YYYY-MM"), accountUuid: nalog.sourceAgentUuid}, {$inc: {sumSoldFromKTBuyPrice: nalog.priceEachBought * nalog.quantity}}
-        else
-          # не нашли в его стоке
-          NalogiSums.upsert {date: moment(nalog.date).format("YYYY-MM"), accountUuid: nalog.sourceAgentUuid}, {$inc: {sumSoldNotFromKTSalePrice: (nalog.priceEachSold * nalog.quantityNotFound)}}
+        # нашли в стоке ИП Трембачева
+        NalogiSums.upsert {date: moment(nalog.date).format("YYYY-MM"), accountUuid: nalog.sourceAgentUuid}, {$inc: {sumSoldFromKTBuyPrice: nalog.priceEachBought * nalog.quantity}}
+      else
+        # не нашли в его стоке
+        NalogiSums.upsert {date: moment(nalog.date).format("YYYY-MM"), accountUuid: nalog.sourceAgentUuid}, {$inc: {sumSoldNotFromKTSalePrice: (nalog.priceEachSold * nalog.quantityNotFound)}}
     console.log "Закончили подсчитывать налоги"

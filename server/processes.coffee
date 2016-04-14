@@ -5,14 +5,14 @@ extend = (object, properties) ->
 
 Meteor.methods
   startProcess: (processName, params) ->
-    console.log "processName: ", processName
+    console.log "Запускаем новый процесс: ", processName
 
     # считать файлы
     processesJson = JSON.parse(Assets.getText("processes.json"));
 
     # найти процесс
     processTemplate = processesJson.processes.filter((x) -> x.name == processName)[0]
-    console.log "processTemplate: ", processTemplate
+    #console.log "processTemplate: ", processTemplate
 
     # создать процесс
     newProcessIns = processTemplate
@@ -21,7 +21,7 @@ Meteor.methods
     newProcessIns.id = uuid.v4()
     newProcessIns.params = params
     newProcessIns.status = "active"
-    console.log "newProcessIns: ", newProcessIns
+    #console.log "newProcessIns: ", newProcessIns
 
     _.each newProcessIns.steps, (step) ->
       if not step.id?
@@ -30,7 +30,7 @@ Meteor.methods
         if not option.id?
           option.id = uuid.v4()
 
-    console.log "newProcessIns: ", newProcessIns
+    #console.log "newProcessIns: ", newProcessIns
 
     # записать новый экземплятр процесса в БД
     ProcessesIns.insert newProcessIns
@@ -38,7 +38,7 @@ Meteor.methods
     return
 
   executeOption: (dataObject) ->
-    console.log "executeOption dataObject ", dataObject
+    #console.log "executeOption dataObject ", dataObject
 
     # пройтись по очереди все действия
     processIns = ProcessesIns.findOne {id: dataObject.processInsId}
@@ -58,7 +58,7 @@ Meteor.methods
                 for k,v of action.params
                   #console.log "k:", k, " ,v:", v, ", k2:", k2, ", v2:", v2, ", replace result: ", v.replace("%#{k2}%", v2)
                   action.params[k] = v.replace "%#{k2}%", v2
-              console.log "action ", action
+              #console.log "action ", action
               # выполнить действие
               switch action.name
                 when "finishProcess"
@@ -107,7 +107,7 @@ Meteor.methods
                   orderStatusUuid = action.params.newOrderStatusUuid
                   console.log "нужно у заказа #{orderName} заменить статус на #{orderStatusUuid}"
                   orderUuid = Orders.findOne(name: orderName).uuid
-                  console.log "orderUuid: #{orderUuid}"
+                  #console.log "orderUuid: #{orderUuid}"
                   job = new Job myJobs, 'setEntityStateByUuid', {entityType: 'customerOrder', entityUuid: orderUuid, newStateUuid: orderStatusUuid}
                   job.priority('high')
                     .retry({ retries: 5, wait: 1*1000})
@@ -171,12 +171,12 @@ Meteor.methods
                     attrib = _.find(order.attribute, (attr) -> attr.metadataUuid is "50836a82-6912-11e4-90a2-8ecb00526879")
                     newState = "ba02cb40-691b-11e4-90a2-8ecb0052ff42" # на сборку
                     if attrib?
-                      console.log "attrib:", attrib
+                      #console.log "attrib:", attrib
                       if (attrib.entityValueUuid is "07242d1a-691b-11e4-90a2-8ecb0052fa9f") or (attrib.entityValueUuid is "c596ace1-7991-11e4-90a2-8eca00151dc4")
                         newState = "265f289e-ca46-11e5-7a69-971100039a24" # пока не собирать
                     console.log "Устанавливаем статус:#{newState}"
                     result = Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid, newState
-                  console.log "result:", result
+                  #console.log "result:", result
 
                 when "setNextStep"
                   # найти следующий шаг
