@@ -8,10 +8,14 @@ Template.nalogi.helpers
           fieldId: "date"
           key:'date'
           label:"Дата"
+          sortDirection: 'ascending'
+          sortOrder: 2
         },{
           fieldId: "accountUuid"
           key:'accountUuid'
           label:"Компания"
+          sortDirection: 'ascending'
+          sortOrder: 1
         },{
           fieldId: "sumSoldFromKTBuyPrice"
           key:'sumSoldFromKTBuyPrice'
