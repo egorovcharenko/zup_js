@@ -106,10 +106,12 @@ Meteor.methods
                             if not (savedEntity.requisite.actualAddress is entity.requisite.actualAddress)
                               load = true
                     if load
+                      console.log "Пытаемся стандартизировать адрес #{entity.requisite.actualAddress}"
                       request = [entity.requisite.actualAddress]
                       # получить часовой пояс
                       result = HTTP.post 'https://dadata.ru/api/v2/clean/address', data: request , headers: {"X-Secret": "4989bbb6a8d72f742f041c8b5716f889f83722ad", "Authorization": "Token 8dcd0d1af4c068d94bcfb8fc69df34f5e25462bd", "Content-Type": "application/json", "Accept": "application/json"}
                       entity.dadata = result.data[0]
+                      console.log "Успешно стандартизировали адрес"
                   catch error
                     console.log "Ошибка при стандартизации адреса:", error.message
                     entity.dadata = ""
