@@ -24,6 +24,8 @@ Template.loadData.helpers
     else
       false
 Template.loadData.events
+  'click #testMethod': (event, template) ->
+    Meteor.call "testMethod"
   'click #calcNalogi': (event, template) ->
     Meteor.call "calcNalogi"
   'click #checkOrdersAccounts': (event, template) ->
