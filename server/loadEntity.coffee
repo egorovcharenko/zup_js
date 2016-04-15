@@ -2,11 +2,8 @@ Meteor.methods
   loadEntityFromMS: (entityName, collectionName, fromLastUpdate) ->
     #console.log "loadEntityFromMS started, collectionName:#{collectionName}, fromLastUpdate:", moment(fromLastUpdate).format("YYYYMMDDHHmmss")
     collection = CollectionNameMap[collectionName]
-    tools = moyskladPackage.tools
     toReturn = []
     countTotal = countAlready = 0
-    client = moyskladPackage.createClient()
-    client.setAuth 'admin@allshellac', 'qweasd'
     maxCountToLoad = 50000
     pageSize = 100
     query = moyskladPackage.createQuery(updated: $gte: moment(fromLastUpdate).format("YYYYMMDDHHmmss"))

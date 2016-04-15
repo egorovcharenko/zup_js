@@ -7,9 +7,9 @@ Meteor.methods
       url: 'http://allshellac.ru/index.php/api/V2_soap?wsdl=1'
     }
     paramsToUse = liveParams;
-    client = Soap.createClient(paramsToUse.url);
-    client.setSecurity(new Soap.BasicAuthSecurity(paramsToUse.user, paramsToUse.pass));
-    result = client.login({username: paramsToUse.user, apiKey:paramsToUse.pass});
+    soapClient = Soap.createClient(paramsToUse.url);
+    soapClient.setSecurity(new Soap.BasicAuthSecurity(paramsToUse.user, paramsToUse.pass));
+    result = soapClient.login({username: paramsToUse.user, apiKey:paramsToUse.pass});
     session = result.loginReturn.$value;
     if not result.loginReturn.$value?
       throw new Error "Не получилось залогиниться в Magento"
@@ -68,11 +68,11 @@ Meteor.methods
           }
         }
         Goods.update({uuid: good.uuid}, {$set: {dirty: false}})
-        response = client.catalogProductUpdate request
+        response = soapClient.catalogProductUpdate request
       catch error
         console.log "Ошибка при отправке остатка:", error.message
 
-    client.endSession session
+    soapClient.endSession session
     return "Остатки отправлены в Мадженто: #{allDirtyGoods.count()} всего"
 
   loadMagentoPics: ->
@@ -82,16 +82,16 @@ Meteor.methods
       pass: 'zup_user'
       url: 'http://allshellac.ru/index.php/api/V2_soap?wsdl=1'
     paramsToUse = liveParams
-    client = Soap.createClient(paramsToUse.url)
-    client.setSecurity new (Soap.BasicAuthSecurity)(paramsToUse.user, paramsToUse.pass)
-    result = client.login(
+    soapClient = Soap.createClient(paramsToUse.url)
+    soapClient.setSecurity new (Soap.BasicAuthSecurity)(paramsToUse.user, paramsToUse.pass)
+    result = soapClient.login(
       username: paramsToUse.user
       apiKey: paramsToUse.pass)
     #console.log(result);
     session = result.loginReturn.$value
     if result.loginReturn.$value
       # get list of all the products
-      productList = client.catalogProductList(
+      productList = soapClient.catalogProductList(
         sessionId: session
         storeView: 'smmarket')
       console.log 'productList.storeView.item.length = ', productList.storeView.item.length
@@ -106,7 +106,7 @@ Meteor.methods
         if GoodsImages.findOne(id: simplifiedProduct.id)
           # skip
         else
-          productImage = client.catalogProductAttributeMediaList(
+          productImage = soapClient.catalogProductAttributeMediaList(
             sessionId: session
             product: simplifiedProduct.id
             storeView: 'smmarket')

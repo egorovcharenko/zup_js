@@ -62,10 +62,6 @@ Meteor.methods
       goodsNum = Goods.find({boughtOnLastPeriodsQty: {$gte: minNumberOfOtgruzhenoQty}, boughtOnLastPeriodsOrders: {$gte: minNumberOfOrders}}).count()
       console.log "goods ready for stock buying: #{goodsNum}"
 
-      client = moyskladPackage.createClient()
-      tools = moyskladPackage.tools
-      client.setAuth 'admin@allshellac', 'qweasd'
-
       # находим статус нужный
       wf = Workflows.findOne {code: "PurchaseOrder"}
       activeStateUuid = _.find(wf.state, (state) -> state.name == "Требуется закупка").uuid

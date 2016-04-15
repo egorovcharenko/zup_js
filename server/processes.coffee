@@ -150,19 +150,12 @@ Meteor.methods
                       ;
 
                 when "setOrderNeededState"
-                  client = moyskladPackage.createClient()
-                  client.setAuth 'admin@allshellac', 'qweasd'
                   # проходимся по всем товарам
                   orderName = action.params.orderName
                   console.log "нужно в заказе #{orderName} проставить нужный статус в зависимости от наличия";
                   # загружаем так чтобы точно уж получить нормальные последние данные
 
-                  Meteor.call "logSystemEvent", "client.load", "5. notice", "Вызываем client.load в setOrderNeededState, options: #{JSON.stringify(client.options,null,2)}, uuid заказа:#{Orders.findOne(name: orderName).uuid}"
-                  try
-                    order = client.load('customerOrder', Orders.findOne(name: orderName).uuid)
-                  catch err
-                    Meteor.call "logSystemEvent", "client.load", "2. error", "Ошибка при вызове в setOrderNeededState, options: #{JSON.stringify(client.options,null,2)}, client: #{JSON.stringify(client,null,2)}"
-                  Meteor.call "logSystemEvent", "client.load", "5. notice", "Закончили вызывать client.load в setOrderNeededState, options: #{JSON.stringify(client.options,null,2)}"
+                  order = client.load('customerOrder', Orders.findOne(name: orderName).uuid)
 
                   #console.log "Нашли заказ: #{order}"
                   needToBuy = false

@@ -1,9 +1,5 @@
 Meteor.methods
   otgruzitZakaz: (orderUuid) ->
-    #moyskladPackage = Meteor.npmRequire('moysklad-client')
-    client = moyskladPackage.createClient()
-    tools = moyskladPackage.tools
-    client.setAuth 'admin@allshellac', 'qweasd'
     order = Orders.findOne {uuid:orderUuid}
     console.log "Начали отгружать заказ #{order.name}"
 

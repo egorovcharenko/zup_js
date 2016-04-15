@@ -5,9 +5,6 @@ Meteor.methods
     numberOfAutosaleStages = 3
     durationOfAutosaleStageWeeks = 2
 
-    msclient = moyskladPackage.createClient()
-    tools = moyskladPackage.tools
-    msclient.setAuth 'admin@allshellac', 'qweasd'
     # подсчитать сколько в неделю уходит
     Meteor.call "calculateDemandPerWeek"
 
@@ -18,9 +15,9 @@ Meteor.methods
       url: 'http://allshellac.ru/index.php/api/V2_soap?wsdl=1'
     }
     paramsToUse = liveParams;
-    client = Soap.createClient(paramsToUse.url);
-    client.setSecurity(new Soap.BasicAuthSecurity(paramsToUse.user, paramsToUse.pass));
-    result = client.login({username: paramsToUse.user, apiKey:paramsToUse.pass});
+    soapClient = Soap.createClient(paramsToUse.url);
+    soapClient.setSecurity(new Soap.BasicAuthSecurity(paramsToUse.user, paramsToUse.pass));
+    result = soapClient.login({username: paramsToUse.user, apiKey:paramsToUse.pass});
     session = result.loginReturn.$value;
     try
       if not result.loginReturn.$value?
@@ -114,7 +111,7 @@ Meteor.methods
               priceForMagento = ""
             else
               priceForMagento = Math.ceil(price / 100)
-            
+
             console.log "#{good.name}, stock:#{good.realAvailableQty}, perWeekQtyNeeded:#{perWeekQtyNeeded}, weeksStockWillLast:#{weeksStockWillLast}, prevAutosaleStage:#{prevAutosaleStage}, autosaleStage:#{autosaleStage}, #{buyPrice} - #{priceForMagento} - #{normalPrice}"
             Goods.update {uuid:good.uuid}, {$set: {forAutoSale: true}}
             # устанавливаем дату следующей автораспродажи
@@ -130,20 +127,20 @@ Meteor.methods
               special_from_date: ""
               special_to_date: ""
             }
-            response = client.catalogProductUpdate request
+            response = soapClient.catalogProductUpdate request
             # устанавливаем все параметры в МС
             # компенсирууем
             autosaleStageAttr.longValue = autosaleStage + 1
             nextAutosaleDateAttr.timeValue = moment().add(durationOfAutosaleStageWeeks, 'weeks').toDate()
             normalPriceAttr.longValue = normalPrice
-            msclient.save(good)
+            client.save(good)
 
             #console.log "Response: #{response}"
-            #console.log "Response: #{client.lastRequest}"
+            #console.log "Response: #{soapClient.lastRequest}"
             #throw new Meteor.Error "завершили обработку одного товара: #{good.name}"
         catch error
           console.log "error:", error
     catch error
       console.log "error:", error
     finally
-      client.endSession session
+      soapClient.endSession session

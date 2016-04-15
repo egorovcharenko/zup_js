@@ -29,9 +29,6 @@ logChangesInDescription = (entityFromMS, field, oldv, newv) ->
 
 Meteor.methods
   getMSAttributeValue: (object, attribs) ->
-    #import moysklad-client from 'moysklad-client';
-    #moyskladPackage = require('moysklad-client')
-    tools = moyskladPackage.tools
     res = {}
     for attr in attribs
       metadataUuid = findMetadataUuidByName(attr.entityName, attr.attrName)
@@ -39,9 +36,6 @@ Meteor.methods
     return res
 
   addNalogenPaymentMethod: (orderName) ->
-    client = moyskladPackage.createClient()
-    tools = moyskladPackage.tools
-    client.setAuth 'admin@allshellac', 'qweasd'
     entityFromMS = Orders.findOne(name:orderName)
 
     nalogPlatUuid = '82c43187-4743-11e5-90a2-8ecb001a04c5'
@@ -77,10 +71,6 @@ Meteor.methods
 
   updateEntityMS: (entityType, entityUuid, data, attributes) ->
     #console.log 'updateEntityMS started, parameters:' + arguments
-    #moyskladPackage = Meteor.npmRequire('moysklad-client')
-    client = moyskladPackage.createClient()
-    tools = moyskladPackage.tools
-    client.setAuth 'admin@allshellac', 'qweasd'
     entityFromMS = client.load(entityType, entityUuid)
     if data?
       for prop of data
@@ -110,8 +100,6 @@ Meteor.methods
     newEntity = client.save(entityFromMS)
 
   setEntityStateByUuid: (entityType, entityUuid, newStateUuid) ->
-    client = moyskladPackage.createClient()
-    client.setAuth 'admin@allshellac', 'qweasd'
     if entityType is "customerOrder"
       # добавить действие по переводу в др. статус
       Orders.update {uuid: entityUuid}, {$push: {actions: {type:"stateChange", date: new Date()}}}
@@ -140,8 +128,6 @@ Meteor.methods
         #Meteor.call "logSystemEvent", "loadEntityGeneric", "2. error", "Ошибка: #{error.reason}"
 
   loadStockFromMS: () ->
-    client = moyskladPackage.createClient()
-    client.setAuth 'admin@allshellac', 'qweasd'
     options = {
       #stockMode: ALL_STOCK,
       storeId: '8de95654-65fe-11e4-90a2-8ecb00148413',
@@ -251,10 +237,6 @@ Meteor.methods
     # подготовка переменных
     stateWorkflow = Workflows.findOne name:"CustomerOrder"
     newStateUuid = (_.find stateWorkflow.state, (state) -> state.name is "Выполнен").uuid
-    #moyskladPackage = Meteor.npmRequire('moysklad-client')
-    client = moyskladPackage.createClient()
-    tools = moyskladPackage.tools
-    client.setAuth 'admin@allshellac', 'qweasd'
 
     for completedOrderID in CompletedOrderIDs
       #if i > 50
