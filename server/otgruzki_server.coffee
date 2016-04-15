@@ -83,7 +83,7 @@ Meteor.methods
                   if materialGood.stockQtiy < qtyNeeded
                     throw new Meteor.Error "stock-insufficient", "При отгрузке через техкарту произошла ошибка - не достаточно товара #{materialGood.name}, нужно #{qtyOfMaterialNeeded}, а в наличии только #{materialGood.stockQty}"
                   else
-                    console.log "processing.material:", processing.material
+                    #console.log "processing.material:", processing.material
                     processing.material.push {
                       "TYPE_NAME" : "moysklad.processingPositionResult",
                       "discount" : 0,
@@ -110,7 +110,7 @@ Meteor.methods
               # добавляем в техкарту все результаты
               _.each plan.product, (product) ->
                 productGood = Goods.findOne {uuid: product.goodUuid}
-                console.log "processing.results:", processing.results
+                #console.log "processing.results:", processing.results
                 processing.results.push {
                   "TYPE_NAME" : "moysklad.product",
                   "goodUuid" : product.goodUuid,
@@ -132,7 +132,7 @@ Meteor.methods
               # оприходовать нужное количество товара
               Meteor.call "addNewEnter", [{uuid:good.uuid, qty: pos.quantity - good.stockQty, buyPrice: good.buyPrice}]
 
-          console.log "demand.shipmentOut:", demand.shipmentOut
+          #console.log "demand.shipmentOut:", demand.shipmentOut
           demand.shipmentOut.push {
             "TYPE_NAME" : "moysklad.shipmentOut",
             "discount" : pos.discount,
@@ -158,7 +158,7 @@ Meteor.methods
             #console.log "deliveryName:#{deliveryName}"
             deliveryGood = Goods.findOne({name: deliveryName})
             if deliveryGood?
-              console.log "demand.shipmentOut:", demand.shipmentOut
+              #console.log "demand.shipmentOut:", demand.shipmentOut
               demand.shipmentOut.push {
                 "TYPE_NAME" : "moysklad.shipmentOut",
                 "discount" : 0,
