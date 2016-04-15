@@ -32,7 +32,9 @@ Meteor.methods
         AplixOrders.insert result.data
     catch err
         console.log "Ошибка при загрузке треков из Апликс:", err
+
   checkOrdersAccounts: () ->
+    console.log "Начали проверять заказы"
     # проверка по каждому заказу из МС: орг, курьеры
     _.each Orders.find().fetch(), (order) ->
       attrib = _.find(order.attribute, (attr) -> attr.metadataUuid is "50836a82-6912-11e4-90a2-8ecb00526879")
@@ -41,12 +43,15 @@ Meteor.methods
           aplixOrder = AplixOrders.findOne {identifier: order.name}
           if aplixOrder?
             # организация - должна совпадать с Апликсовским контрагентом
-            if (order.accountUuid is "6e02ccbd-65fe-11e4-7a07-673d00001215") and (aplixOrder.contractorId is "5000f3a9-a256-eb15-11e4-6022293d599d")
+            if (order.targetAgentUuid is "ddbb489e-65c9-11e5-90a2-8ecb004e1c38") and (aplixOrder.contractorId is "5000f3a9-a256-eb15-11e4-6022293d599d")
               console.log "Несовпадение, заказ #{order.name} заведен от ИП Трембачев а отгружен в Апликс от ИП Овчаренко"
-            else if (order.accountUuid is "8de836c7-65fe-11e4-90a2-8ecb00148411") and (aplixOrder.contractorId is "5000a7af-a256-eb15-11e5-6c178779fb38")
+            else if (order.targetAgentUuid is "8de836c7-65fe-11e4-90a2-8ecb00148411") and (aplixOrder.contractorId is "5000a7af-a256-eb15-11e5-6c178779fb38")
               console.log "Несовпадение, заказ #{order.name} заведен от ИП Овчаренко а отгружен в Апликс от ИП Трембачев"
             #else console.log "Заказ #{order.name} совпадает"
+            return true
+      return false
     # проверка по каждому заказу из Апликса: курьеры в МС
+    console.log "Закончили проверять заказы"
     return
 
   markOrdersInDeliveryPlace: () ->
