@@ -102,11 +102,10 @@ Meteor.methods
       "overheadDistribution": 'BY_PRICE'
       "sourceAgentUuid": '8de836c7-65fe-11e4-90a2-8ecb00148411'
       "targetStoreUuid": '8de95654-65fe-11e4-90a2-8ecb00148413'
-      "applicable": 'true'
-      "payerVat": 'true'
-      "rate": '1.0'
+      "applicable": true
+      "payerVat": true
+      "rate": 1.0
       "moment": moment().subtract(1,'days').toISOString()
-      "vatIncluded": 'true'
       "enterPosition": []
     }
     _.each goodsToEnter, (good) ->
