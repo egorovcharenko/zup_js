@@ -88,6 +88,7 @@ Meteor.methods
         console.log "ошибка внутри client.save:", e
     catch error
       console.log "error:", error
+
   addNewEnter: (goodsToEnter) ->
     client = moyskladPackage.createClient()
     tools = moyskladPackage.tools
@@ -102,6 +103,7 @@ Meteor.methods
       "rate": '1.0'
       "moment": moment().subtract(1,'days').toISOString()
       "vatIncluded": 'true'
+      "enterPosition": []
     }
     _.each goodsToEnter, (good) ->
       newEnter.enterPosition.push {
