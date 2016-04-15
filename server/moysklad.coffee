@@ -115,7 +115,13 @@ Meteor.methods
     if entityType is "customerOrder"
       # добавить действие по переводу в др. статус
       Orders.update {uuid: entityUuid}, {$push: {actions: {type:"stateChange", date: new Date()}}}
-      entityFromMS = client.load(entityType, entityUuid)
+      Meteor.call "logSystemEvent", "client.load", "5. notice", "Вызываем client.load в setEntityStateByUuid, options: #{JSON.stringify(client.options,null,2)}"
+      try
+        entityFromMS = client.load(entityType, entityUuid)
+      catch err
+        Meteor.call "logSystemEvent", "client.load", "2. error", "Ошибка при вызове в setEntityStateByUuid, options: #{JSON.stringify(client.options,null,2)}, client: #{JSON.stringify(client,null,2)}"
+      Meteor.call "logSystemEvent", "client.load", "5. notice", "Закончили вызывать client.load в setEntityStateByUuid, options: #{JSON.stringify(client.options,null,2)}"
+
       stateWorkflow = Workflows.findOne name:"CustomerOrder"
       if stateWorkflow
         oldStateName = (_.find stateWorkflow.state, (state) -> state.uuid is entityFromMS.stateUuid).name

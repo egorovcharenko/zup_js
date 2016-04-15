@@ -78,8 +78,12 @@ Meteor.methods
       client = moyskladPackage.createClient()
       tools = moyskladPackage.tools
       client.setAuth 'admin@allshellac', 'qweasd'
-
-      good = client.load('Good', dataObject.goodUuid)
+      Meteor.call "logSystemEvent", "client.load", "5. notice", "Вызываем client.load в setNewGoodStorage, options: #{JSON.stringify(client.options,null,2)}"
+      try
+        good = client.load('Good', dataObject.goodUuid)
+      catch err
+        Meteor.call "logSystemEvent", "client.load", "2. error", "Ошибка при вызове в setNewGoodStorage, options: #{JSON.stringify(client.options,null,2)}, client: #{JSON.stringify(client,null,2)}"
+      Meteor.call "logSystemEvent", "client.load", "5. notice", "Закончили вызывать client.load в setNewGoodStorage, options: #{JSON.stringify(client.options,null,2)}"
       good.description = dataObject.description
       # записать и сохранить
       try
