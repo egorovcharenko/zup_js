@@ -156,9 +156,15 @@ Meteor.methods
                   orderName = action.params.orderName
                   console.log "нужно в заказе #{orderName} проставить нужный статус в зависимости от наличия";
                   # загружаем так чтобы точно уж получить нормальные последние данные
-                  order = Orders.findOne(name: orderName)#client.load(Orders.findOne(name: orderName).uuid)#
-                  Meteor.call "logSystemEvent", "setOrderNeededState", "5. notice", "options: #{client.options}"
-                  console.log "Нашли заказ: #{order}"
+
+                  Meteor.call "logSystemEvent", "client.load", "5. notice", "Вызываем client.load в setOrderNeededState, options: #{JSON.stringify(client.options,null,2)}, uuid заказа:#{Orders.findOne(name: orderName).uuid}"
+                  try
+                    order = client.load('customerOrder', Orders.findOne(name: orderName).uuid)
+                  catch err
+                    Meteor.call "logSystemEvent", "client.load", "2. error", "Ошибка при вызове в setOrderNeededState, options: #{JSON.stringify(client.options,null,2)}, client: #{JSON.stringify(client,null,2)}"
+                  Meteor.call "logSystemEvent", "client.load", "5. notice", "Закончили вызывать client.load в setOrderNeededState, options: #{JSON.stringify(client.options,null,2)}"
+
+                  #console.log "Нашли заказ: #{order}"
                   needToBuy = false
                   _.each order.customerOrderPosition, (pos) ->
                     good = Goods.findOne {uuid: pos.goodUuid}
