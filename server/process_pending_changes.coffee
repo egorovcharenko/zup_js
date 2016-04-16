@@ -1,6 +1,6 @@
 Meteor.methods
   startProcessingChanges: (orderUuid, pendingChanges) ->
-    Orders.update {uuid: orderUuid}, {$set: {pendingChanges: pendingChanges}}
+    Orders.update {uuid: orderUuid}, {$push: {pendingChanges: pendingChanges}}
 
   processPendingChanges: ->
     # найти все заказы с необработанными изменениями
