@@ -63,9 +63,8 @@
                     "type": "Звонок"
                   }
                 }, {
-                  "name": "setNextStep",
+                  "name": "finishProcess",
                   "params": {
-                    "nextStepId": "999"
                   }
                 }
               ]
@@ -334,31 +333,13 @@
                     "orderName": "%orderName%"
                   }
                 }, {
-                  "name": "setNextStep",
+                  "name": "finishProcess",
                   "params": {
-                    "nextStepId": "999"
                   }
                 }
               ]
             }, {
               "name": "Пропустить",
-              "actions": [
-                {
-                  "name": "setNextStep",
-                  "params": {
-                    "nextStepId": "999"
-                  }
-                }
-              ]
-            }
-          ]
-        }, {
-          "id": "999",
-          "name": "Завершить процесс",
-          "description": "Завершить процесс",
-          "options": [
-            {
-              "name": "Завершить",
               "actions": [
                 {
                   "name": "finishProcess",

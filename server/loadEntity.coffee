@@ -154,13 +154,6 @@ Meteor.methods
     Orders.update {}, { $set: checked: false }, multi: true
     Orders.update { stateUuid: stateUuid1 }, { $set: checked: true }, multi: true
     return
-  loadUpdatedOrders: ->
-    lastTimeLoaded = DataTimestamps.findOne(name: 'orders')
-    temp = if lastTimeLoaded then new moment(lastTimeLoaded.value) else '01-01-1900'
-    Meteor.call 'loadEntityFromMS', 'customerOrder', 'Orders', temp
-    #console.log "*** lastUpdatedTimestamp:", temp
-    DataTimestamps.upsert { name: 'orders' }, $set: value: moment()
-    return
   updateTimestampFlag: (timestampToSet, timeToSet) ->
     #console.log "*** lastUpdatedTimestamp timeToSet:", timeToSet
     DataTimestamps.upsert { name: timestampToSet }, $set: value: (timeToSet)

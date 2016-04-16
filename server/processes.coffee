@@ -14,6 +14,10 @@ Meteor.methods
     processTemplate = processesJson.processes.filter((x) -> x.name == processName)[0]
     #console.log "processTemplate: ", processTemplate
 
+    if not processTemplate?
+      console.log "Не нашли процесс #{processName}"
+      return
+
     # создать процесс
     newProcessIns = processTemplate
     newProcessIns.createdDate = Date.now()
@@ -122,11 +126,6 @@ Meteor.methods
                   console.log "Запускаем новый процесс: #{processName} с параметрами: #{processParams}"
 
                 # TODO
-                when "reserveOrder"
-                  orderName = action.params.orderName
-                  console.log "нужно у заказа #{orderName} зарезервировать товар";
-
-                # TODO
                 when "addSkuToOrder"
                   orderName = action.params.orderName
                   sku = action.params.sku
@@ -144,7 +143,6 @@ Meteor.methods
                 when "setReserve"
                   orderName = action.params.orderName
                   console.log "нужно в заказе #{orderName} поставить весь товар в резерв";
-                  order = Orders.findOne(name: orderName)
                   pendingChanges.push {
                     type: "setOrderReserve"
                     value: true
@@ -154,26 +152,8 @@ Meteor.methods
                   # проходимся по всем товарам
                   orderName = action.params.orderName
                   console.log "нужно в заказе #{orderName} проставить нужный статус в зависимости от наличия";
-                  order = Orders.findOne(name: orderName)
-                  needToBuy = false
-                  _.each order.customerOrderPosition, (pos) ->
-                    good = Goods.findOne {uuid: pos.goodUuid}
-                    if good?
-                      if good.realAvailableQty < pos.quantity
-                        needToBuy = true
-                  if needToBuy
-                    # если чего-то нет, то выставляем "Требуется закупка"
-                    newState = "7f224366-68d0-11e4-7a07-673d0003202a" # "Требуется закупка"
-                  else
-                    # если это самовывоз или достависта - выставляем "Пока не собирать"
-                    attrib = _.find(order.attribute, (attr) -> attr.metadataUuid is "50836a82-6912-11e4-90a2-8ecb00526879")
-                    newState = "ba02cb40-691b-11e4-90a2-8ecb0052ff42" # на сборку
-                    if attrib?
-                      if (attrib.entityValueUuid is "07242d1a-691b-11e4-90a2-8ecb0052fa9f") or (attrib.entityValueUuid is "c596ace1-7991-11e4-90a2-8eca00151dc4")
-                        newState = "265f289e-ca46-11e5-7a69-971100039a24" # пока не собирать
                   pendingChanges.push {
-                    type: "setState"
-                    value: newState
+                    type: "setOrderNeededState"
                   }
 
                 when "setNextStep"
@@ -196,6 +176,7 @@ Meteor.methods
                       }}
                       #console.log "done!"
     if pendingChanges.length > 0
+      #console.log "Начинаем применять к заказу изменения"
       order = Orders.findOne(name: dataObject.orderName)
       if order?
         Meteor.call "startProcessingChanges", order.uuid, pendingChanges

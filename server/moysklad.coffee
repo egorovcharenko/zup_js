@@ -159,7 +159,7 @@ Meteor.methods
                     # для каждого составляющего - добавить его в закупку в нужном количестве
                     minMaterialQty = Math.min(minMaterialQty, materialGood.realAvailableQty / material.quantity / plan.product[0].quantity)
                 if (good.name.lastIndexOf("Набор для ш", 0) == 0)
-                  console.log "#{good.code}: #{good.name}, minMaterialQty:#{minMaterialQty}"
+                  ;#console.log "#{good.code}: #{good.name}, minMaterialQty:#{minMaterialQty}"
                 realAvailableQty += Math.max(minMaterialQty, 0)
               #if good.name is "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие"
               #  console.log "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие, realAvailableQty:#{realAvailableQty}"

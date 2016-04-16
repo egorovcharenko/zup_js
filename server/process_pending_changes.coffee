@@ -1,6 +1,7 @@
 Meteor.methods
   startProcessingChanges: (orderUuid, pendingChanges) ->
-    Orders.update {uuid: orderUuid}, {$push: {pendingChanges: pendingChanges}}
+    console.log "Ставим в очередь обработку для заказа #{orderUuid} изменения: #{pendingChanges}"
+    Orders.update {uuid: orderUuid}, {$push: {pendingChanges: {$each: pendingChanges}}}
 
   processPendingChanges: ->
     # найти все заказы с необработанными изменениями
@@ -13,6 +14,7 @@ Meteor.methods
         error = false
         # пройтись по всем изменениям
         _.each order.pendingChanges, (change) ->
+          console.log "change: #{JSON.stringify(change,null,2)}"
           console.log "change: #{change.type}, #{change.value}"
           Meteor._sleepForMs(300); # delay
           # выполнить действие
@@ -28,11 +30,30 @@ Meteor.methods
                 processingResult +=  "Ошибка в отгрузке, требуется отгрузить вручную: " + error.message + "<br/>"
             when "setOrderReserve"
               result = Meteor.call 'setOrderReserve', order.uuid, change.value
+            when "setOrderNeededState"
+              freshOrder = client.load('customerOrder', order.uuid)
+              needToBuy = false
+              _.each freshOrder.customerOrderPosition, (pos) ->
+                good = Goods.findOne {uuid: pos.goodUuid}
+                if good?
+                  if good.realAvailableQty < pos.quantity
+                    needToBuy = true
+              if needToBuy
+                # если чего-то нет, то выставляем "Требуется закупка"
+                newState = "7f224366-68d0-11e4-7a07-673d0003202a" # "Требуется закупка"
+              else
+                # если это самовывоз или достависта - выставляем "Пока не собирать"
+                attrib = _.find(freshOrder.attribute, (attr) -> attr.metadataUuid is "50836a82-6912-11e4-90a2-8ecb00526879")
+                newState = "ba02cb40-691b-11e4-90a2-8ecb0052ff42" # на сборку
+                if attrib?
+                  if (attrib.entityValueUuid is "07242d1a-691b-11e4-90a2-8ecb0052fa9f") or (attrib.entityValueUuid is "c596ace1-7991-11e4-90a2-8eca00151dc4")
+                    newState = "265f289e-ca46-11e5-7a69-971100039a24" # пока не собирать
+              Meteor.call 'setEntityStateByUuid', 'customerOrder', freshOrder.uuid, newState
         # удалить массив и обновить сообщение
         processingResult += "Заказ обработан, собирайте следующий"
-        Orders.update {uuid: order.uuid}, {$unset: {pendingChanges: ""}, $set: {processingResult: processingResult}}
       catch error
         console.log "Ошибка при обработке изменений:", error
         processingResult += "Ошибка при обработке заказа, попробуйте заново (?): #{error.toString()}"
+      finally
         Orders.update {uuid: order.uuid}, {$unset: {pendingChanges: ""}, $set: {processingResult: processingResult}}
     return

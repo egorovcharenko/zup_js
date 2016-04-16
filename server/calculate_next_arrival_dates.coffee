@@ -40,3 +40,4 @@ Meteor.methods
                 Goods.update {uuid: pos.goodUuid}, {$set: {nextFactRecieveDate: nextFactDate, nextDate: nextFactDate}}
       catch error
         console.log "error:", error
+    console.log "calculateNextArrivalDates ended"

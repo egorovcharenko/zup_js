@@ -34,8 +34,9 @@ Meteor.methods
       console.log "error:", error
 
   setOrderReserve: (entityUuid, setReserve) ->
+    console.log "Начинаем ставить резерв для заказа #{entityUuid}"
     order = client.load('customerOrder', entityUuid)
-
+    console.log "Загрузили заказ.."
     changed = false
     _.each order.customerOrderPosition, (position) ->
       if setReserve
@@ -55,4 +56,4 @@ Meteor.methods
       #console.log "position.reserve:", position.reserve
     if changed
       newEntity = client.save(order)
-      console.log "new reserve sent to MS for order #{order.name}"
+      console.log "Проставили резерв #{order.name}"
