@@ -47,6 +47,8 @@ Meteor.methods
     dataObject.msUserId =  Meteor.user().profile.msUserId
     dataObject.userName = Meteor.user().profile.userName
 
+    pendingChanges = []
+
     if processIns?
       _.each processIns.steps, (step) ->
         _.each step.options, (option) ->
@@ -81,8 +83,10 @@ Meteor.methods
                     value: fieldValue
                     type: fieldType
                   } ]
-                  orderUuid = Orders.findOne(name: orderName).uuid
-                  Meteor.call "updateEntityMS", 'customerOrder', orderUuid, null, attr
+                  pendingChanges.push {
+                    type: "changeAttributes"
+                    value: attr
+                  }
 
                 when "log"
                   logEntry = {
@@ -106,12 +110,10 @@ Meteor.methods
                   orderName = action.params.orderName
                   orderStatusUuid = action.params.newOrderStatusUuid
                   console.log "нужно у заказа #{orderName} заменить статус на #{orderStatusUuid}"
-                  orderUuid = Orders.findOne(name: orderName).uuid
-                  #console.log "orderUuid: #{orderUuid}"
-                  job = new Job myJobs, 'setEntityStateByUuid', {entityType: 'customerOrder', entityUuid: orderUuid, newStateUuid: orderStatusUuid}
-                  job.priority('high')
-                    .retry({ retries: 5, wait: 1*1000})
-                    .save()
+                  pendingChanges.push {
+                    type: "setState"
+                    value: orderStatusUuid
+                  }
 
                 # TODO
                 when "startNewProcess"
@@ -143,21 +145,16 @@ Meteor.methods
                   orderName = action.params.orderName
                   console.log "нужно в заказе #{orderName} поставить весь товар в резерв";
                   order = Orders.findOne(name: orderName)
-                  Meteor.call "setOrderReserve", order.uuid, true, (error, result) ->
-                    if error
-                      console.log "error", error
-                    if result
-                      ;
+                  pendingChanges.push {
+                    type: "setOrderReserve"
+                    value: true
+                  }
 
                 when "setOrderNeededState"
                   # проходимся по всем товарам
                   orderName = action.params.orderName
                   console.log "нужно в заказе #{orderName} проставить нужный статус в зависимости от наличия";
-                  # загружаем так чтобы точно уж получить нормальные последние данные
-
-                  order = client.load('customerOrder', Orders.findOne(name: orderName).uuid)
-
-                  #console.log "Нашли заказ: #{order}"
+                  order = Orders.findOne(name: orderName)
                   needToBuy = false
                   _.each order.customerOrderPosition, (pos) ->
                     good = Goods.findOne {uuid: pos.goodUuid}
@@ -166,19 +163,18 @@ Meteor.methods
                         needToBuy = true
                   if needToBuy
                     # если чего-то нет, то выставляем "Требуется закупка"
-                    console.log "Выставляем статус Требуется закупка"
-                    result = Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid, "7f224366-68d0-11e4-7a07-673d0003202a"
+                    newState = "7f224366-68d0-11e4-7a07-673d0003202a" # "Требуется закупка"
                   else
                     # если это самовывоз или достависта - выставляем "Пока не собирать"
                     attrib = _.find(order.attribute, (attr) -> attr.metadataUuid is "50836a82-6912-11e4-90a2-8ecb00526879")
                     newState = "ba02cb40-691b-11e4-90a2-8ecb0052ff42" # на сборку
                     if attrib?
-                      #console.log "attrib:", attrib
                       if (attrib.entityValueUuid is "07242d1a-691b-11e4-90a2-8ecb0052fa9f") or (attrib.entityValueUuid is "c596ace1-7991-11e4-90a2-8eca00151dc4")
                         newState = "265f289e-ca46-11e5-7a69-971100039a24" # пока не собирать
-                    console.log "Устанавливаем статус:#{newState}"
-                    result = Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid, newState
-                  #console.log "result:", result
+                  pendingChanges.push {
+                    type: "setState"
+                    value: newState
+                  }
 
                 when "setNextStep"
                   # найти следующий шаг
@@ -199,3 +195,7 @@ Meteor.methods
                         "steps.$.status": "passed"
                       }}
                       #console.log "done!"
+    if pendingChanges.length > 0
+      order = Orders.findOne(name: dataObject.orderName)
+      if order?
+        Meteor.call "startProcessingChanges", order.uuid, pendingChanges

@@ -14,6 +14,7 @@ Meteor.methods
         # пройтись по всем изменениям
         _.each order.pendingChanges, (change) ->
           console.log "change: #{change.type}, #{change.value}"
+          Meteor._sleepForMs(300); # delay
           # выполнить действие
           switch change.type
             when "changeAttributes"

@@ -1,6 +1,6 @@
 getLastTimeRun = (entityName) ->
   lastTimeLoaded = DataTimestamps.findOne(name: entityName)
-  if lastTimeLoaded? then moment(lastTimeLoaded.value).subtract(5, 'seconds') else moment('2014-01-01')
+  if lastTimeLoaded? then moment(lastTimeLoaded.value).subtract(2, 'seconds') else moment('2014-01-01')
 
 loadEntityGeneric = (entityMSName, collectionName) ->
   currentTime = moment()

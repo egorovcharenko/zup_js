@@ -1,6 +1,6 @@
 getLastTimeRun = (entityName) ->
   lastTimeLoaded = DataTimestamps.findOne(name: entityName)
-  if lastTimeLoaded? then moment(lastTimeLoaded.value).subtract(5, 'seconds') else moment('2014-01-01')
+  if lastTimeLoaded? then moment(lastTimeLoaded.value).subtract(2, 'seconds') else moment('2014-01-01')
 
 @findMetadataUuidByName = (entityName, attrName) ->
   #console.log("findMetadataUuidByName: entityName:" + entityName + ", attrName: " + attrName);
@@ -36,7 +36,7 @@ Meteor.methods
     return res
 
   addNalogenPaymentMethod: (orderName) ->
-    entityFromMS = Orders.findOne(name:orderName)
+    entityFromMS = client.load("customerOrder", Orders.findOne(name:orderName).uuid)
 
     nalogPlatUuid = '82c43187-4743-11e5-90a2-8ecb001a04c5'
     nalogPlatPercent = 0.04;
@@ -46,24 +46,20 @@ Meteor.methods
       "TYPE_NAME" : "moysklad.customerOrderPosition",
       "discount" : 0,
       "quantity" : 1,
-      "consignmentUuid" : "82c439da-4743-11e5-90a2-8ecb001a04c9",
       "goodUuid" : nalogPlatUuid,
       "vat" : 0,
-      "accountUuid" : entityFromMS.accountUuid,
-      "accountId" : entityFromMS.accountId,
-      #"uuid" : "8c13b12e-ee93-11e5-7a69-9715002c22db",
       "groupUuid" : entityFromMS.groupUuid,
       "ownerUid" : "admin@allshellac",
       "shared" : false,
       "basePrice" : {
-              "TYPE_NAME" : "moysklad.moneyAmount",
-              "sum" : nalogPlatPrice,
-              "sumInCurrency" : nalogPlatPrice
+        "TYPE_NAME" : "moysklad.moneyAmount",
+        "sum" : nalogPlatPrice,
+        "sumInCurrency" : nalogPlatPrice
       },
       "price" : {
-              "TYPE_NAME" : "moysklad.moneyAmount",
-              "sum" : nalogPlatPrice,
-              "sumInCurrency" : nalogPlatPrice
+        "TYPE_NAME" : "moysklad.moneyAmount",
+        "sum" : nalogPlatPrice,
+        "sumInCurrency" : nalogPlatPrice
       },
       "reserve" : 0
     }
@@ -103,13 +99,7 @@ Meteor.methods
     if entityType is "customerOrder"
       # добавить действие по переводу в др. статус
       Orders.update {uuid: entityUuid}, {$push: {actions: {type:"stateChange", date: new Date()}}}
-      Meteor.call "logSystemEvent", "client.load", "5. notice", "Вызываем client.load в setEntityStateByUuid, options: #{JSON.stringify(client.options,null,2)}"
-      try
-        entityFromMS = client.load(entityType, entityUuid)
-      catch err
-        Meteor.call "logSystemEvent", "client.load", "2. error", "Ошибка при вызове в setEntityStateByUuid, options: #{JSON.stringify(client.options,null,2)}, client: #{JSON.stringify(client,null,2)}"
-      Meteor.call "logSystemEvent", "client.load", "5. notice", "Закончили вызывать client.load в setEntityStateByUuid, options: #{JSON.stringify(client.options,null,2)}"
-
+      entityFromMS = client.load(entityType, entityUuid)
       stateWorkflow = Workflows.findOne name:"CustomerOrder"
       if stateWorkflow
         oldStateName = (_.find stateWorkflow.state, (state) -> state.uuid is entityFromMS.stateUuid).name
