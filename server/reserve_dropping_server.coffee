@@ -42,7 +42,7 @@ Meteor.methods
         good = Goods.findOne({uuid: position.goodUuid})
         if good?
           resQty = Math.max(Math.min(position.quantity, good.realAvailableQty), 0)
-          console.log "#{position.quantity}, #{good.realAvailableQty}, #{resQty}"
+          #console.log "#{position.quantity}, #{good.realAvailableQty}, #{resQty}"
         else
           resQty = position.quantity
         if position.reserve != resQty
