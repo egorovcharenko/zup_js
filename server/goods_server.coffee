@@ -88,7 +88,7 @@ Meteor.methods
       "applicable": true
       "payerVat": true
       "rate": 1.0
-      "moment": moment().subtract(1,'days').toISOString()
+      "moment": moment().subtract(1,'days').toDate()
       "enterPosition": []
     }
     _.each goodsToEnter, (good) ->
