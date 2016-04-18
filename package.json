@@ -7,7 +7,7 @@
 		"meteor-node-stubs": "~0.2.0",
 		"moment": "^2.12.0",
 		"moment-business-time": "^0.5.0",
-		"moysklad-client": "git://github.com/wmakeev/moysklad-client"
+		"moysklad-client": "git://github.com/wmakeev/moysklad-client#0.2.10"
 	},
 	"private": true
 }
