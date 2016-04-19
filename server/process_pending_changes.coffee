@@ -2,13 +2,14 @@ Meteor.methods
   startProcessingChanges: (orderUuid, pendingChanges) ->
     console.log "Ставим в очередь обработку для заказа #{orderUuid} изменения: #{pendingChanges}"
     Orders.update {uuid: orderUuid}, {$push: {pendingChanges: {$each: pendingChanges}}}
-    #Meteor.call "logSystemEvent", "startProcessingChanges", "5. notice", ""
+    Meteor.call "logSystemEvent", "processPendingChanges", "5. notice", "Ставим в очередь обработку для заказа #{orderUuid} изменения:#{JSON.stringify(change,null,2)}"
 
   processPendingChanges: ->
     # найти все заказы с необработанными изменениями
     _.each Orders.find({pendingChanges: {$exists: true}}).fetch(), (order) ->
       try
         console.log "Заказ с необработанными изменениями: #{order.name}"
+        Meteor.call "logSystemEvent", "processPendingChanges", "5. notice", "Заказ с необработанными изменениями: #{order.name},  изменения:#{JSON.stringify(order.pendingChanges, null, 2)}"
         # сбросить сообщение
         Orders.update {uuid: order.uuid}, {$set: {processingResult: "Обрабатывается..."}}
         processingResult = ""
