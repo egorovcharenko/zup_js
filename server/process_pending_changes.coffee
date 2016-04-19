@@ -2,6 +2,7 @@ Meteor.methods
   startProcessingChanges: (orderUuid, pendingChanges) ->
     console.log "Ставим в очередь обработку для заказа #{orderUuid} изменения: #{pendingChanges}"
     Orders.update {uuid: orderUuid}, {$push: {pendingChanges: {$each: pendingChanges}}}
+    #Meteor.call "logSystemEvent", "startProcessingChanges", "5. notice", ""
 
   processPendingChanges: ->
     # найти все заказы с необработанными изменениями
@@ -55,7 +56,7 @@ Meteor.methods
               freshOrder.stateUuid = newState
               saveResult = client.save(freshOrder)
               #Meteor.call 'setEntityStateByUuid', 'customerOrder', order.uuid, newState
-              console.log "Успешно выставили статус, результат:", saveResult
+              console.log "Успешно выставили новый статус"
         # удалить массив и обновить сообщение
         processingResult += "Заказ обработан, собирайте следующий"
       catch error

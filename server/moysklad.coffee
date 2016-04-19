@@ -77,7 +77,7 @@ Meteor.methods
       metadataUuid = findMetadataUuidByName('CustomerOrder', attrib.name)
       if not metadataUuid?
         throw new Meteor.Error "Не нашли нужный атрибут", "attrib-not-found"
-      console.log "metadataUuid: #{metadataUuid}"
+      #console.log "metadataUuid: #{metadataUuid}"
       test = tools.getAttr(entityFromMS, metadataUuid)
       switch attrib.type
         when 'string'
