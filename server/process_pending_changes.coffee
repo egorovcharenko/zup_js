@@ -15,7 +15,7 @@ Meteor.methods
         # пройтись по всем изменениям
         _.each order.pendingChanges, (change) ->
           console.log "change: #{JSON.stringify(change,null,2)}"
-          console.log "change: #{change.type}, #{change.value}"
+          #console.log "change: #{change.type}, #{change.value}"
           Meteor._sleepForMs(300); # delay
           # выполнить действие
           switch change.type
@@ -31,13 +31,16 @@ Meteor.methods
             when "setOrderReserve"
               result = Meteor.call 'setOrderReserve', order.uuid, change.value
             when "setOrderNeededState"
+              console.log "Вошли в ветку setOrderNeededState"
               freshOrder = client.load('customerOrder', order.uuid)
+              console.log "Загрузили свежий заказ"
               needToBuy = false
-              _.each freshOrder.customerOrderPosition, (pos) ->
-                good = Goods.findOne {uuid: pos.goodUuid}
-                if good?
-                  if good.realAvailableQty < pos.quantity
-                    needToBuy = true
+              if freshOrder.customerOrderPosition?
+                _.each freshOrder.customerOrderPosition, (pos) ->
+                  good = Goods.findOne {uuid: pos.goodUuid}
+                  if good?
+                    if good.realAvailableQty < pos.quantity
+                      needToBuy = true
               if needToBuy
                 # если чего-то нет, то выставляем "Требуется закупка"
                 newState = "7f224366-68d0-11e4-7a07-673d0003202a" # "Требуется закупка"
@@ -48,7 +51,11 @@ Meteor.methods
                 if attrib?
                   if (attrib.entityValueUuid is "07242d1a-691b-11e4-90a2-8ecb0052fa9f") or (attrib.entityValueUuid is "c596ace1-7991-11e4-90a2-8eca00151dc4")
                     newState = "265f289e-ca46-11e5-7a69-971100039a24" # пока не собирать
-              Meteor.call 'setEntityStateByUuid', 'customerOrder', freshOrder.uuid, newState
+              console.log "выставляем статус"
+              freshOrder.stateUuid = newState
+              saveResult = client.save(freshOrder)
+              #Meteor.call 'setEntityStateByUuid', 'customerOrder', order.uuid, newState
+              console.log "Успешно выставили статус, результат:", saveResult
         # удалить массив и обновить сообщение
         processingResult += "Заказ обработан, собирайте следующий"
       catch error
