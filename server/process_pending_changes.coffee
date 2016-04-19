@@ -1,10 +1,10 @@
 Meteor.methods
   startProcessingChanges: (orderUuid, pendingChanges) ->
     console.log "Ставим в очередь обработку для заказа #{orderUuid} изменения: #{pendingChanges}"
-    Orders.update {uuid: orderUuid}, {$push: {pendingChanges: {$each: pendingChanges}}}
     order = Orders.findOne {uuid: orderUuid}
     if order?
-      Meteor.call "logSystemEvent", "processPendingChanges", "5. notice", "Ставим в очередь обработки для заказа #{order.name} изменения:#{JSON.stringify(pendingChanges,null,2)}"
+      Meteor.call "logSystemEvent", "processPendingChanges", "5. notice", "Ставим в очередь обработки для заказа #{order.name} изменения:#{JSON.stringify(pendingChanges, null, 2)}, текущие значения: #{JSON.stringify(order.pendingChanges, null, 2)}"
+    Orders.update {uuid: orderUuid}, {$push: {pendingChanges: {$each: pendingChanges}}}
 
   processPendingChanges: ->
     # найти все заказы с необработанными изменениями
@@ -21,6 +21,8 @@ Meteor.methods
           console.log "change: #{JSON.stringify(change,null,2)}"
           #console.log "change: #{change.type}, #{change.value}"
           Meteor._sleepForMs(300); # delay
+          # запомнить для очищения потом
+          lastWorkedOnType = change.type
           # выполнить действие
           switch change.type
             when "changeAttributes"
@@ -60,11 +62,15 @@ Meteor.methods
               saveResult = client.save(freshOrder)
               #Meteor.call 'setEntityStateByUuid', 'customerOrder', order.uuid, newState
               console.log "Успешно выставили новый статус"
+          # очистить то, что обработали
+          Orders.update {uuid: order.uuid}, {$pull: {pendingChanges: {type: change.type}}}
         # удалить массив и обновить сообщение
         processingResult += "Заказ обработан, собирайте следующий"
       catch error
         console.log "Ошибка при обработке изменений:", error
         processingResult += "Ошибка при обработке заказа, попробуйте заново (?): #{error.toString()}"
-      finally
-        Orders.update {uuid: order.uuid}, {$unset: {pendingChanges: ""}, $set: {processingResult: processingResult}}
+        if lastWorkedOnType?
+          Orders.update {uuid: order.uuid}, {$pull: {pendingChanges: {type: lastWorkedOnType}}}
+      # обновить результат
+      Orders.update {uuid: order.uuid}, {$set: {processingResult: processingResult}}
     return
