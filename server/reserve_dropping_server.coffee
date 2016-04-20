@@ -55,5 +55,6 @@ Meteor.methods
           changed = true
       #console.log "position.reserve:", position.reserve
     if changed
+      console.log "Начинаем проставлять резерв"
       newEntity = client.save(order)
       console.log "Проставили резерв #{order.name}"

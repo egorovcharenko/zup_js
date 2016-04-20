@@ -8,16 +8,16 @@ Meteor.methods
 
   processPendingChanges: ->
     # найти все заказы с необработанными изменениями
-    _.each Orders.find({pendingChanges: {$exists: true}}).fetch(), (order) ->
-      try
-        console.log "Заказ с необработанными изменениями: #{order.name}"
-        Meteor.call "logSystemEvent", "processPendingChanges", "5. notice", "Заказ с необработанными изменениями: #{order.name},  изменения:#{JSON.stringify(order.pendingChanges, null, 2)}"
-        # сбросить сообщение
-        Orders.update {uuid: order.uuid}, {$set: {processingResult: "Обрабатывается..."}}
-        processingResult = ""
-        error = false
-        # пройтись по всем изменениям
-        _.each order.pendingChanges, (change) ->
+    _.each Orders.find({pendingChanges: {$exists: true, $ne: []}}).fetch(), (order) ->
+      console.log "Заказ с необработанными изменениями: #{order.name}"
+      Meteor.call "logSystemEvent", "processPendingChanges", "5. notice", "Заказ с необработанными изменениями: #{order.name},  изменения:#{JSON.stringify(order.pendingChanges, null, 2)}"
+      # сбросить сообщение
+      Orders.update {uuid: order.uuid}, {$set: {processingResult: "Обрабатывается..."}}
+      processingResult = ""
+      error = false
+      # пройтись по всем изменениям
+      _.each order.pendingChanges, (change) ->
+        try
           console.log "change: #{JSON.stringify(change,null,2)}"
           #console.log "change: #{change.type}, #{change.value}"
           Meteor._sleepForMs(300); # delay
@@ -62,15 +62,14 @@ Meteor.methods
               saveResult = client.save(freshOrder)
               #Meteor.call 'setEntityStateByUuid', 'customerOrder', order.uuid, newState
               console.log "Успешно выставили новый статус"
-          # очистить то, что обработали
-          Orders.update {uuid: order.uuid}, {$pull: {pendingChanges: {type: change.type}}}
-        # удалить массив и обновить сообщение
-        processingResult += "Заказ обработан, собирайте следующий"
-      catch error
-        console.log "Ошибка при обработке изменений:", error
-        processingResult += "Ошибка при обработке заказа, попробуйте заново (?): #{error.toString()}"
-        if lastWorkedOnType?
-          Orders.update {uuid: order.uuid}, {$pull: {pendingChanges: {type: lastWorkedOnType}}}
+        catch error
+          console.log "Ошибка при обработке изменений заказа #{order.name}:", error
+          processingResult += "Ошибка при обработке заказа, попробуйте заново (?): #{error.toString()}"
+        # очистить то, что обработали
+        Orders.update {uuid: order.uuid}, {$pull: {pendingChanges: {type: change.type}}}
+      # обновить сообщение
+      processingResult += "Заказ обработан, собирайте следующий"
+
       # обновить результат
       Orders.update {uuid: order.uuid}, {$set: {processingResult: processingResult}}
     return
