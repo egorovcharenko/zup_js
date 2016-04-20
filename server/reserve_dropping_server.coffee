@@ -36,7 +36,7 @@ Meteor.methods
   setOrderReserve: (entityUuid, setReserve) ->
     console.log "Начинаем ставить резерв для заказа #{entityUuid}"
     order = client.load('customerOrder', entityUuid)
-    console.log "Загрузили заказ.."
+    console.log "Загрузили заказ для резерва: #{order.name}"
     changed = false
     _.each order.customerOrderPosition, (position) ->
       if setReserve
