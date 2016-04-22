@@ -37,9 +37,9 @@ Meteor.methods
             when "setOrderReserve"
               result = Meteor.call 'setOrderReserve', order.uuid, change.value
             when "setOrderNeededState"
-              console.log "Вошли в ветку setOrderNeededState"
+              #console.log "Вошли в ветку setOrderNeededState"
               freshOrder = client.load('customerOrder', order.uuid)
-              console.log "Загрузили свежий заказ"
+              #console.log "Загрузили свежий заказ"
               needToBuy = false
               if freshOrder.customerOrderPosition?
                 _.each freshOrder.customerOrderPosition, (pos) ->
@@ -57,11 +57,11 @@ Meteor.methods
                 if attrib?
                   if (attrib.entityValueUuid is "07242d1a-691b-11e4-90a2-8ecb0052fa9f") or (attrib.entityValueUuid is "c596ace1-7991-11e4-90a2-8eca00151dc4")
                     newState = "265f289e-ca46-11e5-7a69-971100039a24" # пока не собирать
-              console.log "выставляем статус"
+              #console.log "выставляем статус"
               freshOrder.stateUuid = newState
               saveResult = client.save(freshOrder)
               #Meteor.call 'setEntityStateByUuid', 'customerOrder', order.uuid, newState
-              console.log "Успешно выставили новый статус"
+              #console.log "Успешно выставили новый статус"
         catch error
           console.log "Ошибка при обработке изменений заказа #{order.name}:", error
           processingResult += "Ошибка при обработке заказа, попробуйте заново (?): #{error.toString()}"
@@ -69,7 +69,6 @@ Meteor.methods
         Orders.update {uuid: order.uuid}, {$pull: {pendingChanges: {type: change.type}}}
       # обновить сообщение
       processingResult += "Заказ обработан, собирайте следующий"
-
       # обновить результат
       Orders.update {uuid: order.uuid}, {$set: {processingResult: processingResult}}
     return

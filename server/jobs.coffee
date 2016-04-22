@@ -122,9 +122,6 @@ processMSJobsWorker = (job, cb) ->
           job.log "ошибка: #{error}"
           job.fail()
       return cb()
-
-processStockJobsWorker = (job, cb) ->
-  switch job.type
     when "loadStockFromMS"
       Meteor.call 'loadStockFromMS', (error, result) ->
         if not error?
@@ -134,6 +131,9 @@ processStockJobsWorker = (job, cb) ->
           job.log "ошибка: #{error}"
           job.fail()
       return cb()
+
+processStockJobsWorker = (job, cb) ->
+  switch job.type
     when "sendStockToMagento"
       Meteor.call 'sendStockToMagento', job, (error, result) ->
         if not error?
@@ -235,11 +235,11 @@ Meteor.startup ->
   # Начать обрабатывать задачи
 
   if sendStockFlag
-    myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities', 'processPendingChanges','setAutosalePrices','autoStatusChange'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
-    myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
+    myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities', 'processPendingChanges','setAutosalePrices','autoStatusChange', 'loadStockFromMS'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
+    myJobs.processJobs ['sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
   else
     myJobs.processJobs ['setOrderActionsParameters', 'calculateNextArrivalDates', 'loadAllDataMoyskladPeriodic', 'setEntityStateByUuid', 'updateEntityMS', 'loadNotPrimaryEntities', 'processPendingChanges'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
-    myJobs.processJobs ['loadStockFromMS'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
+    #myJobs.processJobs ['loadStockFromMS'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
 
   # cleanups and remove stale jobs
   new Job(myJobs, 'cleanup', {})

@@ -24,6 +24,8 @@ Template.loadData.helpers
     else
       false
 Template.loadData.events
+  'click #calcDeliveryDiff': (event, template) ->
+    Meteor.call "calcDeliveryDiff"
   'click #testMethod': (event, template) ->
     Meteor.call "testMethod"
   'click #calcNalogi': (event, template) ->
