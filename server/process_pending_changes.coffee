@@ -68,7 +68,7 @@ Meteor.methods
         # очистить то, что обработали
         Orders.update {uuid: order.uuid}, {$pull: {pendingChanges: {type: change.type}}}
       # обновить сообщение
-      processingResult += "Заказ обработан, собирайте следующий"
+      processingResult += "Заказ обработан в #{moment().format('DD.MM.YYYY HH:mm')}" 
       # обновить результат
       Orders.update {uuid: order.uuid}, {$set: {processingResult: processingResult}}
     return

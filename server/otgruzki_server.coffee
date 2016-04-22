@@ -6,7 +6,7 @@ Meteor.methods
     # проверить чтобы отгрузок не было уже
     existingDemand = Demands.findOne {customerOrderUuid: orderUuid, applicable: true}
     if existingDemand?
-      console.log "Отгрузка для данного заказа уже создана:", existingDemand
+      console.log "Отгрузка для данного заказа уже создана:", existingDemand.name
       throw new Meteor.Error "stock-exists", "Отгрузка для данного заказа уже создана"
 
     demand = {
