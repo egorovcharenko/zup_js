@@ -39,7 +39,7 @@ Meteor.methods
         if good.name is "Наложенный платеж"
           ;#skip
         else
-          #console.log "  good found: #{good.name}, good.stockQty: #{good.stockQty}, pos.quantity:#{pos.quantity}"
+          console.log "  good found: #{good.name}, good.stockQty: #{good.stockQty}, pos.quantity:#{pos.quantity}"
           if pos.quantity > good.stockQty
             # Для тех которые не в наличии - найти техкарту
             solved = false
@@ -69,6 +69,7 @@ Meteor.methods
                 "results": [],
                 "material": []
               }
+              productPrice = 0
               # все ли товары из тех-карты в наличии в нужном кол-ве?
               _.each plan.material, (material) ->
                 #console.log "    material: #{material.goodUuid}"
@@ -101,6 +102,7 @@ Meteor.methods
                         "sumInCurrency" : materialGood.buyPrice
                       }
                     }
+                    productPrice += materialGood.buyPrice * material.quantity * qtyMultiplier
                 else
                   console.log "     материал не найден: #{material.goodUuid}"
               # добавляем в техкарту все результаты

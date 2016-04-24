@@ -73,6 +73,7 @@ Meteor.methods
         activePurchaseOrder1 = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
         if activePurchaseOrder1?
           console.log "найден старый заказ на закупку"
+          Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Нашли старый заказ для него: #{activePurchaseOrder1.name}"
           # удалить старый заказ
           #delResult = HTTP.del('https://online.moysklad.ru/exchange/rest/ms/xml/purchaseOrder/' + activePurchaseOrder1.uuid, {auth:"admin@allshellac:qweasd"} )
         else
@@ -158,6 +159,7 @@ Meteor.methods
                 Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Создание/обновление заказа на закупку завершено"
               catch e
                 console.log "ошибка внутри runSync:", e
+                Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Ошибка при создании/обновлении заказа на закупку: #{JSON.stringify(e,null,2)}"
             else
               console.log "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
               Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
@@ -166,6 +168,7 @@ Meteor.methods
         activePurchaseOrder2 = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
         if activePurchaseOrder2?
           console.log "найден старый заказ на закупку"
+          Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Нашли старый заказ для него 2: #{activePurchaseOrder1.name}"
           # удалить старый заказ
           #delResult = HTTP.del('https://online.moysklad.ru/exchange/rest/ms/xml/purchaseOrder/' + activePurchaseOrder2.uuid, {auth:"admin@allshellac:qweasd"} )
           #console.log "delete result:", delResult
@@ -226,6 +229,7 @@ Meteor.methods
                 Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Создание/обновление заказа на закупку завершено 2"
               catch e
                 console.log "ошибка внутри runSync:", e
+                Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Ошибка при создании/обновлении заказа на закупку 2: #{JSON.stringify(e,null,2)}"
             else
               console.log "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
     catch error

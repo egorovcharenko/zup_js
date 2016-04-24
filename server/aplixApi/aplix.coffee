@@ -64,12 +64,19 @@ Meteor.methods
           if order?
             Orders.update {name: aplixOrder.identifier}, {$set: {atDeliveryPlace: "1"}}
             # если заказ в статусе что мы знаем что он в пункте выдачи - не меняем, иначе:
+            # Заказ в пункте выдачи - НЕ требуется связь
             # Заказ в пункте выдачи - требуется связь
             # ВЫполнен
             # Отказ (после отправки)
-            if not ((order.stateUuid is "5753d0b0-a6fb-11e4-90a2-8ecb0011be7f") or (order.stateUuid is "798d5b49-68d0-11e4-7a07-673d00031aa2") or (order.stateUuid is "a33d0fff-7496-11e4-90a2-8ecb00385fe2") or (order.stateUuid is "a9508cfd-fe83-11e5-7a69-8f5500085d54"))
+            if not ((order.stateUuid is "a9508cfd-fe83-11e5-7a69-8f5500085d54") or (order.stateUuid is "5753d0b0-a6fb-11e4-90a2-8ecb0011be7f") or (order.stateUuid is "798d5b49-68d0-11e4-7a07-673d00031aa2") or (order.stateUuid is "a33d0fff-7496-11e4-90a2-8ecb00385fe2") or (order.stateUuid is "a9508cfd-fe83-11e5-7a69-8f5500085d54"))
               # меняем статус на "Заказ в пункте выдачи - требуется связь"
-              Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid, "5753d0b0-a6fb-11e4-90a2-8ecb0011be7f" # Заказ в пункте выдачи - требуется связь
+              pendingChanges = [{
+                type: "setState"
+                value: "5753d0b0-a6fb-11e4-90a2-8ecb0011be7f" # Заказ в пункте выдачи - требуется связь
+              }]
+              Meteor.call "startProcessingChanges", order.uuid, pendingChanges
+              console.log "Меняем у заказа #{order.name} статус на то, что его не выкупают"
+              #Meteor.call "setEntityStateByUuid", "customerOrder", order.uuid,
               # TODO отправляем СМСку
     return
   loadBillingInfo: ->
