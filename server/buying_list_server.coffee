@@ -70,31 +70,30 @@ Meteor.methods
       _.each Companies.find({ tags: $in: [ 'поставщики' ] }).fetch(), (supplier) ->
         Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Обрабатываем поставщика #{supplier.name}, #{supplier.uuid}"
         # найти заказ на закупку в статусе. если нет - создать его
-        activePurchaseOrder1 = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
-        if activePurchaseOrder1?
-          console.log "найден старый заказ на закупку"
-          Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Нашли старый заказ для него: #{activePurchaseOrder1.name}"
+        # activePurchaseOrder1 = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
+        # if activePurchaseOrder1?
+        #   console.log "найден старый заказ на закупку"
+        #   Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Нашли старый заказ для него: #{activePurchaseOrder1.name}"
           # удалить старый заказ
           #delResult = HTTP.del('https://online.moysklad.ru/exchange/rest/ms/xml/purchaseOrder/' + activePurchaseOrder1.uuid, {auth:"admin@allshellac:qweasd"} )
-        else
-          activePurchaseOrder1 = {
-            "TYPE_NAME" : "moysklad.purchaseOrder",
-            "reservedSum" : 0,
-            "stateUuid" : activeStateUuid,
-            "sourceAgentUuid" : supplier.uuid,
-            "applicable" : true,
-            "targetAccountUuid" : "8de83912-65fe-11e4-90a2-8ecb00148412",
-            "payerVat" : true,
-            "rate" : 1,
-            "vatIncluded" : true,
-            "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-            "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-            "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
-            "ownerUid" : "admin@allshellac",
-            "shared" : false,
-            "purchaseOrderPosition": [],
-            "description": "Автозакупка про запас"
-          }
+        activePurchaseOrder1 = {
+          "TYPE_NAME" : "moysklad.purchaseOrder",
+          "reservedSum" : 0,
+          "stateUuid" : activeStateUuid,
+          "sourceAgentUuid" : supplier.uuid,
+          "applicable" : true,
+          "targetAccountUuid" : "8de83912-65fe-11e4-90a2-8ecb00148412",
+          "payerVat" : true,
+          "rate" : 1,
+          "vatIncluded" : true,
+          "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
+          "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
+          "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
+          "ownerUid" : "admin@allshellac",
+          "shared" : false,
+          "purchaseOrderPosition": [],
+          "description": "Автозакупка про запас"
+        }
         activePurchaseOrder1.created = new Date()
         activePurchaseOrder1.purchaseOrderPosition = []
         d = new Date()
@@ -159,38 +158,37 @@ Meteor.methods
                 Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Создание/обновление заказа на закупку завершено"
               catch e
                 console.log "ошибка внутри runSync:", e
-                Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Ошибка при создании/обновлении заказа на закупку: #{JSON.stringify(e,null,2)}"
+                Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Ошибка при создании/обновлении заказа на закупку: #{e}"
             else
               console.log "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
               Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
 
         # закупка под заказ
-        activePurchaseOrder2 = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
-        if activePurchaseOrder2?
-          console.log "найден старый заказ на закупку"
-          Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Нашли старый заказ для него 2: #{activePurchaseOrder1.name}"
+        # activePurchaseOrder2 = PurchaseOrders.findOne {stateUuid: activeStateUuid, sourceAgentUuid: supplier.uuid, applicable: true}
+        # if activePurchaseOrder2?
+        #   console.log "найден старый заказ на закупку"
+        #   Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Нашли старый заказ для него 2: #{activePurchaseOrder1.name}"
           # удалить старый заказ
           #delResult = HTTP.del('https://online.moysklad.ru/exchange/rest/ms/xml/purchaseOrder/' + activePurchaseOrder2.uuid, {auth:"admin@allshellac:qweasd"} )
           #console.log "delete result:", delResult
-        else
-          activePurchaseOrder2 = {
-            "TYPE_NAME" : "moysklad.purchaseOrder",
-            "reservedSum" : 0,
-            "stateUuid" : activeStateUuid,
-            "sourceAgentUuid" : supplier.uuid,
-            "applicable" : true,
-            "targetAccountUuid" : "8de83912-65fe-11e4-90a2-8ecb00148412",
-            "payerVat" : true,
-            "rate" : 1,
-            "vatIncluded" : true,
-            "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-            "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
-            "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
-            "ownerUid" : "admin@allshellac",
-            "shared" : false,
-            "purchaseOrderPosition": [],
-            "description": "Автозакупка под заказ"
-          }
+        activePurchaseOrder2 = {
+          "TYPE_NAME" : "moysklad.purchaseOrder",
+          "reservedSum" : 0,
+          "stateUuid" : activeStateUuid,
+          "sourceAgentUuid" : supplier.uuid,
+          "applicable" : true,
+          "targetAccountUuid" : "8de83912-65fe-11e4-90a2-8ecb00148412",
+          "payerVat" : true,
+          "rate" : 1,
+          "vatIncluded" : true,
+          "accountUuid" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
+          "accountId" : "6e02ccbd-65fe-11e4-7a07-673d00001215",
+          "groupUuid" : "09951fc6-d269-11e4-90a2-8ecb000588c0",
+          "ownerUid" : "admin@allshellac",
+          "shared" : false,
+          "purchaseOrderPosition": [],
+          "description": "Автозакупка под заказ"
+        }
         activePurchaseOrder2.created = new Date()
         activePurchaseOrder2.purchaseOrderPosition = []
         podZakazStringMeta = _.find(supplier.attribute, (attr) -> attr.metadataUuid == "c5723a4e-f3f7-11e5-7a69-970d0029005c")
@@ -229,7 +227,7 @@ Meteor.methods
                 Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Создание/обновление заказа на закупку завершено 2"
               catch e
                 console.log "ошибка внутри runSync:", e
-                Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Ошибка при создании/обновлении заказа на закупку 2: #{JSON.stringify(e,null,2)}"
+                Meteor.call "logSystemEvent", "calculateBuyingQty", "5. notice", "Ошибка при создании/обновлении заказа на закупку 2: #{e}"
             else
               console.log "Пропускаем заведение заказа т.к. товаров для поставщика '#{supplier.name}' нет"
     catch error
