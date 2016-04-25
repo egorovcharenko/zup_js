@@ -119,7 +119,7 @@ Meteor.methods
 
   loadStockFromMS: () ->
     # очищаем список составных товаров
-    CompoundGoods.remove({})
+    #CompoundGoods.remove({})
 
     options = {
       #stockMode: ALL_STOCK,
