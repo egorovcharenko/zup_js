@@ -29,9 +29,9 @@ Meteor.methods
         4: ["10", "18"],
         5: ["10", "18"],
         6: null,
-        0: null,
+        0: null
     )
-    ordersTotal = Orders.count({})
+    ordersTotal = Orders.find().count()
     currentCount = 0
     # пройтись по всем заказам?
     _.each Orders.find({created: {$gt: moment().subtract(3, 'days').toDate()}}).fetch(), (order) ->
@@ -41,54 +41,62 @@ Meteor.methods
       # проходим по всей истории изменения статусов заказа, находим время поступления в модерацию и время выхода из нее
       startModerationStatus = StatusHistory.findOne {orderName: order.name, $or: [{newStateUuid: "3f201baf-8d32-11e4-7a07-673d00307946"}, {newStateUuid: "33cd998e-3090-11e5-7a07-673d0019b9ed"}]}
       if startModerationStatus?
-        #console.log "found:", startModerationStatus
+        console.log "found:", startModerationStatus
         startModerationTime = startModerationStatus.date
-        #console.log "startModerationTime:#{startModerationTime}"
+        console.log "startModerationTime:#{startModerationTime}"
         moderationEndedStatus = StatusHistory.findOne {orderName: order.name, $or: [{oldStateUuid: "3f201baf-8d32-11e4-7a07-673d00307946"}, {oldStateUuid: "33cd998e-3090-11e5-7a07-673d0019b9ed"}]}
         if moderationEndedStatus?
           # учитываем пояс и рабочее время общее
           customer = Companies.findOne {uuid: order.sourceAgentUuid}
-          if customer?
-            if customer.dadata?
-              if customer.dadata.timezone?
-                offset = parseInt(customer.dadata.timezone.substring(3)) - 3 # москва
-                moment.updateLocale('en',
-                workinghours:
-                  1: [Math.max(9, 9 + offset).toString(), Math.min(18, 18 + offset).toString()],
-                  2: [Math.max(9, 9 + offset).toString(), Math.min(18, 18 + offset).toString()],
-                  3: [Math.max(9, 9 + offset).toString(), Math.min(18, 18 + offset).toString()],
-                  4: [Math.max(9, 9 + offset).toString(), Math.min(18, 18 + offset).toString()],
-                  5: [Math.max(9, 9 + offset).toString(), Math.min(18, 18 + offset).toString()],
-                  6: null,
-                  0: null,
-                  )
+          # if customer?
+          #   if customer.dadata?
+          #     if customer.dadata.timezone?
+          #       offset = parseInt(customer.dadata.timezone.substring(3)) - 3 # москва
+          #       moment.updateLocale('en',
+          #       workinghours:
+          #         1: [Math.max(9, 9 + offset).toString(), Math.min(18, 18 + offset).toString()],
+          #         2: [Math.max(9, 9 + offset).toString(), Math.min(18, 18 + offset).toString()],
+          #         3: [Math.max(9, 9 + offset).toString(), Math.min(18, 18 + offset).toString()],
+          #         4: [Math.max(9, 9 + offset).toString(), Math.min(18, 18 + offset).toString()],
+          #         5: [Math.max(9, 9 + offset).toString(), Math.min(18, 18 + offset).toString()],
+          #         6: null,
+          #         0: null
+          #         )
           endModerationTime = moderationEndedStatus.date
           shouldBeModerated = moment(startModerationTime).addWorkingTime(30, 'minutes')
           # возращаем старое расписание
-          moment.updateLocale('en',
-            workinghours:
-              1: ["10", "18"],
-              2: ["10", "18"],
-              3: ["10", "18"],
-              4: ["10", "18"],
-              5: ["10", "18"],
-              6: null,
-              0: null,
-          )
-          #console.log "shouldBeModerated: #{moment(shouldBeModerated).format("YYYY-DD-MM в HH:mm")}"
-          # а теперь смотрим, успели или нет
+          # moment.updateLocale('en',
+          #   workinghours:
+          #     1: ["10", "18"],
+          #     2: ["10", "18"],
+          #     3: ["10", "18"],
+          #     4: ["10", "18"],
+          #     5: ["10", "18"],
+          #     6: null,
+          #     0: null
+          # )
+          #console.log "shouldBeModerated: #{moment(shouldBeModerated).format('YYYY-DD-MM в HH:mm')}"
+          console.log "0"
+          console.log "1"
           if moment(endModerationTime).isAfter(shouldBeModerated)
-            reason = "Штраф 100р: Заказ #{order.name} промодерирован с задержкой, должен был #{moment(shouldBeModerated).format("YYYY-DD-MM в HH:mm:ss")}, а был #{moment(endModerationTime).format("YYYY-DD-MM в HH:mm")}"
+            console.log "2"
+            reason = "Штраф 100р: Заказ #{order.name} промодерирован с задержкой, должен был #{moment(shouldBeModerated).format('YYYY-DD-MM в HH:mm:ss')}, а был #{moment(endModerationTime).format('YYYY-DD-MM в HH:mm')}"
+            console.log "3"
             console.log reason
+            console.log "4"
             makeKpiRecord moment(startModerationTime).format('DD.MM.YYYY'), "все", -100, reason
+            console.log "5"
           # записать время модерации заказа
+          console.log "6"
           moderationTime = moment(startModerationTime).workingDiff(moment(endModerationTime), "minutes")
+          console.log "7"
           date =  moment(startModerationTime).format('DD.MM.YYYY')
+          console.log "8"
           ModerationTimes.insert({date: date, orderName: order.name, moderationTime: moderationTime})
+          console.log "9"
           Kpis.update {date: date, user: "Промодерировано заказов"}, {$inc: {qty: 1, time: moderationTime}}
-
-      # пропускаем пока
-      return
+          console.log "moderationTime logged"
+      console.log "10"
       _.each OrderRules.find({}).fetch(), (rule) ->
         # находим каждый этот статус
         _.each StatusHistory.find({orderName: order.name, newStateUuid: rule.stateUuid}).fetch(), (inStatus) ->
@@ -127,8 +135,9 @@ Meteor.methods
               else
                 whomToPunish = "не понятно"
             makeKpiRecord moment(inStatus.date).format('DD.MM.YYYY'), whomToPunish, -100, reason
+    console.log "started calculating average"
     # получаем среднее на каждый день по скорости модерации
-    _.each (ModerationTimes.find({}).fetch()), (modTime) ->
-      
+    #_.each (ModerationTimes.find({}).fetch()), (modTime) ->
+
     #
     console.log "закончили подсчет KPI"

@@ -2,6 +2,8 @@
 #   return Log.find {}
 ReactiveTable.publish("all_goods_special_publish", Goods);
 
+ReactiveTable.publish("compoundgoods_special_publish", CompoundGoods);
+
 ReactiveTable.publish("log_special_publish", Log);
 
 ReactiveTable.publish("order_statuses_special_publish", OrderStatuses);
