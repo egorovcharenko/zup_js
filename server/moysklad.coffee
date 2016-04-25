@@ -165,7 +165,7 @@ Meteor.methods
                     #if (good.name.lastIndexOf("Набор для ш", 0) == 0)
                       #console.log "--#{materialGood.name} - #{materialGood.realAvailableQty}"
                     # для каждого составляющего - добавить его в закупку в нужном количестве
-                    compoundGood.materials += "#{materialGood.name} - #{materialGood.realAvailableQty}<br/>"
+                    compoundGood.materials += "#{materialGood.name}: #{materialGood.realAvailableQty}<br/>"
                     minMaterialQty = Math.min(minMaterialQty, materialGood.realAvailableQty / material.quantity / plan.product[0].quantity)
                 compoundGood.minQty = minMaterialQty
                 realAvailableQty += Math.max(minMaterialQty, 0)
