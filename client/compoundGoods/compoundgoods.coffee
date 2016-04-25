@@ -16,6 +16,8 @@ Template.compoundgoods.helpers
           fieldId: "materials"
           key:'materials'
           label:"Составные части"
+          fn: (value)->
+            return new Spacebars.SafeString(value)
         },{
           fieldId: "minQty"
           key:'minQty'
