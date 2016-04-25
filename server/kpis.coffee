@@ -78,7 +78,7 @@ Meteor.methods
             console.log reason
             makeKpiRecord moment(startModerationTime).format('DD.MM.YYYY'), "все", -100, reason
           # записать время модерации заказа
-          ModerationTimes.insert({order.name: order.name, moderationTime: moment(startModerationTime).workingDiff(moment(endModerationTime), "minutes")})
+          ModerationTimes.insert({orderName: order.name, moderationTime: moment(startModerationTime).workingDiff(moment(endModerationTime), "minutes")})
 
       _.each OrderRules.find({}).fetch(), (rule) ->
         # находим каждый этот статус
