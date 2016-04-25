@@ -31,8 +31,12 @@ Meteor.methods
         6: null,
         0: null,
     )
+    ordersTotal = Orders.count({})
+    currentCount = 0
     # пройтись по всем заказам?
     _.each Orders.find({created: {$gt: moment().subtract(3, 'days').toDate()}}).fetch(), (order) ->
+      currentCount++
+      console.log "Обрабатываем заказ #{order.name}, прошли уже #{Math.ceil((currentCount/ordersTotal)*100)}% заказов (#{currentCount} штук)"
       # Модерация невовремя - штраф 100р
       # проходим по всей истории изменения статусов заказа, находим время поступления в модерацию и время выхода из нее
       startModerationStatus = StatusHistory.findOne {orderName: order.name, $or: [{newStateUuid: "3f201baf-8d32-11e4-7a07-673d00307946"}, {newStateUuid: "33cd998e-3090-11e5-7a07-673d0019b9ed"}]}
@@ -78,8 +82,13 @@ Meteor.methods
             console.log reason
             makeKpiRecord moment(startModerationTime).format('DD.MM.YYYY'), "все", -100, reason
           # записать время модерации заказа
-          ModerationTimes.insert({orderName: order.name, moderationTime: moment(startModerationTime).workingDiff(moment(endModerationTime), "minutes")})
+          moderationTime = moment(startModerationTime).workingDiff(moment(endModerationTime), "minutes")
+          date =  moment(startModerationTime).format('DD.MM.YYYY')
+          ModerationTimes.insert({date: date, orderName: order.name, moderationTime: moderationTime})
+          Kpis.update {date: date, user: "Промодерировано заказов"}, {$inc: {qty: 1, time: moderationTime}}
 
+      # пропускаем пока
+      return
       _.each OrderRules.find({}).fetch(), (rule) ->
         # находим каждый этот статус
         _.each StatusHistory.find({orderName: order.name, newStateUuid: rule.stateUuid}).fetch(), (inStatus) ->
@@ -118,4 +127,8 @@ Meteor.methods
               else
                 whomToPunish = "не понятно"
             makeKpiRecord moment(inStatus.date).format('DD.MM.YYYY'), whomToPunish, -100, reason
+    # получаем среднее на каждый день по скорости модерации
+    _.each (ModerationTimes.find({}).fetch()), (modTime) ->
+      
+    #
     console.log "закончили подсчет KPI"
