@@ -9,6 +9,7 @@ Meteor.methods
     console.log "начинаем подсчет KPI"
     # очистить логи
     Kpis.remove {}
+    ModerationTimes.remove {}
     # пройтись по всем записям логов
     _.each Log.find({}).fetch(), (logEntry) ->
       # вычислить дату записи
@@ -76,6 +77,9 @@ Meteor.methods
             reason = "Штраф 100р: Заказ #{order.name} промодерирован с задержкой, должен был #{moment(shouldBeModerated).format("YYYY-DD-MM в HH:mm:ss")}, а был #{moment(endModerationTime).format("YYYY-DD-MM в HH:mm")}"
             console.log reason
             makeKpiRecord moment(startModerationTime).format('DD.MM.YYYY'), "все", -100, reason
+          # записать время модерации заказа
+          ModerationTimes.insert({order.name: order.name, moderationTime: moment(startModerationTime).workingDiff(moment(endModerationTime), "minutes")})
+
       _.each OrderRules.find({}).fetch(), (rule) ->
         # находим каждый этот статус
         _.each StatusHistory.find({orderName: order.name, newStateUuid: rule.stateUuid}).fetch(), (inStatus) ->
