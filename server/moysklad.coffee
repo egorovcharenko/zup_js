@@ -152,11 +152,7 @@ Meteor.methods
               # если товар составной - то определить его доступное количество как минимальное из всех составных частей
               plan = ProcessingPlans.findOne({"product.goodUuid":good.uuid, "parentUuid": { $ne: "5283123e-7334-11e4-90a2-8ecb0012dbc6" }})
               if plan?
-                compoundGood = {
-                  name: good.name
-                  plan: plan.name
-                  materials: ""
-                }
+                materials = ""
                 #console.log "--#{plan.name}"
                 minMaterialQty = 99999
                 _.each plan.material, (material) ->
@@ -165,11 +161,10 @@ Meteor.methods
                     #if (good.name.lastIndexOf("Набор для ш", 0) == 0)
                       #console.log "--#{materialGood.name} - #{materialGood.realAvailableQty}"
                     # для каждого составляющего - добавить его в закупку в нужном количестве
-                    compoundGood.materials += "#{materialGood.name}: #{materialGood.realAvailableQty}<br/>"
+                    materials += "#{materialGood.name}: #{materialGood.realAvailableQty}<br/>"
                     minMaterialQty = Math.min(minMaterialQty, materialGood.realAvailableQty / material.quantity / plan.product[0].quantity)
-                compoundGood.minQty = minMaterialQty
                 realAvailableQty += Math.max(minMaterialQty, 0)
-                CompoundGoods.insert compoundGood
+                CompoundGoods.upsert {name: good.name, plan: plan.name}, {$set: {materials: materials, minQty: minMaterialQty}}
               #if good.name is "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие"
               #  console.log "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие, realAvailableQty:#{realAvailableQty}"
 
