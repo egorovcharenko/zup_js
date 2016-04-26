@@ -54,7 +54,7 @@ Meteor.methods
                     if service?
                       if (service.name.lastIndexOf("Наложенный", 0) == 0)
                         nalozPlatSum = pos.price.sum / 100
-                AplixDeliveryCosts.upsert {orderName: detail.content.orderExternalNumber}, {$set: {weCharged: deliveryPrice, nalozPlatSum: nalozPlatSum, difference: (deliveryPrice - detail.content.deliveryCost + packagePrice + nalozPlatSum).toFixed(2), weightMS: weight.toFixed(2)}}
+                AplixDeliveryCosts.upsert {orderName: detail.content.orderExternalNumber}, {$set: {weCharged: deliveryPrice, nalozPlatSum: nalozPlatSum, difference: (deliveryPrice - detail.content.deliveryCost + packagePrice + nalozPlatSum), weightMS: weight.toFixed(2)}}
           console.log curDate.format("YYYY-MM-DD")
     catch err
         console.log "Ошибка при подсчете расхождений в доставках:", err
