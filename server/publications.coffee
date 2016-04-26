@@ -1,5 +1,5 @@
-# Meteor.publish "wholeLog", (args) ->
-#   return Log.find {}
+ReactiveTable.publish("deliveries_costs_special_publish", AplixDeliveryCosts);
+
 ReactiveTable.publish("all_goods_special_publish", Goods);
 
 ReactiveTable.publish("compoundgoods_special_publish", CompoundGoods);
