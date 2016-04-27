@@ -6,7 +6,7 @@ Meteor.methods
     credentials = [{apiKey: '48d38fe6-fb40-4c8c-be48-ee96448b1a0b', shipperId: '5000a7af-a256-eb15-11e5-6c17dd4cddfe'}, {apiKey: 'c83edc56-7f97-4212-95c5-1f6d7bce3073', shipperId: '5000f3a9-a256-eb15-11e4-610eb7073e6f'}]
     try
       for credential in credentials
-        startDate = moment("2016-03-01")
+        startDate = moment("2016-01-01")
         endDate = moment().add(1, 'days')
         curDate = startDate
         while curDate <= endDate
