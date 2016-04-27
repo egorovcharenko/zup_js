@@ -131,7 +131,7 @@ Meteor.methods
       stock = client.stock(options);
     catch error
       console.log "Ошибка при загрузке остатков с сервера:", error
-    #console.log "Получили остатки:", stock
+    console.log "Получили остатки: #{JSON.stringify(stock,null,1)}", 
 
     countUpdated = 0
     if stock?
