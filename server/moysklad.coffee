@@ -120,6 +120,7 @@ Meteor.methods
   loadStockFromMS: () ->
     # очищаем список составных товаров
     #CompoundGoods.remove({})
+    console.log "Начинаем загружать отстатки с сервера"
 
     options = {
       stockMode: ALL_STOCK,
