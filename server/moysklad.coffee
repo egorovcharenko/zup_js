@@ -123,7 +123,7 @@ Meteor.methods
     console.log "Начинаем загружать отстатки с сервера"
 
     options = {
-      stockMode: ALL_STOCK,
+      #stockMode: ALL_STOCK,
       storeId: '8de95654-65fe-11e4-90a2-8ecb00148413',
       showConsignments: false
     }
@@ -131,7 +131,7 @@ Meteor.methods
       stock = client.stock(options);
     catch error
       console.log "Ошибка при загрузке остатков с сервера:", error
-    #console.log "Получили остатки: #{JSON.stringify(stock,null,1)}", 
+    #console.log "Получили остатки, кол-во: #{stock.length}",
 
     countUpdated = 0
     if stock?

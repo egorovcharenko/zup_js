@@ -6,7 +6,7 @@ Meteor.methods
     credentials = [{apiKey: '48d38fe6-fb40-4c8c-be48-ee96448b1a0b', shipperId: '5000a7af-a256-eb15-11e5-6c17dd4cddfe'}, {apiKey: 'c83edc56-7f97-4212-95c5-1f6d7bce3073', shipperId: '5000f3a9-a256-eb15-11e4-610eb7073e6f'}]
     try
       for credential in credentials
-        startDate = moment("2016-01-01")
+        startDate = moment("2016-03-01")
         endDate = moment().add(1, 'days')
         curDate = startDate
         while curDate <= endDate
@@ -55,6 +55,23 @@ Meteor.methods
                       if (service.name.lastIndexOf("Наложенный", 0) == 0)
                         nalozPlatSum = pos.price.sum / 100
                 AplixDeliveryCosts.upsert {orderName: detail.content.orderExternalNumber}, {$set: {weCharged: deliveryPrice, nalozPlatSum: nalozPlatSum, difference: (deliveryPrice - detail.content.deliveryCost + packagePrice + nalozPlatSum), weightMS: weight.toFixed(2)}}
+            else if detail.type is "MutualSettlementDetailTrackNumberPayment"
+              _.each detail.orders, (detailOrder) ->
+                orderName = detailOrder.externalNumber
+                order = Orders.findOne {name: orderName}
+                if order?
+                  incassation = 0
+                  sumPaid = 0
+                  _.each detailOrder.items, (item) ->
+                    if item.service?
+                      if item.service is "Инкассация"
+                        incassation = item.sum
+                      else
+                        sumPaid = item.sum
+                    else
+                      sumPaid = item.sum
+                   AplixDeliveryCosts.upsert {orderName: orderName}, {$set: {incassation: incassation, sumPaid: sumPaid}}
+                   AplixDeliveryCosts.update {orderName: orderName}, {$inc: {difference: incassation, deliveryCostTotal: -incassation}}
           console.log curDate.format("YYYY-MM-DD")
     catch err
         console.log "Ошибка при подсчете расхождений в доставках:", err
