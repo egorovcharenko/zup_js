@@ -22,6 +22,9 @@ Meteor.methods
               if ((good.realAvailableQty + pos.reserve) < pos.quantity)
                 allAvailable = false
                 console.log "Товар #{good.name} - не в наличии. доступно #{(good.realAvailableQty + pos.reserve)}, а нужно #{pos.quantity}"
+            else
+              allAvailable = false
+              console.log "Товар #{good.name} - не в наличии. доступно неизвестное количество, а нужно #{pos.quantity}"
         if allAvailable
           # если самовывоз или достависта - поставить на "Треб связь чтобы сказать клиенту что товар пришел"
           console.log "Все в наличии, Переводим заказ #{order.name} на сборку"
