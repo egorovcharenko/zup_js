@@ -122,8 +122,11 @@ processMSJobsWorker = (job, cb) ->
           job.log "ошибка: #{error}"
           job.fail()
       return cb()
-    when "loadStockFromMS"
-      Meteor.call 'loadStockFromMS', (error, result) ->
+
+processStockJobsWorker = (job, cb) ->
+  switch job.type
+    when "sendStockToMagento"
+      Meteor.call 'sendStockToMagento', job, (error, result) ->
         if not error?
           job.log "успешно, результат: #{result}"
           job.done()
@@ -131,11 +134,8 @@ processMSJobsWorker = (job, cb) ->
           job.log "ошибка: #{error}"
           job.fail()
       return cb()
-
-processStockJobsWorker = (job, cb) ->
-  switch job.type
-    when "sendStockToMagento"
-      Meteor.call 'sendStockToMagento', job, (error, result) ->
+    when "loadStockFromMS"
+      Meteor.call 'loadStockFromMS', (error, result) ->
         if not error?
           job.log "успешно, результат: #{result}"
           job.done()
@@ -223,8 +223,8 @@ Meteor.startup ->
   # Загрузка остатков из МС
   job = new Job myJobs, 'loadStockFromMS', {}
   job.priority('normal')
-    .retry({retries: myJobs.forever, wait: 60*1000}) # 60 * 1000
-    .repeat({ repeats: myJobs.forever, wait: 60*1000})
+    .retry({retries: myJobs.forever, wait: 6000*1000}) # 60 * 1000
+    .repeat({ repeats: myJobs.forever, wait: 600*1000})
     .save({cancelRepeats: true})
   # Загрузка не главных сущностей раз в 5 минут
   job = new Job myJobs, 'loadNotPrimaryEntities', {}
@@ -235,11 +235,11 @@ Meteor.startup ->
   # Начать обрабатывать задачи
 
   if sendStockFlag
-    myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities', 'processPendingChanges','setAutosalePrices','autoStatusChange', 'loadStockFromMS'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
-    myJobs.processJobs ['sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
+    myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities', 'processPendingChanges','setAutosalePrices','autoStatusChange'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
+    myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
   else
     myJobs.processJobs ['setOrderActionsParameters', 'calculateNextArrivalDates', 'loadAllDataMoyskladPeriodic', 'setEntityStateByUuid', 'updateEntityMS', 'loadNotPrimaryEntities', 'processPendingChanges'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
-    #myJobs.processJobs ['loadStockFromMS'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
+    myJobs.processJobs ['loadStockFromMS'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
 
   # cleanups and remove stale jobs
   new Job(myJobs, 'cleanup', {})
