@@ -9,6 +9,10 @@ Template.deliveriescosts.helpers
           key:'orderName'
           label:"Заказ"
         },{
+            fieldId: "sumPaid"
+            key:'sumPaid'
+            label:"Клиент заплатил"
+        },{
           fieldId: "packagePrice"
           key:'packagePrice'
           label:"Упаковка заказа Апликсом"
@@ -20,6 +24,10 @@ Template.deliveriescosts.helpers
           fieldId: "insurance"
           key:'insurance'
           label:"Страховка"
+        },{
+          fieldId: "incassation"
+          key:'incassation'
+          label:"Инкассация"
         },{
           fieldId: "weight"
           key:'weight'
