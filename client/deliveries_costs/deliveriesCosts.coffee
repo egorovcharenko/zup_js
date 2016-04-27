@@ -49,6 +49,10 @@ Template.deliveriescosts.helpers
           key:'postHeight'
           label:"Высота"
         },{
+          fieldId: "postVolumeWeight"
+          key:'postVolumeWeight'
+          label:"Объемный вес"
+        },{
           fieldId: "deliveryCostTotal"
           key:'deliveryCostTotal'
           label:"Заплатили Апликсу за доставку"
