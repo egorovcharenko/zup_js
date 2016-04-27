@@ -33,7 +33,7 @@ Meteor.methods
               else
                 insurance = 0
 
-              AplixDeliveryCosts.upsert {orderName: detail.content.orderExternalNumber}, {$set: {packagePrice: packagePrice, weightTarif: weightTarif, insurance: insurance, weight: detail.content.postWeight, deliveryCostTotal: detail.content.deliveryCost - packagePrice}}
+              AplixDeliveryCosts.upsert {orderName: detail.content.orderExternalNumber}, {$set: {packagePrice: packagePrice, weightTarif: weightTarif, insurance: insurance, weight: detail.content.postWeight, deliveryCostTotal: detail.content.deliveryCost - packagePrice, postLength: detail.content.postLength, postWidth: detail.content.postWidth, postHeight: detail.content.postHeight}}
               # Найти соотв. заказ у нас
               order = Orders.findOne {name: detail.content.orderExternalNumber}
               if order?

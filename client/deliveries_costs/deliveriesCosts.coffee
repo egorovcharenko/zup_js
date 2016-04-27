@@ -37,6 +37,18 @@ Template.deliveriescosts.helpers
           key:'weightMS'
           label:"Вес в МС"
         },{
+          fieldId: "postLength"
+          key:'postLength'
+          label:"Длина"
+        },{
+          fieldId: "postWidth"
+          key:'postWidth'
+          label:"Ширина"
+        },{
+          fieldId: "postHeight"
+          key:'postHeight'
+          label:"Высота"
+        },{
           fieldId: "deliveryCostTotal"
           key:'deliveryCostTotal'
           label:"Заплатили Апликсу за доставку"
