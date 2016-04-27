@@ -58,7 +58,6 @@ Meteor.methods
             single_data: {
               associativeEntity: [
                 { key: "instock_desc", value: inStockStatus}
-                { key: "shipment_desc", value: shipmentStatus}
               ]
             }
           }
