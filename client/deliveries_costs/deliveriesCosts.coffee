@@ -53,6 +53,10 @@ Template.deliveriescosts.helpers
           key:'postVolumeWeight'
           label:"Объемный вес"
         },{
+          fieldId: "deliveryMethod"
+          key:'deliveryMethod'
+          label:"Способ доставки"
+        },{
           fieldId: "deliveryCostTotal"
           key:'deliveryCostTotal'
           label:"Заплатили Апликсу за доставку"
