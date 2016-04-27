@@ -130,7 +130,7 @@ Meteor.methods
     stock = client.stock(options);
     countUpdated = 0
     if stock?
-      #Meteor.call "logSystemEvent", "loadStock", "5. notice", "Получено с сервера #{stock.length} остатков"
+      console.log "Получено с сервера #{stock.length} остатков"
       _.each stock, (oneStock) ->
         try
           if oneStock.goodRef?
