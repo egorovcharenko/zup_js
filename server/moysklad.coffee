@@ -127,8 +127,12 @@ Meteor.methods
       storeId: '8de95654-65fe-11e4-90a2-8ecb00148413',
       showConsignments: false
     }
+    try
+      stock = client.stock(options);
+    catch error
+      console.log "Ошибка при загрузке остатков с сервера:", error
+    #console.log "Получили остатки:", stock
 
-    stock = client.stock(options);
     countUpdated = 0
     if stock?
       console.log "Получено с сервера #{stock.length} остатков"
