@@ -122,7 +122,7 @@ Meteor.methods
     #CompoundGoods.remove({})
 
     options = {
-      #stockMode: ALL_STOCK,
+      stockMode: ALL_STOCK,
       storeId: '8de95654-65fe-11e4-90a2-8ecb00148413',
       showConsignments: false
     }
@@ -147,8 +147,6 @@ Meteor.methods
                   realAvailableQty = 100
               else
                 realAvailableQty = oneStock.quantity
-              #if good.name is "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие"
-              #  console.log "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие, realAvailableQty:#{realAvailableQty}"
               # если товар составной - то определить его доступное количество как минимальное из всех составных частей
               plan = ProcessingPlans.findOne({"product.goodUuid":good.uuid, "parentUuid": { $ne: "5283123e-7334-11e4-90a2-8ecb0012dbc6" }})
               if plan?
@@ -158,21 +156,15 @@ Meteor.methods
                 _.each plan.material, (material) ->
                   materialGood = Goods.findOne {uuid: material.goodUuid}
                   if materialGood?
-                    #if (good.name.lastIndexOf("Набор для ш", 0) == 0)
-                      #console.log "--#{materialGood.name} - #{materialGood.realAvailableQty}"
                     # для каждого составляющего - добавить его в закупку в нужном количестве
                     materials += "#{materialGood.name}: #{materialGood.realAvailableQty}<br/>"
                     minMaterialQty = Math.min(minMaterialQty, materialGood.realAvailableQty / material.quantity / plan.product[0].quantity)
                 realAvailableQty += Math.max(minMaterialQty, 0)
                 CompoundGoods.upsert {name: good.name, plan: plan.name}, {$set: {materials: materials, minQty: minMaterialQty}}
-              #if good.name is "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие"
-              #  console.log "Гель-лак Bluesky Shellac Base 10мл, базовое покрытие, realAvailableQty:#{realAvailableQty}"
-
               if good.realAvailableQty is realAvailableQty
                 needsUpdate = false
               else
                 needsUpdate = true
-
               Goods.update({uuid: oneStock.goodRef.uuid}, {$set: {stockQty: oneStock.stock, reserveQty: oneStock.reserve, quantityQty: oneStock.quantity, reserveForSelectedAgentQty: oneStock.reserveForSelectedAgent, realAvailableQty: realAvailableQty, dirty: needsUpdate}})
             else
               ;#Meteor.call "logSystemEvent", "loadStock", "5. notice", "При загрузке остатков не нашли товар: #{oneStock.goodRef.name}"

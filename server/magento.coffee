@@ -68,7 +68,9 @@ Meteor.methods
           }
         }
         Goods.update({uuid: good.uuid}, {$set: {dirty: false}})
-        response = soapClient.catalogProductUpdate request
+        Meteor.defer () ->
+          response = soapClient.catalogProductUpdate request
+        Meteor._sleepForMs(1000);
       catch error
         console.log "Ошибка при отправке остатка:", error.message
 
