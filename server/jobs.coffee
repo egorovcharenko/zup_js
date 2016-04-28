@@ -235,7 +235,7 @@ Meteor.startup ->
   # Начать обрабатывать задачи
 
   if sendStockFlag
-    myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities', 'processPendingChanges','setAutosalePrices','autoStatusChange'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
+    myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities', 'processPendingChanges','setAutosalePrices','autoStatusChange', 'resetStockSendToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
     myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
   else
     myJobs.processJobs ['setOrderActionsParameters', 'calculateNextArrivalDates', 'loadAllDataMoyskladPeriodic', 'setEntityStateByUuid', 'updateEntityMS', 'loadNotPrimaryEntities', 'processPendingChanges'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
