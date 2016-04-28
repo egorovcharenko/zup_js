@@ -22,30 +22,28 @@ Meteor.methods
         if good.realAvailableQty?
           if good.realAvailableQty > 0
             inStockStatus = "В наличии, отправим сегодня"
-            shipmentStatus = "Товар в наличии на нашем складе, отправим сегодня или завтра утром"
             isInStock = 1
             stockQty = 9999 #good.stockQty
         if (not good.realAvailableQty? or good.realAvailableQty <= 0)
           outOfStockInSupplier = good.outOfStockInSupplier #tools.getAttrValue(good, metadataUuid)
           if outOfStockInSupplier
-            #console.log "Флаг 'отсутствует у поставщика' у товара '#{good.name}': #{outOfStockInSupplier}"
             inStockStatus = "Временно нет в продаже"
-            shipmentStatus = "Товар отсутствует у поставщика. Отправка возможна после появления в продаже."
             isInStock = 0
             stockQty = 0
           else
             if good.nextDate?
               inStockStatus = "В наличии, отправим #{moment(good.nextDate).format("DD.MM")}"
-              shipmentStatus = "Товар в наличии, находится на складе поставщика, отправим #{moment(good.nextDate).format("DD.MM")}"
               isInStock = 1
               stockQty = 999
             else
               inStockStatus = "Доступно под заказ"
-              shipmentStatus = "Товар под заказ, уточняйте время поступления у менеджера"
               isInStock = 1
               stockQty = 999
 
-        console.log "Отправляем остаток: #{good.productCode}, кол-во #{good.realAvailableQty} наличие: #{inStockStatus}, отгрузка: #{shipmentStatus}"
+        console.log "Отправляем остаток: #{good.productCode}, кол-во #{good.realAvailableQty} наличие: #{inStockStatus}"
+
+        # обновить дату последней отправки остатка
+        Goods.update {uuid: good.uuid}, {$set: {lastStockSentAt: new Date()}}
 
         # send to magento
         request = {}

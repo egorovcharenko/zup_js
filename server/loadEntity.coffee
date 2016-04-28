@@ -47,6 +47,8 @@ Meteor.methods
                     else
                       entity.actions = [{type:"stateChange", date: new Date()}]
                 else if entityName is "good"
+                  if savedEntity.lastStockSentAt?
+                    entity.lastStockSentAt = savedEntity.lastStockSentAt
                   if savedEntity.ordersForBuy?
                     entity.ordersForBuy = savedEntity.ordersForBuy
                   if savedEntity.forAutoSale?
