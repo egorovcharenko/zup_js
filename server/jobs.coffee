@@ -164,7 +164,7 @@ Meteor.startup ->
     job = new Job myJobs, 'setAutosalePrices', {}
     job.priority('normal')
       .retry({retries: 5, wait: 60*60*1000}) # 1 * 1000
-      .repeat({schedule: myJobs.later.parse.text('at 01:00 am')})
+      #.repeat({schedule: myJobs.later.parse.text('at 01:00 am')})
       .save({cancelRepeats: true})
     # обновлять данные по заказам
     job = new Job myJobs, 'resetStockSendToMagento', {}
