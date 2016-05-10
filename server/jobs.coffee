@@ -161,11 +161,11 @@ Meteor.startup ->
       .repeat({schedule: myJobs.later.parse.text('every 5 minutes')})
       .save({cancelRepeats: true})
     # автораспродажа
-    job = new Job myJobs, 'setAutosalePrices', {}
-    job.priority('normal')
-      .retry({retries: 5, wait: 60*60*1000}) # 1 * 1000
-      #.repeat({schedule: myJobs.later.parse.text('at 01:00 am')})
-      .save({cancelRepeats: true})
+    # job = new Job myJobs, 'setAutosalePrices', {}
+    # job.priority('normal')
+    #   .retry({retries: 5, wait: 60*60*1000}) # 1 * 1000
+    #   #.repeat({schedule: myJobs.later.parse.text('at 01:00 am')})
+    #   .save({cancelRepeats: true})
     # обновлять данные по заказам
     job = new Job myJobs, 'resetStockSendToMagento', {}
     job.priority('normal')
@@ -235,7 +235,7 @@ Meteor.startup ->
   # Начать обрабатывать задачи
 
   if sendStockFlag
-    myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities', 'processPendingChanges','setAutosalePrices','autoStatusChange', 'resetStockSendToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
+    myJobs.processJobs ['setOrderActionsParameters', 'periodicalDropReserve', 'calculateNextArrivalDates', 'calculateBuyingQty', 'loadAllDataMoyskladPeriodic','setEntityStateByUuid', 'updateEntityMS', 'resetTimestamps', 'loadNotPrimaryEntities', 'processPendingChanges','autoStatusChange', 'resetStockSendToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
     myJobs.processJobs ['loadStockFromMS', 'sendStockToMagento'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processStockJobsWorker
   else
     myJobs.processJobs ['setOrderActionsParameters', 'calculateNextArrivalDates', 'loadAllDataMoyskladPeriodic', 'setEntityStateByUuid', 'updateEntityMS', 'loadNotPrimaryEntities', 'processPendingChanges'], { concurrency: 1, prefetch: 0, pollInterval: 1*1000 }, processMSJobsWorker
